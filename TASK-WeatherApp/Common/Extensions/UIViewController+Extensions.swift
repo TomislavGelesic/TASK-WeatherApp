@@ -30,4 +30,10 @@ extension UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
+    
+    func getTopBarHeight() -> CGFloat {
+        
+        return UIApplication.shared.statusBarFrame.size.height +
+            (self.navigationController?.navigationBar.frame.height ?? 0.0)
+    }
 }

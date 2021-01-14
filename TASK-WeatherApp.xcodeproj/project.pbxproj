@@ -8,6 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		202E6128E8E7E5C2045799AC /* Pods_TASK_WeatherApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD325B9A619230A1ED6C345D /* Pods_TASK_WeatherApp.framework */; };
+		6060B43C25B02C7000860602 /* SettingsSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B43B25B02C7000860602 /* SettingsSceneViewController.swift */; };
+		6060B44025B02E0800860602 /* SavedLocationsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B43F25B02E0800860602 /* SavedLocationsCollectionViewCell.swift */; };
+		6060B44525B033B700860602 /* UnitsCheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B44425B033B700860602 /* UnitsCheckBox.swift */; };
+		6060B44C25B0354000860602 /* CheckBoxDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B44B25B0354000860602 /* CheckBoxDelegate.swift */; };
+		6060B45025B037BC00860602 /* UnitsCheckBoxTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B44F25B037BC00860602 /* UnitsCheckBoxTableViewCell.swift */; };
+		6060B45725B043ED00860602 /* UnitsRadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B45625B043ED00860602 /* UnitsRadioButton.swift */; };
+		6060B46725B0549D00860602 /* UnitsRadioButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B46625B0549D00860602 /* UnitsRadioButtonType.swift */; };
+		6060B46D25B05ABA00860602 /* ConditionsRadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B46C25B05ABA00860602 /* ConditionsRadioButton.swift */; };
+		6060B47025B05B2B00860602 /* ConditionsRadioButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B46F25B05B2B00860602 /* ConditionsRadioButtonType.swift */; };
+		6060B47325B05BB200860602 /* ConditionsCheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B47225B05BB200860602 /* ConditionsCheckBox.swift */; };
+		6060B47625B05BD300860602 /* ConditionsCheckBoxCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B47525B05BD300860602 /* ConditionsCheckBoxCollectionViewCell.swift */; };
+		6060B47925B05CA900860602 /* UICollectionView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B47825B05CA900860602 /* UICollectionView+Extensions.swift */; };
 		60D87ED825AF60360033CB7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87ED725AF60360033CB7A /* AppDelegate.swift */; };
 		60D87EE225AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EE025AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld */; };
 		60D87EE425AF60370033CB7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60D87EE325AF60370033CB7A /* Assets.xcassets */; };
@@ -30,6 +42,18 @@
 /* Begin PBXFileReference section */
 		04D5A738B9554AE2294F8536 /* Pods-TASK-WeatherApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TASK-WeatherApp.release.xcconfig"; path = "Target Support Files/Pods-TASK-WeatherApp/Pods-TASK-WeatherApp.release.xcconfig"; sourceTree = "<group>"; };
 		1645C7E1D4D936249B847CFF /* Pods-TASK-WeatherApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TASK-WeatherApp.debug.xcconfig"; path = "Target Support Files/Pods-TASK-WeatherApp/Pods-TASK-WeatherApp.debug.xcconfig"; sourceTree = "<group>"; };
+		6060B43B25B02C7000860602 /* SettingsSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneViewController.swift; sourceTree = "<group>"; };
+		6060B43F25B02E0800860602 /* SavedLocationsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocationsCollectionViewCell.swift; sourceTree = "<group>"; };
+		6060B44425B033B700860602 /* UnitsCheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitsCheckBox.swift; sourceTree = "<group>"; };
+		6060B44B25B0354000860602 /* CheckBoxDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxDelegate.swift; sourceTree = "<group>"; };
+		6060B44F25B037BC00860602 /* UnitsCheckBoxTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitsCheckBoxTableViewCell.swift; sourceTree = "<group>"; };
+		6060B45625B043ED00860602 /* UnitsRadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitsRadioButton.swift; sourceTree = "<group>"; };
+		6060B46625B0549D00860602 /* UnitsRadioButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitsRadioButtonType.swift; sourceTree = "<group>"; };
+		6060B46C25B05ABA00860602 /* ConditionsRadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsRadioButton.swift; sourceTree = "<group>"; };
+		6060B46F25B05B2B00860602 /* ConditionsRadioButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsRadioButtonType.swift; sourceTree = "<group>"; };
+		6060B47225B05BB200860602 /* ConditionsCheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsCheckBox.swift; sourceTree = "<group>"; };
+		6060B47525B05BD300860602 /* ConditionsCheckBoxCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsCheckBoxCollectionViewCell.swift; sourceTree = "<group>"; };
+		6060B47825B05CA900860602 /* UICollectionView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Extensions.swift"; sourceTree = "<group>"; };
 		60D87ED425AF60360033CB7A /* TASK-WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TASK-WeatherApp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60D87ED725AF60360033CB7A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60D87EE125AF60360033CB7A /* TASK_WeatherApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TASK_WeatherApp.xcdatamodel; sourceTree = "<group>"; };
@@ -64,6 +88,45 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6060B43E25B02C7700860602 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				6060B44425B033B700860602 /* UnitsCheckBox.swift */,
+				6060B44F25B037BC00860602 /* UnitsCheckBoxTableViewCell.swift */,
+				6060B43F25B02E0800860602 /* SavedLocationsCollectionViewCell.swift */,
+				6060B47225B05BB200860602 /* ConditionsCheckBox.swift */,
+				6060B47525B05BD300860602 /* ConditionsCheckBoxCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6060B44325B0339200860602 /* CustomViewsCommon */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = CustomViewsCommon;
+			sourceTree = "<group>";
+		};
+		6060B46925B05A0700860602 /* ViewSettingsScene */ = {
+			isa = PBXGroup;
+			children = (
+				6060B43B25B02C7000860602 /* SettingsSceneViewController.swift */,
+				6060B43E25B02C7700860602 /* Views */,
+			);
+			path = ViewSettingsScene;
+			sourceTree = "<group>";
+		};
+		6060B46B25B05A2700860602 /* ModelSettingsScene */ = {
+			isa = PBXGroup;
+			children = (
+				6060B45625B043ED00860602 /* UnitsRadioButton.swift */,
+				6060B46625B0549D00860602 /* UnitsRadioButtonType.swift */,
+				6060B46C25B05ABA00860602 /* ConditionsRadioButton.swift */,
+				6060B46F25B05B2B00860602 /* ConditionsRadioButtonType.swift */,
+			);
+			path = ModelSettingsScene;
+			sourceTree = "<group>";
+		};
 		60D87ECB25AF60360033CB7A = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +171,7 @@
 		60D87EF425AF623F0033CB7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				6060B44325B0339200860602 /* CustomViewsCommon */,
 				60D87F1C25AF65C80033CB7A /* ModelsCommon */,
 				60D87F1125AF653A0033CB7A /* ProtocolsCommon */,
 				60D87F0825AF63CF0033CB7A /* Spinner */,
@@ -134,6 +198,8 @@
 		60D87EF725AF62610033CB7A /* SettingsScene */ = {
 			isa = PBXGroup;
 			children = (
+				6060B46B25B05A2700860602 /* ModelSettingsScene */,
+				6060B46925B05A0700860602 /* ViewSettingsScene */,
 			);
 			path = SettingsScene;
 			sourceTree = "<group>";
@@ -147,6 +213,7 @@
 				60D87F0225AF63400033CB7A /* UIViewController+Extensions.swift */,
 				60D87F0525AF638B0033CB7A /* UIImageView+Extensions.swift */,
 				60D87F3B25AF757C0033CB7A /* UICollectionViewCell+Extensions.swift */,
+				6060B47825B05CA900860602 /* UICollectionView+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -166,6 +233,7 @@
 				60D87F1225AF654E0033CB7A /* ReusableView.swift */,
 				60D87F1625AF656B0033CB7A /* Coordinator.swift */,
 				60D87F1925AF659A0033CB7A /* NetworkRepository.swift */,
+				6060B44B25B0354000860602 /* CheckBoxDelegate.swift */,
 			);
 			path = ProtocolsCommon;
 			sourceTree = "<group>";
@@ -324,13 +392,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6060B47925B05CA900860602 /* UICollectionView+Extensions.swift in Sources */,
 				60D87F3C25AF757C0033CB7A /* UICollectionViewCell+Extensions.swift in Sources */,
 				60D87F1A25AF659A0033CB7A /* NetworkRepository.swift in Sources */,
+				6060B44C25B0354000860602 /* CheckBoxDelegate.swift in Sources */,
+				6060B46D25B05ABA00860602 /* ConditionsRadioButton.swift in Sources */,
+				6060B47325B05BB200860602 /* ConditionsCheckBox.swift in Sources */,
 				60D87EFA25AF62990033CB7A /* UIView+Extensions.swift in Sources */,
 				60D87F1325AF654E0033CB7A /* ReusableView.swift in Sources */,
+				6060B45025B037BC00860602 /* UnitsCheckBoxTableViewCell.swift in Sources */,
 				60D87F0625AF638B0033CB7A /* UIImageView+Extensions.swift in Sources */,
+				6060B43C25B02C7000860602 /* SettingsSceneViewController.swift in Sources */,
 				60D87F2825AF69420033CB7A /* HomeSceneViewController.swift in Sources */,
+				6060B46725B0549D00860602 /* UnitsRadioButtonType.swift in Sources */,
+				6060B44525B033B700860602 /* UnitsCheckBox.swift in Sources */,
 				60D87ED825AF60360033CB7A /* AppDelegate.swift in Sources */,
+				6060B47625B05BD300860602 /* ConditionsCheckBoxCollectionViewCell.swift in Sources */,
+				6060B45725B043ED00860602 /* UnitsRadioButton.swift in Sources */,
 				60D87EE225AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld in Sources */,
 				60D87F0E25AF63F60033CB7A /* SpinnerViewManager.swift in Sources */,
 				60D87F3725AF72040033CB7A /* ConditionsHomeSceneCollectionViewCell.swift in Sources */,
@@ -338,7 +416,9 @@
 				60D87F0025AF62EF0033CB7A /* UITableViewCell+Extensions.swift in Sources */,
 				60D87F0325AF63400033CB7A /* UIViewController+Extensions.swift in Sources */,
 				60D87F1E25AF65E00033CB7A /* NetworkError.swift in Sources */,
+				6060B44025B02E0800860602 /* SavedLocationsCollectionViewCell.swift in Sources */,
 				60D87F0A25AF63DF0033CB7A /* SpinnerView.swift in Sources */,
+				6060B47025B05B2B00860602 /* ConditionsRadioButtonType.swift in Sources */,
 				60D87EFD25AF62C10033CB7A /* UITableView+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

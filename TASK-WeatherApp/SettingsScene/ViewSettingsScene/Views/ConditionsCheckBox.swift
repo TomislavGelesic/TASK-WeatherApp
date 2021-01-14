@@ -10,30 +10,48 @@ import SnapKit
 
 class ConditionsCheckBox: UIView {
     
-    weak var delegate: UnitsCheckBoxDelegate?
+    weak var delegate: ConditionsRadioButtonDelegate?
     
-    var radioButtons = [ConditionsRadioButton]()
+//    var radioButtons: [ConditionsRadioButton] = {
+//        ConditionsRadioButton(image: UIImage(named: "humidity_icon") ?? UIImage(systemName: "photo"), isChecked: false, type: .humidity),
+//        ConditionsRadioButton(image: UIImage(named: "wind_icon") ?? UIImage(systemName: "photo"), isChecked: false, type: .wind),
+//        ConditionsRadioButton(image: UIImage(named: "pressure") ?? UIImage(systemName: "photo"), isChecked: false, type: .pressure)
+//
+//    }
     
-    let flowLayout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 10
-        return layout
+    let humidityCheckBoxWithImage: CheckBoxWithImage = {
+        let image = UIImage(named: "humidity_icon")?.withRenderingMode(.alwaysTemplate) ?? UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
+        let box = CheckBoxWithImage(with: image, active: false)
+        box.backgroundColor = .clear
+        return box
     }()
-
-    let conditionsCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        collectionView.backgroundColor = .clear
-        collectionView.register(ConditionsCheckBoxCollectionViewCell.self, forCellWithReuseIdentifier: ConditionsCheckBoxCollectionViewCell.reuseIdentifier)
-        return collectionView
+    
+    let windCheckBoxWithImage: CheckBoxWithImage = {
+        let image = UIImage(named: "wind_icon")?.withRenderingMode(.alwaysTemplate) ?? UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
+        let box = CheckBoxWithImage(with: image, active: false)
+        box.backgroundColor = .clear
+        return box
+    }()
+    
+    let pressureCheckBoxWithImage: CheckBoxWithImage = {
+        let image = UIImage(named: "pressure_icon")?.withRenderingMode(.alwaysTemplate) ?? UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
+        let box = CheckBoxWithImage(with: image, active: false)
+        box.backgroundColor = .clear
+        return box
+    }()
+    
+    let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 5
+        stackView.distribution = .fillEqually
+        return stackView
     }()
     
     init() {
         super.init(frame: .zero)
         
         setup()
-        createRadioButtons()
-        conditionsCollectionView.reloadData()
     }
     
     required init(coder: NSCoder?) {
@@ -46,62 +64,62 @@ extension ConditionsCheckBox {
     
     func setup() {
         
-        addSubview(conditionsCollectionView)
+        addSubview(stackView)
+        stackView.addArrangedSubview(humidityCheckBoxWithImage)
+        stackView.addArrangedSubview(windCheckBoxWithImage)
+        stackView.addArrangedSubview(pressureCheckBoxWithImage)
+    
+        humidityCheckBoxWithImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(humidityRadioButtonTapped)))
         
-        conditionsCollectionView.dataSource = self
-        conditionsCollectionView.delegate = self
-        conditionsCollectionView.collectionViewLayout = flowLayout
+        windCheckBoxWithImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(windRadioButtonTapped)))
         
-        setConstraints_tableView()
+        pressureCheckBoxWithImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pressureRadioButtonTapped)))
+        
+        
+        
+        setConstraints_stackView()
+        setConstraint_humidityCheckBoxWithImage()
+        setConstraint_windCheckBoxWithImage()
+        setConstraint_pressureCheckBoxWithImage()
     }
     
-    func setConstraints_tableView() {
-        
-        conditionsCollectionView.snp.makeConstraints { (make) in
-            make.edges.equalTo(self)
+    func setConstraints_stackView() {
+        stackView.snp.makeConstraints { (make) in
+            make.edges.equalTo(self).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
         }
     }
     
-    func createRadioButtons() {
-        
-        if let image = UIImage(named: "humidity_icon") {
-            radioButtons.append(ConditionsRadioButton(image: image, isChecked: false, type: .humidity))
+    func setConstraint_humidityCheckBoxWithImage() {
+        humidityCheckBoxWithImage.snp.makeConstraints { (make) in
+            make.height.equalTo(self)
         }
-        if let image = UIImage(named: "pressure_icon") {
-            radioButtons.append(ConditionsRadioButton(image: image, isChecked: false, type: .wind))
+    }
+    
+    func setConstraint_windCheckBoxWithImage() {
+        humidityCheckBoxWithImage.snp.makeConstraints { (make) in
+            make.height.equalTo(self)
         }
-        if let image = UIImage(named: "wind_icon") {
-            radioButtons.append(ConditionsRadioButton(image: image, isChecked: false, type: .pressure))
+    }
+    
+    func setConstraint_pressureCheckBoxWithImage() {
+        humidityCheckBoxWithImage.snp.makeConstraints { (make) in
+            make.height.equalTo(self)
         }
+    }
+    
+    @objc func humidityRadioButtonTapped() {
+        delegate?.radioButtonTapped(type: .humidity)
+    }
+    
+    @objc func windRadioButtonTapped() {
+        delegate?.radioButtonTapped(type: .wind)
+    }
+    
+    @objc func pressureRadioButtonTapped() {
+        delegate?.radioButtonTapped(type: .pressure)
     }
 }
 
-extension ConditionsCheckBox: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return radioButtons.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell: ConditionsCheckBoxCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
-        
-        if let image = radioButtons[indexPath.row].image {
-            cell.configure(with: image)
-        }
-        return cell
-    }
-    
-    
-    
-    
-}
-
-extension ConditionsCheckBox: UICollectionViewDelegate {
-    
-    
-}
 
 
 

@@ -10,7 +10,7 @@ import SnapKit
 
 class SettingsSceneViewController: UIViewController {
     
-    let savedLocations = ["test 1", "test 2", "test 3"]
+    var savedLocations = ["test 1", "test 2", "test 3", "test 4", "test 5", "test 6", "test 7", "test 8"]
     
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -22,7 +22,7 @@ class SettingsSceneViewController: UIViewController {
         let label = UILabel()
         label.text = "Locations"
         label.textAlignment = .center
-        label.font = label.font.withSize(26)
+        label.font = label.font.withSize(24)
         label.backgroundColor = .clear
         return label
     }()
@@ -36,8 +36,10 @@ class SettingsSceneViewController: UIViewController {
     
     let locationsCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        collectionView.backgroundColor = .red
+        collectionView.backgroundColor = .clear
         collectionView.register(SavedLocationsCollectionViewCell.self, forCellWithReuseIdentifier: SavedLocationsCollectionViewCell.reuseIdentifier)
+        collectionView.layer.borderWidth = 1
+        collectionView.layer.borderColor = CGColor.init(red: 1, green: 1, blue: 1, alpha: 1)
         return collectionView
     }()
     
@@ -45,13 +47,14 @@ class SettingsSceneViewController: UIViewController {
         let label = UILabel()
         label.text = "Units"
         label.textAlignment = .center
+        label.font = label.font.withSize(20)
         label.backgroundColor = .clear
         return label
     }()
     
     let unitsCheckBox: UnitsCheckBox = {
         let box = UnitsCheckBox()
-        box.backgroundColor = .blue
+        box.backgroundColor = .clear
         return box
     }()
     
@@ -59,13 +62,14 @@ class SettingsSceneViewController: UIViewController {
         let label = UILabel()
         label.text = "Conditions"
         label.textAlignment = .center
+        label.font = label.font.withSize(20)
         label.backgroundColor = .clear
         return label
     }()
     
     let conditionsCheckBox: ConditionsCheckBox = {
         let box = ConditionsCheckBox()
-        box.backgroundColor = .green
+        box.backgroundColor = .clear
         return box
     }()
     
@@ -147,6 +151,17 @@ extension SettingsSceneViewController {
         locationsCollectionView.dataSource = self
         locationsCollectionView.delegate = self
         locationsCollectionView.collectionViewLayout = locationsFlowLayout
+        locationsCollectionView.reloadData()
+        
+        unitsCheckBox.delegate = self
+        
+        applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func applyButtonTapped() {
+        
+        //save settings to CoreData
+        navigationController?.popViewController(animated: true)
     }
     
     func setConstraints() {
@@ -154,11 +169,11 @@ extension SettingsSceneViewController {
         setConstraints_backgroundImageView()
         setConstraints_locationsLabelDescription()
         setConstraints_locationsCollectionView()
-//        setConstraints_unitsLabelDescription()
-//        setConstraints_unitsCheckBox()
-//        setConstraints_conditionsLabelDescription()
-//        setConstraints_conditionsCheckBox()
-//        setConstraints_applyButton()
+        setConstraints_unitsLabelDescription()
+        setConstraints_unitsCheckBox()
+        setConstraints_conditionsLabelDescription()
+        setConstraints_conditionsCheckBox()
+        setConstraints_applyButton()
     }
     
     func setConstraints_backgroundImageView() {
@@ -169,8 +184,9 @@ extension SettingsSceneViewController {
     
     func setConstraints_locationsLabelDescription() {
         locationsLabelDescription.snp.makeConstraints { (make) in
-            make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 0, bottom: 0, right: 0))
+            make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 5, bottom: 0, right: 5))
             make.centerX.equalTo(view)
+            make.height.equalTo(30)
             
         }
     }
@@ -178,8 +194,9 @@ extension SettingsSceneViewController {
     func setConstraints_locationsCollectionView() {
         
         locationsCollectionView.snp.makeConstraints { (make) in
-            make.leading.trailing.equalTo(view)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.top.equalTo(locationsLabelDescription.snp.bottom)
+            make.height.equalTo(view.frame.height/5)
         }
     }
     
@@ -187,37 +204,41 @@ extension SettingsSceneViewController {
         
         unitsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(locationsCollectionView.snp.bottom).offset(10)
-            make.centerX.equalTo(view.snp.centerX)
+            make.centerX.equalTo(view.snp.centerX).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.height.equalTo(20)
         }
     }
     
     func setConstraints_unitsCheckBox() {
         
         unitsCheckBox.snp.makeConstraints { (make) in
-            make.top.equalTo(unitsLabelDescription.snp.bottom).offset(10)
-            make.leading.trailing.equalTo(view)
+            make.top.equalTo(unitsLabelDescription.snp.bottom).offset(5)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.height.equalTo(60)
         }
     }
     
     func setConstraints_conditionsLabelDescription() {
         
         conditionsLabelDescription.snp.makeConstraints { (make) in
-            make.top.equalTo(unitsCheckBox.snp.bottom).offset(10)
-            make.centerX.equalTo(view)
+            make.top.equalTo(unitsCheckBox.snp.bottom).offset(5)
+            make.centerX.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.height.equalTo(20)
         }
     }
     
     func setConstraints_conditionsCheckBox() {
         
         conditionsCheckBox.snp.makeConstraints { (make) in
-            make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(10)
-            make.leading.trailing.equalTo(view)
+            make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(5)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
         }
     }
     
     func setConstraints_applyButton() {
         
         applyButton.snp.makeConstraints { (make) in
+            make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)
             make.width.equalTo(88)
             make.height.equalTo(44)
             make.bottom.trailing.equalTo(view).offset(-10)
@@ -234,6 +255,12 @@ extension SettingsSceneViewController: UICollectionViewDataSource {
         
         let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.configure(with: savedLocations[indexPath.row])
+        
+        cell.removeButtonAction = { [unowned self] in
+            self.savedLocations.remove(at: indexPath.row)
+            self.locationsCollectionView.reloadData()
+        }
+        
         return cell
     }
     
@@ -241,6 +268,33 @@ extension SettingsSceneViewController: UICollectionViewDataSource {
     
 }
 
+extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellWidth = locationsCollectionView.frame.width
+        let cellHeight = CGFloat(30.0)
+        return CGSize(width: cellWidth, height: cellHeight)
+    }
+    
+}
+
 extension SettingsSceneViewController: UICollectionViewDelegate {
+    
+    
+}
+
+extension SettingsSceneViewController: UnitsCheckBoxDelegate {
+    
+    func itemSelected(type: UnitsRadioButtonType) {
+        #warning("can i implement it with only one delegate for all radioButtons??")
+    }
+}
+
+extension SettingsSceneViewController: ConditionsCheckBoxDelegate {
+    
+    func itemSelected(type: ConditionsRadioButtonType) {
+        
+    }
+    
     
 }

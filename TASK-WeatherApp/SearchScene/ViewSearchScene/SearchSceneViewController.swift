@@ -40,7 +40,7 @@ class SearchSceneViewController: UIViewController {
     let inputField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Search"
-        textField.backgroundColor = UIColor.white.withAlphaComponent(0.5)
+        textField.backgroundColor = UIColor.white.withAlphaComponent(0.6)
         return textField
     }()
     
@@ -73,7 +73,13 @@ class SearchSceneViewController: UIViewController {
         setupKeyboardNotifications()
         setupTimer()
         setConstraints()
-        availableCitiesTableView.reloadData()
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        inputField.becomeFirstResponder()
     }
     
 }

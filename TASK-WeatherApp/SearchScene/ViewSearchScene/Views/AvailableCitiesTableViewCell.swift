@@ -33,7 +33,7 @@ extension AvailableCitiesTableViewCell {
     
     func setup() {
         
-        backgroundColor = .cyan
+        backgroundColor = UIColor.white.withAlphaComponent(0.6)
         
         contentView.addSubview(label)
         

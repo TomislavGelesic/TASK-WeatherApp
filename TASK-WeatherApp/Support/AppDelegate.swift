@@ -17,10 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow()
         window?.backgroundColor = .white
-        let rootViewController = SettingsSceneViewController()
+        let rootViewController = SearchSceneViewController()
         
         let navigationController = UINavigationController(rootViewController: rootViewController)
-        window?.rootViewController = navigationController
+        window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
         return true
     }

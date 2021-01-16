@@ -140,10 +140,11 @@ class HomeSceneViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .white
+        view.isUserInteractionEnabled = false
         setSubviews()
         setConstraints()
-        
         setupConditionsCollectionView()
+        view.isUserInteractionEnabled = true
     }
     
 }

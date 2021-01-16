@@ -6,18 +6,15 @@
 //
 
 import UIKit
+import Combine
 
 class SearchSceneViewController: UIViewController {
+    
+    var disposeBag = Set<AnyCancellable>()
     
     var viewModel: SearchSceneViewModel
     
     var coordinator: SearchSceneCoordinator
-    
-    var timer = Timer()
-    
-    var searchText: String = ""
-    
-    var availableCities: [String] = [ "MANCHESTER CITY", "BRISTOL CITY", "BIRMINGHAM CITY", "NORWICH CITY", "CARDIFF CITY", "LEICESTER CITY", "SWANSEA CITY", "HULL CITY", "STOKE CITY" ]
    
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -33,9 +30,9 @@ class SearchSceneViewController: UIViewController {
         return button
     }()
     
-    let availableCitiesTableView: UITableView = {
+    let tableView: UITableView = {
         let tableView = UITableView()
-        tableView.register(AvailableCitiesTableViewCell.self, forCellReuseIdentifier: AvailableCitiesTableViewCell.reuseIdentifier)
+        tableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: SearchResultTableViewCell.reuseIdentifier)
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
         return tableView
@@ -67,7 +64,6 @@ class SearchSceneViewController: UIViewController {
         
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-        timer.invalidate()
     }
     
     init(coordinator: SearchSceneCoordinator, viewModel: SearchSceneViewModel) {
@@ -85,10 +81,12 @@ class SearchSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.isUserInteractionEnabled = false
         setupViews()
         setupKeyboardNotifications()
-        setupTimer()
         setConstraints()
+        setSubscribers()
+        view.isUserInteractionEnabled = true
         
     }
     
@@ -104,18 +102,39 @@ extension SearchSceneViewController {
     
     func setupViews() {
         
-        view.addSubviews([backgroundImageView, cancelButton, availableCitiesTableView, inputField])
+        view.addSubviews([backgroundImageView, cancelButton, tableView, inputField])
         
         searchIconView.addSubview(searchIcon)
         
         inputField.delegate = self
         inputField.leftViewMode = .always
         inputField.leftView = searchIconView
+        inputField.addTarget(self, action: #selector(inputFieldDidChange), for: .allEditingEvents)
         
-        availableCitiesTableView.dataSource = self
-        availableCitiesTableView.delegate = self
+        tableView.dataSource = self
+        tableView.delegate = self
         
         cancelButton.addTarget(self, action: #selector(cancellSearchTapped), for: .touchUpInside)
+    }
+    
+    @objc func inputFieldDidChange() {
+        
+        if let validText = inputField.text {
+            
+            if validText.isEmpty == false {
+                
+                let cityPath = "\(Constants.GeoNamesORG.BASE)\(Constants.GeoNamesORG.GET_CITY_BY_NAME)\(validText)\(Constants.GeoNamesORG.MAX_ROWS)\(10)\(Constants.GeoNamesORG.KEY)"
+                
+                guard let getCityURLPath = URL(string: cityPath) else { return }
+                
+                viewModel.searchNewCitiesSubject.send(getCityURLPath)
+            } else {
+            
+                viewModel.screenData.removeAll()
+                viewModel.refreshUISubject.send()
+            }
+        }
+        
     }
     
     @objc func cancellSearchTapped() {
@@ -129,12 +148,8 @@ extension SearchSceneViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    func setupTimer() {
-        
-        timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(searchCity), userInfo: nil, repeats: true)
-    }
-    
     @objc func keyboardWillShow(notification: Notification) {
+        
         
         guard let userInfo = notification.userInfo as? [String: Any],
               let keyboardEndFrame = userInfo["UIKeyboardFrameEndUserInfoKey"] as? CGRect
@@ -181,17 +196,8 @@ extension SearchSceneViewController {
             completion: nil
         )
         
-    }
-    
-    @objc func searchCity() {
+        coordinator.goToHomeScene()
         
-        if let validText = inputField.text,
-           validText.isEmpty == false {
-            
-            searchText = validText
-            
-//           fetchDelegate?(searchText)
-        }
     }
     
     func setConstraints() {
@@ -220,7 +226,7 @@ extension SearchSceneViewController {
     
     func setConstraints_availableCitiesTableView() {
         
-        availableCitiesTableView.snp.makeConstraints { (make) in
+        tableView.snp.makeConstraints { (make) in
             make.top.equalTo(cancelButton.snp.bottom).offset(10)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.height.equalTo(200)
@@ -247,6 +253,38 @@ extension SearchSceneViewController {
             make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))
         }
     }
+    
+    func setSubscribers() {
+        
+        viewModel.initializeSearchSubject(subject: viewModel.searchNewCitiesSubject.eraseToAnyPublisher())
+            .store(in: &disposeBag)
+        
+        viewModel.alertSubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (message) in
+                self.showAPIFailedAlert(for: message, completion: nil)
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.spinnerSubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [unowned self] (isVisible) in
+                
+                isVisible ? self.showSpinner() : self.hideSpinner()
+            })
+            .store(in: &disposeBag)
+        
+        viewModel.refreshUISubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (_) in
+    
+                self.tableView.reloadData()
+            }
+            .store(in: &disposeBag)
+    }
 }
 
 extension SearchSceneViewController: UITextFieldDelegate {
@@ -261,23 +299,26 @@ extension SearchSceneViewController: UITextFieldDelegate {
 extension SearchSceneViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return availableCities.count
+        return viewModel.screenData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell: AvailableCitiesTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        cell.configure(with: availableCities[indexPath.row])
+        let cell: SearchResultTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+        print(viewModel.screenData[indexPath.row])
+        cell.configure(with: viewModel.screenData[indexPath.row])
         return cell
     }
-    
-    
-    
 }
 
 extension SearchSceneViewController: UITableViewDelegate {
     
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+//        viewModel.citySelectionSubject.send( iso_3166_2 --> id )
+        print("selected city from tableView")
+        coordinator.goToHomeScene()
+    }
 }
 
 

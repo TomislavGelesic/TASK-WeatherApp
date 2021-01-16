@@ -17,7 +17,7 @@ class SearchSceneCoordinator: Coordinator {
     
     func start() {
         
-        let viewModel = SearchSceneViewModel()
+        let viewModel = SearchSceneViewModel(searchRepository: SearchRepositoryImpl())
         
         let viewController = SearchSceneViewController(coordinator: self, viewModel: viewModel)
         

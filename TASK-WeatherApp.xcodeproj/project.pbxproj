@@ -20,10 +20,16 @@
 		6060B47325B05BB200860602 /* ConditionsCheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B47225B05BB200860602 /* ConditionsCheckBox.swift */; };
 		6060B47925B05CA900860602 /* UICollectionView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B47825B05CA900860602 /* UICollectionView+Extensions.swift */; };
 		6060B48225B0952D00860602 /* ConditionsCheckBoxDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B48125B0952D00860602 /* ConditionsCheckBoxDelegate.swift */; };
-		6060B48525B09BD900860602 /* CheckBoxWithImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B48425B09BD900860602 /* CheckBoxWithImage.swift */; };
+		6060B48525B09BD900860602 /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B48425B09BD900860602 /* CheckBox.swift */; };
 		6060B48925B0A24000860602 /* ConditionsRadioButtonDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B48825B0A24000860602 /* ConditionsRadioButtonDelegate.swift */; };
 		60796F5925B1890E00988BC1 /* SearchSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */; };
 		60796F5E25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5D25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift */; };
+		60796F6A25B1E4E900988BC1 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F6925B1E4E900988BC1 /* AppCoordinator.swift */; };
+		60B642EF25B2D97700DE43EC /* SettingsSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */; };
+		60B642F425B2DD5C00DE43EC /* HomeSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */; };
+		60B642FA25B2DDC100DE43EC /* HomeSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */; };
+		60B6430025B2E7DA00DE43EC /* SearchSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642FF25B2E7DA00DE43EC /* SearchSceneCoordinator.swift */; };
+		60B6430425B2E86000DE43EC /* SearchSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6430325B2E86000DE43EC /* SearchSceneViewModel.swift */; };
 		60D87ED825AF60360033CB7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87ED725AF60360033CB7A /* AppDelegate.swift */; };
 		60D87EE225AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EE025AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld */; };
 		60D87EE425AF60370033CB7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60D87EE325AF60370033CB7A /* Assets.xcassets */; };
@@ -58,10 +64,16 @@
 		6060B47225B05BB200860602 /* ConditionsCheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsCheckBox.swift; sourceTree = "<group>"; };
 		6060B47825B05CA900860602 /* UICollectionView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Extensions.swift"; sourceTree = "<group>"; };
 		6060B48125B0952D00860602 /* ConditionsCheckBoxDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsCheckBoxDelegate.swift; sourceTree = "<group>"; };
-		6060B48425B09BD900860602 /* CheckBoxWithImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxWithImage.swift; sourceTree = "<group>"; };
+		6060B48425B09BD900860602 /* CheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBox.swift; sourceTree = "<group>"; };
 		6060B48825B0A24000860602 /* ConditionsRadioButtonDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsRadioButtonDelegate.swift; sourceTree = "<group>"; };
 		60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneViewController.swift; sourceTree = "<group>"; };
 		60796F5D25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableCitiesTableViewCell.swift; sourceTree = "<group>"; };
+		60796F6925B1E4E900988BC1 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneViewModel.swift; sourceTree = "<group>"; };
+		60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneViewModel.swift; sourceTree = "<group>"; };
+		60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneCoordinator.swift; sourceTree = "<group>"; };
+		60B642FF25B2E7DA00DE43EC /* SearchSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneCoordinator.swift; sourceTree = "<group>"; };
+		60B6430325B2E86000DE43EC /* SearchSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneViewModel.swift; sourceTree = "<group>"; };
 		60D87ED425AF60360033CB7A /* TASK-WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TASK-WeatherApp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60D87ED725AF60360033CB7A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60D87EE125AF60360033CB7A /* TASK_WeatherApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TASK_WeatherApp.xcdatamodel; sourceTree = "<group>"; };
@@ -103,7 +115,7 @@
 				6060B44F25B037BC00860602 /* UnitsCheckBoxTableViewCell.swift */,
 				6060B43F25B02E0800860602 /* SavedLocationsCollectionViewCell.swift */,
 				6060B47225B05BB200860602 /* ConditionsCheckBox.swift */,
-				6060B48425B09BD900860602 /* CheckBoxWithImage.swift */,
+				6060B48425B09BD900860602 /* CheckBox.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -152,6 +164,46 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		60B642ED25B2D95300DE43EC /* ViewModelSettingsScene */ = {
+			isa = PBXGroup;
+			children = (
+				60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */,
+			);
+			path = ViewModelSettingsScene;
+			sourceTree = "<group>";
+		};
+		60B642F725B2DD8800DE43EC /* ViewModelHomeScrene */ = {
+			isa = PBXGroup;
+			children = (
+				60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */,
+			);
+			path = ViewModelHomeScrene;
+			sourceTree = "<group>";
+		};
+		60B642F825B2DD9E00DE43EC /* CoordinatorHomeScene */ = {
+			isa = PBXGroup;
+			children = (
+				60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */,
+			);
+			path = CoordinatorHomeScene;
+			sourceTree = "<group>";
+		};
+		60B642FE25B2E7C800DE43EC /* CoordinatorSearchScene */ = {
+			isa = PBXGroup;
+			children = (
+				60B642FF25B2E7DA00DE43EC /* SearchSceneCoordinator.swift */,
+			);
+			path = CoordinatorSearchScene;
+			sourceTree = "<group>";
+		};
+		60B6430225B2E84700DE43EC /* ViewModelSearchScene */ = {
+			isa = PBXGroup;
+			children = (
+				60B6430325B2E86000DE43EC /* SearchSceneViewModel.swift */,
+			);
+			path = ViewModelSearchScene;
+			sourceTree = "<group>";
+		};
 		60D87ECB25AF60360033CB7A = {
 			isa = PBXGroup;
 			children = (
@@ -185,6 +237,7 @@
 		60D87EF325AF616F0033CB7A /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				60796F6925B1E4E900988BC1 /* AppCoordinator.swift */,
 				60D87ED725AF60360033CB7A /* AppDelegate.swift */,
 				60D87EE325AF60370033CB7A /* Assets.xcassets */,
 				60D87EE825AF60370033CB7A /* Info.plist */,
@@ -208,6 +261,8 @@
 		60D87EF525AF62490033CB7A /* HomeScene */ = {
 			isa = PBXGroup;
 			children = (
+				60B642F825B2DD9E00DE43EC /* CoordinatorHomeScene */,
+				60B642F725B2DD8800DE43EC /* ViewModelHomeScrene */,
 				60D87F2625AF69090033CB7A /* ViewHomeScene */,
 			);
 			path = HomeScene;
@@ -216,6 +271,8 @@
 		60D87EF625AF62510033CB7A /* SearchScene */ = {
 			isa = PBXGroup;
 			children = (
+				60B6430225B2E84700DE43EC /* ViewModelSearchScene */,
+				60B642FE25B2E7C800DE43EC /* CoordinatorSearchScene */,
 				60796F5625B188DD00988BC1 /* ViewSearchScene */,
 			);
 			path = SearchScene;
@@ -224,6 +281,7 @@
 		60D87EF725AF62610033CB7A /* SettingsScene */ = {
 			isa = PBXGroup;
 			children = (
+				60B642ED25B2D95300DE43EC /* ViewModelSettingsScene */,
 				6060B46B25B05A2700860602 /* ModelSettingsScene */,
 				6060B46925B05A0700860602 /* ViewSettingsScene */,
 			);
@@ -420,6 +478,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				60796F6A25B1E4E900988BC1 /* AppCoordinator.swift in Sources */,
 				6060B47925B05CA900860602 /* UICollectionView+Extensions.swift in Sources */,
 				60D87F3C25AF757C0033CB7A /* UICollectionViewCell+Extensions.swift in Sources */,
 				6060B48925B0A24000860602 /* ConditionsRadioButtonDelegate.swift in Sources */,
@@ -430,6 +489,7 @@
 				60D87EFA25AF62990033CB7A /* UIView+Extensions.swift in Sources */,
 				60D87F1325AF654E0033CB7A /* ReusableView.swift in Sources */,
 				6060B45025B037BC00860602 /* UnitsCheckBoxTableViewCell.swift in Sources */,
+				60B6430025B2E7DA00DE43EC /* SearchSceneCoordinator.swift in Sources */,
 				60796F5E25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift in Sources */,
 				60D87F0625AF638B0033CB7A /* UIImageView+Extensions.swift in Sources */,
 				6060B43C25B02C7000860602 /* SettingsSceneViewController.swift in Sources */,
@@ -446,10 +506,14 @@
 				60D87F0025AF62EF0033CB7A /* UITableViewCell+Extensions.swift in Sources */,
 				60D87F0325AF63400033CB7A /* UIViewController+Extensions.swift in Sources */,
 				60796F5925B1890E00988BC1 /* SearchSceneViewController.swift in Sources */,
+				60B642EF25B2D97700DE43EC /* SettingsSceneViewModel.swift in Sources */,
 				60D87F1E25AF65E00033CB7A /* NetworkError.swift in Sources */,
 				6060B44025B02E0800860602 /* SavedLocationsCollectionViewCell.swift in Sources */,
-				6060B48525B09BD900860602 /* CheckBoxWithImage.swift in Sources */,
+				60B642F425B2DD5C00DE43EC /* HomeSceneViewModel.swift in Sources */,
+				6060B48525B09BD900860602 /* CheckBox.swift in Sources */,
+				60B642FA25B2DDC100DE43EC /* HomeSceneCoordinator.swift in Sources */,
 				60D87F0A25AF63DF0033CB7A /* SpinnerView.swift in Sources */,
+				60B6430425B2E86000DE43EC /* SearchSceneViewModel.swift in Sources */,
 				6060B47025B05B2B00860602 /* ConditionsRadioButtonType.swift in Sources */,
 				60D87EFD25AF62C10033CB7A /* UITableView+Extensions.swift in Sources */,
 			);

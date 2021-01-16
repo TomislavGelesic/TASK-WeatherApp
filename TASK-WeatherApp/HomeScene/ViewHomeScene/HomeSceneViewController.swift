@@ -10,6 +10,16 @@ import SnapKit
 
 class HomeSceneViewController: UIViewController {
     
+    var coordinator: HomeSceneCoordinator
+    
+    var viewModel: HomeSceneViewModel
+    
+    let backgroundImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "body_image-clear-day")
+        return imageView
+    }()
+    
     let currentTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
@@ -94,83 +104,91 @@ class HomeSceneViewController: UIViewController {
     
     let settingsButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "gearshape.2.fill")?.withTintColor(.black), for: .normal)
-        button.setImage(UIImage(systemName: "gearshape.2")?.withTintColor(.black), for: .selected)
+        button.setImage(UIImage(systemName: "gearshape.2.fill")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(systemName: "gearshape.2")?.withRenderingMode(.alwaysTemplate), for: .selected)
+        button.tintColor = .black
         return button
     }()
     
     let searchTextField: UITextField = {
+        
+        let iconView = UIImageView(image: UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysTemplate))
+        iconView.tintColor = .black
+        
         let textField = UITextField()
-        textField.leftView = UIImageView(image: UIImage(systemName: "magnifyingglass")?.withTintColor(.black))
+        textField.leftView = iconView
         textField.leftViewMode = .always
         textField.placeholder = "Search"
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = CGColor.init(red: 0, green: 0, blue: 0, alpha: 1)
         return textField
     }()
-
+    
+    init(coordinator: HomeSceneCoordinator, viewModel: HomeSceneViewModel) {
+        
+        self.coordinator = coordinator
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .white
-        addSubviews()
+        setSubviews()
         setConstraints()
         
         setupConditionsCollectionView()
     }
     
 }
-extension HomeSceneViewController {
-    
-    func setupConditionsCollectionView() {
-        
-        conditionsCollectionView.collectionViewLayout = conditionsFlowLayout
-        conditionsCollectionView.delegate = self
-        conditionsCollectionView.dataSource = self
-        
-    }
-}
-
-extension HomeSceneViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConditionsHomeSceneCollectionViewCell.reuseIdentifier, for: indexPath)
-        
-        return cell
-    }
-    
-    
-}
-
-extension HomeSceneViewController: UICollectionViewDelegate {
-    
-}
 
 extension HomeSceneViewController {
     
-    func addSubviews() {
+    func setSubviews() {
         
         view.backgroundColor = .lightGray
         
         view.addSubviews([
-           currentTemperatureLabel,
-           weatherDescriptionLabel,
-           cityNameLabel,
-           conditionsCollectionView,
-           minTemperatureLabel,
-           minTemperatureLabelDescription,
-           verticalLine,
-           maxTemperatureLabel,
-           maxTemperatureLabelDescription,
-           settingsButton,
-           searchTextField])
+            backgroundImageView,
+            currentTemperatureLabel,
+            weatherDescriptionLabel,
+            cityNameLabel,
+            conditionsCollectionView,
+            minTemperatureLabel,
+            minTemperatureLabelDescription,
+            verticalLine,
+            maxTemperatureLabel,
+            maxTemperatureLabelDescription,
+            settingsButton,
+            searchTextField
+        ])
+        
+        searchTextField.delegate = self
+        
+        settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func settingsButtonTapped() {
+        
+        
+        let viewModel = SettingsSceneViewModel()
+        
+        let viewController = SettingsSceneViewController(viewModel: viewModel)
+        viewController.modalPresentationStyle = .fullScreen
+        
+        navigationController?.present(viewController, animated: true)
+        
     }
     
     func setConstraints() {
         
+        setConstraints_backgroundImageView()
         setConstraints_currentTemperatureLabel()
         setConstraints_weatherDescriptionLabel()
         setConstraints_cityNameLabel()
@@ -182,6 +200,13 @@ extension HomeSceneViewController {
         setConstraints_conditionsCollectionView()
         setConstraints_settingsButton()
         setConstraints_searchTextField()
+    }
+    
+    func setConstraints_backgroundImageView() {
+        
+        backgroundImageView.snp.makeConstraints { (make) in
+            make.edges.equalTo(view)
+        }
     }
     
     func setConstraints_currentTemperatureLabel() {
@@ -264,7 +289,7 @@ extension HomeSceneViewController {
     func setConstraints_settingsButton() {
         settingsButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(44)
-            make.bottom.equalTo(view.snp.bottom)
+            make.bottom.equalTo(view.snp.bottom).offset(-2)
             make.leading.equalTo(view.snp.leading).offset(10)
         }
         
@@ -275,9 +300,46 @@ extension HomeSceneViewController {
             make.width.equalTo(view.frame.width - 44 - 30)
             make.height.equalTo(44)
             make.trailing.equalTo(view.snp.trailing).offset(-10)
-            make.bottom.equalTo(view.snp.bottom)
+            make.bottom.equalTo(view.snp.bottom).offset(-2)
         }
         
     }
     
+    func setupConditionsCollectionView() {
+        
+        conditionsCollectionView.collectionViewLayout = conditionsFlowLayout
+        conditionsCollectionView.delegate = self
+        conditionsCollectionView.dataSource = self
+        
+    }
+}
+
+extension HomeSceneViewController: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConditionsHomeSceneCollectionViewCell.reuseIdentifier, for: indexPath)
+        
+        return cell
+    }
+    
+    
+}
+
+extension HomeSceneViewController: UICollectionViewDelegate {
+    
+}
+
+extension HomeSceneViewController: UITextFieldDelegate {
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        
+        coordinator.goToSearchScene()
+        
+        return true
+    }
 }

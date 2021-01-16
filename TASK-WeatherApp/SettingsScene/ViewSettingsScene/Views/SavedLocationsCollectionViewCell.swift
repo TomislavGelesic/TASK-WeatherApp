@@ -23,7 +23,7 @@ class SavedLocationsCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         button.setImage(UIImage(systemName: "multiply.square")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setImage(UIImage(systemName: "multiply.square.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        button.tintColor = .white
+        button.tintColor = .black
         return button
     }()
     

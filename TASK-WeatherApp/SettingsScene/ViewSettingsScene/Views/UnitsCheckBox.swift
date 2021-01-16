@@ -57,7 +57,7 @@ extension UnitsCheckBox {
     
     func setActiveRadioButton(position: Int) {
         
-        for var item in radioButtons {
+        for item in radioButtons {
             item.isActive = false
         }
         

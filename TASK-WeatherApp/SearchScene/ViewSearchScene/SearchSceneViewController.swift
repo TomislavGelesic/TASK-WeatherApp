@@ -9,6 +9,10 @@ import UIKit
 
 class SearchSceneViewController: UIViewController {
     
+    var viewModel: SearchSceneViewModel
+    
+    var coordinator: SearchSceneCoordinator
+    
     var timer = Timer()
     
     var searchText: String = ""
@@ -66,6 +70,18 @@ class SearchSceneViewController: UIViewController {
         timer.invalidate()
     }
     
+    init(coordinator: SearchSceneCoordinator, viewModel: SearchSceneViewModel) {
+        
+        self.coordinator = coordinator
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -98,6 +114,13 @@ extension SearchSceneViewController {
         
         availableCitiesTableView.dataSource = self
         availableCitiesTableView.delegate = self
+        
+        cancelButton.addTarget(self, action: #selector(cancellSearchTapped), for: .touchUpInside)
+    }
+    
+    @objc func cancellSearchTapped() {
+        
+        coordinator.goToHomeScene()
     }
     
     func setupKeyboardNotifications() {

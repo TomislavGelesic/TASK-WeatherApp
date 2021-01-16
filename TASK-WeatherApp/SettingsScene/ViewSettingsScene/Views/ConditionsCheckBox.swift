@@ -12,30 +12,29 @@ class ConditionsCheckBox: UIView {
     
     weak var delegate: ConditionsRadioButtonDelegate?
     
-//    var radioButtons: [ConditionsRadioButton] = {
-//        ConditionsRadioButton(image: UIImage(named: "humidity_icon") ?? UIImage(systemName: "photo"), isChecked: false, type: .humidity),
-//        ConditionsRadioButton(image: UIImage(named: "wind_icon") ?? UIImage(systemName: "photo"), isChecked: false, type: .wind),
-//        ConditionsRadioButton(image: UIImage(named: "pressure") ?? UIImage(systemName: "photo"), isChecked: false, type: .pressure)
-//
-//    }
-    
-    let humidityCheckBoxWithImage: CheckBoxWithImage = {
-        let image = UIImage(named: "humidity_icon")?.withRenderingMode(.alwaysTemplate) ?? UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
-        let box = CheckBoxWithImage(with: image, active: false)
+    let humidityCheckBoxWithImage: CheckBox = {
+        
+        let image = UIImage(named: "humidity_icon")?.withRenderingMode(.alwaysTemplate)
+        
+        let box = CheckBox(with: image, active: false)
         box.backgroundColor = .clear
         return box
     }()
     
-    let windCheckBoxWithImage: CheckBoxWithImage = {
-        let image = UIImage(named: "wind_icon")?.withRenderingMode(.alwaysTemplate) ?? UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
-        let box = CheckBoxWithImage(with: image, active: false)
+    let windCheckBoxWithImage: CheckBox = {
+        
+        let image = UIImage(named: "wind_icon")?.withRenderingMode(.alwaysTemplate)
+        
+        let box = CheckBox(with: image, active: false)
         box.backgroundColor = .clear
         return box
     }()
     
-    let pressureCheckBoxWithImage: CheckBoxWithImage = {
-        let image = UIImage(named: "pressure_icon")?.withRenderingMode(.alwaysTemplate) ?? UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
-        let box = CheckBoxWithImage(with: image, active: false)
+    let pressureCheckBoxWithImage: CheckBox = {
+        
+        let image = UIImage(named: "pressure_icon")?.withRenderingMode(.alwaysTemplate)
+        
+        let box = CheckBox(with: image, active: false)
         box.backgroundColor = .clear
         return box
     }()
@@ -51,7 +50,8 @@ class ConditionsCheckBox: UIView {
     init() {
         super.init(frame: .zero)
         
-        setup()
+        setViews()
+        setConstraints()
     }
     
     required init(coder: NSCoder?) {
@@ -62,7 +62,7 @@ class ConditionsCheckBox: UIView {
 
 extension ConditionsCheckBox {
     
-    func setup() {
+    func setViews() {
         
         addSubview(stackView)
         stackView.addArrangedSubview(humidityCheckBoxWithImage)
@@ -75,7 +75,27 @@ extension ConditionsCheckBox {
         
         pressureCheckBoxWithImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pressureRadioButtonTapped)))
         
+    }
+    
+    @objc func humidityRadioButtonTapped() {
         
+        humidityCheckBoxWithImage.radioButton.isSelected = !humidityCheckBoxWithImage.radioButton.isSelected
+        delegate?.radioButtonTapped(type: .humidity)
+    }
+    
+    @objc func windRadioButtonTapped() {
+        
+        windCheckBoxWithImage.radioButton.isSelected = !windCheckBoxWithImage.radioButton.isSelected
+        delegate?.radioButtonTapped(type: .wind)
+    }
+    
+    @objc func pressureRadioButtonTapped() {
+        
+        pressureCheckBoxWithImage.radioButton.isSelected = !pressureCheckBoxWithImage.radioButton.isSelected
+        delegate?.radioButtonTapped(type: .pressure)
+    }
+    
+    func setConstraints() {
         
         setConstraints_stackView()
         setConstraint_humidityCheckBoxWithImage()
@@ -105,18 +125,6 @@ extension ConditionsCheckBox {
         humidityCheckBoxWithImage.snp.makeConstraints { (make) in
             make.height.equalTo(self)
         }
-    }
-    
-    @objc func humidityRadioButtonTapped() {
-        delegate?.radioButtonTapped(type: .humidity)
-    }
-    
-    @objc func windRadioButtonTapped() {
-        delegate?.radioButtonTapped(type: .wind)
-    }
-    
-    @objc func pressureRadioButtonTapped() {
-        delegate?.radioButtonTapped(type: .pressure)
     }
 }
 

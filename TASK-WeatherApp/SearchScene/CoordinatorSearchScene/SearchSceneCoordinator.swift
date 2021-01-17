@@ -29,9 +29,9 @@ class SearchSceneCoordinator: Coordinator {
         self.parentCoordinator = parentCoordinator
         self.navigationController = navigationController
     }
-
-    func goToHomeScene() {
+    
+    func goToHomeScene(selectedCity_id: String?) {
         
-        parentCoordinator.goToHomeScene()
+        parentCoordinator.goToHomeScene(selectedCity_id: selectedCity_id)
     }
 }

@@ -11,4 +11,15 @@ import SnapKit
 
 class HomeSceneViewModel {
     
+    var weather: CityWeatherItem
+    
+    
+    
+    init(weatherInfo: CityWeatherItem) {
+        
+        self.weather = weatherInfo
+    }
+    
+    
+    
 }

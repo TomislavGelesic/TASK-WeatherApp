@@ -13,5 +13,6 @@ struct GeoNameItem: Codable {
     var countryName: String = ""
     var lat: String = ""
     var lng: String = ""
-    var adminCodes1: AdminCodes1
+    var countryCode: String = ""
+    var geonameId: String = ""
 }

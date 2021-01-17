@@ -14,16 +14,13 @@ class SearchSceneViewModel {
     
     var searchRepository: NetworkRepository
     
-    var screenData = [String]()
+    var viewModelData = [GeoNameItem]()
     
     var spinnerSubject = PassthroughSubject<Bool, Never>()
     
     var alertSubject = PassthroughSubject<String, Never>()
     
     var refreshUISubject = PassthroughSubject<Void, Never>()
-    
-    #warning("String?! or some city parameter which i can get?!") //yes, iso3166_2 idNumber is needed - String/Double/Int
-    var citySelectionSubject = PassthroughSubject<String, Never>()
     
     var searchNewCitiesSubject = PassthroughSubject<URL, Never>()
     
@@ -44,23 +41,16 @@ extension SearchSceneViewModel {
                 
             }
             .throttle(for: 0.5, scheduler: DispatchQueue.global(qos: .background), latest: true)
-            .map{ [unowned self] (data) in
-                
-                return self.createScreenData(from: data.geonames)
-            }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { (completion) in
                 switch completion {
                 case .finished:
-                    
-                        print("doing good")
                     break
                 case .failure(let error):
                     
                     switch error {
                     case .badResponseCode,.decodingError,.noDataError:
-                        print("doing error")
                         break
                     case .other(let error):
                         self.alertSubject.send("Unkown error occured: \n\(error.localizedDescription)")
@@ -68,14 +58,16 @@ extension SearchSceneViewModel {
                     break
                 }
                 
-            } receiveValue: { [unowned self] (newScreenData) in
-                self.screenData = newScreenData
-                self.refreshUISubject.send()            }
+            } receiveValue: { [unowned self] (newData) in
+                
+                self.viewModelData = newData.geonames
+                self.refreshUISubject.send()
+            }
 
     }
     
-    func createScreenData(from items: [GeoNameItem]) -> [String] {
+    func getScreenData(for position: Int) -> String {
         
-        return items.map { return "\($0.name), (\($0.countryName))" }
+        return "\(viewModelData[position].name), (\(viewModelData[position].countryName))"
     }
 }

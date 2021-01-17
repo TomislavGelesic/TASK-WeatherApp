@@ -82,14 +82,7 @@ class SettingsSceneViewController: UIViewController {
         return button
     }()
     
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setNavigationBar()
-        setSubviews()
-        setConstraints()
-    }
+    
     
     init(viewModel: SettingsSceneViewModel) {
         
@@ -102,11 +95,32 @@ class SettingsSceneViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setNavigationBar()
+        setSubviews()
+        setConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 }
 
 extension SettingsSceneViewController {
     
     func setNavigationBar() {
+                
+        navigationController?.setNavigationBarHidden(false, animated: false)
         
         let coloredAppearance = UINavigationBarAppearance()
         coloredAppearance.configureWithTransparentBackground()
@@ -145,7 +159,7 @@ extension SettingsSceneViewController {
     
     @objc func backButtonPressed() {
         
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
     }
     
     func setSubviews() {

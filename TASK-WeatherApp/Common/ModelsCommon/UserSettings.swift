@@ -23,4 +23,6 @@ class UserSettings {
         self.shouldShowHumidity = shouldShowHumidity
     }
     
+    
+    
 }

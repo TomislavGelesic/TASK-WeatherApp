@@ -32,10 +32,20 @@ class AppCoordinator: Coordinator {
         
         self.navigationController = navigationController
         
-        let defaults = UserDefaults.standard
-        let userDefaults = UserSettings()
-        defaults.set(userDefaults, forKey: "UserSettings")
         
+        let userDefaults = UserDefaults.standard
+        let settings = UserSettings()
+        
+        userDefaults.setValue(settings.lastCityId, forKey: "lastCityId")
+        if settings.meassurmentUnit == .metric {
+            userDefaults.setValue("metric", forKey: "meassurmentUnit")
+        }
+        else {
+            userDefaults.setValue("imperial", forKey: "meassurmentUnit")
+        }
+        userDefaults.setValue(settings.shouldShowHumidity, forKey: "humidity")
+        userDefaults.setValue(settings.shouldShowPressure, forKey: "pressure")
+        userDefaults.setValue(settings.shouldShowWindSpeed, forKey: "windSpeed")
     }
 }
 
@@ -66,7 +76,7 @@ extension AppCoordinator {
         
         guard let urlPath = URL(string: path) else { return }
         
-        var weather = CityWeatherItem()
+        var weather = WeatherInfo()
         
         cityWeatherRepository
             .getNetworkSubject(ofType: CityWeatherResponse.self, for: urlPath)
@@ -110,9 +120,17 @@ extension AppCoordinator {
         child.start()
     }
     
-    func createCityWeatherItem(from response: CityWeatherResponse) -> CityWeatherItem {
+    func createCityWeatherItem(from response: CityWeatherResponse) -> WeatherInfo {
         
-        return CityWeatherItem(id: response.id, name: response.name, pressure: response.main.pressure, windSpeed: response.wind.speed, humidity: response.main.humidity)
+        return WeatherInfo(id: response.id,
+                               cityName: response.name,
+                               weatherDescription: response.weather.description,
+                               pressure: response.main.pressure,
+                               windSpeed: response.wind.speed,
+                               humidity: response.main.humidity,
+                               min_Temperature: response.main.temp_min,
+                               current_Temperature: response.main.temp,
+                               max_Temperature: response.main.temp_max)
     }
     
 }

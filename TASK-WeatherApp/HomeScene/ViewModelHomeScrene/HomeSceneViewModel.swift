@@ -7,19 +7,20 @@
 
 import UIKit
 import Combine
-import SnapKit
 
 class HomeSceneViewModel {
     
-    var weather: CityWeatherItem
+    var weatherInfo: WeatherInfo
     
+    var userSettings: UserSettings
     
+    var refreshUISubject = PassthroughSubject<Void, Never>()
     
-    init(weatherInfo: CityWeatherItem) {
+    init(weatherInfo: WeatherInfo) {
         
-        self.weather = weatherInfo
+        self.userSettings = UserDefaults.standard.object(forKey: "UserSettings") as? UserSettings ?? UserSettings()
+        
+        self.weatherInfo = weatherInfo
     }
-    
-    
     
 }

@@ -15,7 +15,7 @@ class HomeSceneCoordinator: Coordinator {
     
     var navigationController: UINavigationController
     
-    var weather: CityWeatherItem
+    var weather: WeatherInfo
     
     func start() {
         
@@ -26,7 +26,7 @@ class HomeSceneCoordinator: Coordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    init(parentCoordinator: AppCoordinator, navigationController: UINavigationController, weather: CityWeatherItem) {
+    init(parentCoordinator: AppCoordinator, navigationController: UINavigationController, weather: WeatherInfo) {
         
         self.parentCoordinator = parentCoordinator
         self.navigationController = navigationController

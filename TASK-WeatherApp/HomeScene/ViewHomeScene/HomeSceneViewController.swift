@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 import SnapKit
 
 class HomeSceneViewController: UIViewController {
@@ -13,6 +14,8 @@ class HomeSceneViewController: UIViewController {
     var coordinator: HomeSceneCoordinator
     
     var viewModel: HomeSceneViewModel
+    
+    var disposeBag = Set<AnyCancellable>()
     
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -144,7 +147,16 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setupConditionsCollectionView()
+        setSubscribers()
         view.isUserInteractionEnabled = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewModel.userSettings = UserDefaults.standard.object(forKey: "UserSettings") as? UserSettings ?? UserSettings()
+        
+        viewModel.refreshUISubject.send()
     }
     
 }
@@ -178,12 +190,10 @@ extension HomeSceneViewController {
     @objc func settingsButtonTapped() {
         
         
-        let viewModel = SettingsSceneViewModel()
+        let subNavigationController = UINavigationController(rootViewController: SettingsSceneViewController(viewModel: SettingsSceneViewModel()))
+        subNavigationController.modalPresentationStyle = .fullScreen
         
-        let viewController = SettingsSceneViewController(viewModel: viewModel)
-        viewController.modalPresentationStyle = .fullScreen
-        
-        navigationController?.present(viewController, animated: true)
+        navigationController?.present(subNavigationController, animated: true)
         
     }
     
@@ -282,8 +292,6 @@ extension HomeSceneViewController {
             make.top.equalTo(verticalLine.snp.bottom).offset(10)
             make.leading.trailing.equalTo(view)
             make.bottom.equalTo(settingsButton.snp.top).offset(-5)
-            #warning("add collectionViewFlowLayout sizeForItemAt")
-            #warning("collection view height")
         }
     }
     
@@ -313,6 +321,31 @@ extension HomeSceneViewController {
         conditionsCollectionView.dataSource = self
         
     }
+    
+    func setSubscribers() {
+        
+        viewModel.refreshUISubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (_) in
+                
+                switch viewModel.userSettings.meassurmentUnit {
+                case .imperial:
+                    self.currentTemperatureLabel.text = "\(viewModel.weatherInfo.current_Temperature)" + " F"
+                    self.minTemperatureLabel.text = "\(viewModel.weatherInfo.min_Temperature)" + " F"
+                    self.maxTemperatureLabel.text = "\(viewModel.weatherInfo.max_Temperature)" + " F"
+                    break
+                case .metric:
+                    self.currentTemperatureLabel.text = "\(viewModel.weatherInfo.current_Temperature)" + " °C"
+                    self.minTemperatureLabel.text = "\(viewModel.weatherInfo.min_Temperature)" + " °C"
+                    self.maxTemperatureLabel.text = "\(viewModel.weatherInfo.max_Temperature)" + " °C"
+                    break
+                }
+                
+                self.conditionsCollectionView.reloadData()
+            }
+            .store(in: &disposeBag)
+    }
 }
 
 extension HomeSceneViewController: UICollectionViewDataSource {
@@ -328,10 +361,25 @@ extension HomeSceneViewController: UICollectionViewDataSource {
         return cell
     }
     
+
+}
+
+extension HomeSceneViewController: UICollectionViewDelegateFlowLayout {
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let width = conditionsCollectionView.frame.width/3 - 10
+        let height = conditionsCollectionView.frame.height
+        return CGSize(width: width, height: height)
+    }
 }
 
 extension HomeSceneViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+    }
+    
     
 }
 

@@ -26,3 +26,28 @@ class UserSettings {
     
     
 }
+
+extension UserSettings {
+    
+    static func getNewestUserSettings() -> UserSettings {
+        let userDefaults = UserDefaults.standard
+        
+        var unitType: MeassurmentUnits = .metric
+        
+        if let type = userDefaults.value(forKey: "meassurmentUnit") as? String {
+            switch type {
+            case "metric":
+                unitType = .metric
+            default:
+                unitType = .imperial
+            }
+        }
+        
+        return UserSettings(
+            meassurmentUnit: userDefaults.value(forKey: "meassurmentUnit") as? String ?? .metric,
+            lastCityId: <#T##String#>,
+            shouldShowWindSpeed: <#T##Bool#>,
+            shouldShowPressure: <#T##Bool#>,
+            shouldShowHumidity: <#T##Bool#>)
+    }
+}

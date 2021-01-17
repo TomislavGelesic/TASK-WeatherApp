@@ -10,8 +10,6 @@ import SnapKit
 
 class SettingsSceneViewController: UIViewController {
     
-    var savedLocations = ["test 1", "test 2", "test 3", "test 4", "test 5", "test 6", "test 7", "test 8"]
-    
     var viewModel: SettingsSceneViewModel
     
     let backgroundImageView: UIImageView = {
@@ -101,6 +99,8 @@ class SettingsSceneViewController: UIViewController {
         setNavigationBar()
         setSubviews()
         setConstraints()
+        
+        viewModel.refreshUISubject.send()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -186,7 +186,8 @@ extension SettingsSceneViewController {
     
     @objc func applyButtonTapped() {
         
-        //save settings to CoreData
+        viewModel.saveUserSettings()
+        
         dismiss(animated: true, completion: nil)
     }
     
@@ -312,14 +313,29 @@ extension SettingsSceneViewController: UICollectionViewDelegate {
 extension SettingsSceneViewController: UnitsCheckBoxDelegate {
     
     func itemSelected(type: UnitsRadioButtonType) {
-        #warning("can i implement it with only one delegate for all radioButtons??")
+        switch type {
+        case .metric:
+            userSettings.meassurmentUnit = .metric
+        case .imperial:
+            userSettings.meassurmentUnit = .imperial
+        }
     }
 }
 
 extension SettingsSceneViewController: ConditionsCheckBoxDelegate {
     
     func itemSelected(type: ConditionsRadioButtonType) {
-        
+        switch type {
+        case .humidity:
+            userSettings.shouldShowHumidity = !userSettings.shouldShowHumidity
+            break
+        case .pressure:
+            userSettings.shouldShowPressure = !userSettings.shouldShowPressure
+            break
+        case .wind:
+            userSettings.shouldShowWindSpeed = !userSettings.shouldShowWindSpeed
+            break
+        }
     }
     
     

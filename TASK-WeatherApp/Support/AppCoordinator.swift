@@ -37,12 +37,7 @@ class AppCoordinator: Coordinator {
         let settings = UserSettings()
         
         userDefaults.setValue(settings.lastCityId, forKey: "lastCityId")
-        if settings.meassurmentUnit == .metric {
-            userDefaults.setValue("metric", forKey: "meassurmentUnit")
-        }
-        else {
-            userDefaults.setValue("imperial", forKey: "meassurmentUnit")
-        }
+        userDefaults.setValue("metric", forKey: "meassurmentUnit")
         userDefaults.setValue(settings.shouldShowHumidity, forKey: "humidity")
         userDefaults.setValue(settings.shouldShowPressure, forKey: "pressure")
         userDefaults.setValue(settings.shouldShowWindSpeed, forKey: "windSpeed")

@@ -12,6 +12,8 @@ class SettingsSceneViewController: UIViewController {
     
     var savedLocations = ["test 1", "test 2", "test 3", "test 4", "test 5", "test 6", "test 7", "test 8"]
     
+    var viewModel: SettingsSceneViewModel
+    
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "body_image-clear-day")
@@ -39,7 +41,7 @@ class SettingsSceneViewController: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.register(SavedLocationsCollectionViewCell.self, forCellWithReuseIdentifier: SavedLocationsCollectionViewCell.reuseIdentifier)
         collectionView.layer.borderWidth = 1
-        collectionView.layer.borderColor = CGColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+        collectionView.layer.borderColor = CGColor.init(red: 0, green: 0, blue: 0, alpha: 1)
         return collectionView
     }()
     
@@ -89,6 +91,16 @@ class SettingsSceneViewController: UIViewController {
         setConstraints()
     }
     
+    init(viewModel: SettingsSceneViewModel) {
+        
+        self.viewModel = viewModel
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
 }
 
@@ -161,7 +173,7 @@ extension SettingsSceneViewController {
     @objc func applyButtonTapped() {
         
         //save settings to CoreData
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
     }
     
     func setConstraints() {

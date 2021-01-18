@@ -7,20 +7,20 @@
 
 import UIKit
 
-class CheckBoxWithImage: UIView {
+class CheckBox: UIView {
 
     let radioButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setImage(UIImage(systemName: "circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        button.tintColor = .white
+        button.tintColor = .black
         return button
     }()
     
     let radioButtonImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = .white
+        imageView.tintColor = .black
         return imageView
     }()
     
@@ -42,7 +42,7 @@ class CheckBoxWithImage: UIView {
     
 }
 
-extension CheckBoxWithImage {
+extension CheckBox {
     
     func setupViews() {
         

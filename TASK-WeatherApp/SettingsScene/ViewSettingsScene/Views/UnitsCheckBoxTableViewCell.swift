@@ -12,8 +12,8 @@ class UnitsCheckBoxTableViewCell: UITableViewCell {
     let radioButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
-        button.tintColor = .white
+        button.setImage(UIImage(systemName: "circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
+        button.tintColor = .black
         button.backgroundColor = .clear
         return button
     }()

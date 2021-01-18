@@ -30,20 +30,24 @@ class AppCoordinator: Coordinator {
 extension AppCoordinator {
     
     func goToHomeScene(){
-            
-            childCoordinators.removeAll()
         
-            let child = HomeSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
-            
-            childCoordinators.append(child)
-            
-            child.start()
+        childCoordinators.removeAll()
+        
+        navigationController.popViewController(animated: false)
+        
+        let child = HomeSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
+        
+        childCoordinators.append(child)
+        
+        child.start()
         
     }
     
     func goToSearchScene() {
         
         childCoordinators.removeAll()
+        
+        navigationController.popViewController(animated: false)
         
         let child = SearchSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
         

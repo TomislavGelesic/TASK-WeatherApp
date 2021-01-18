@@ -23,13 +23,22 @@
 		6060B48525B09BD900860602 /* CheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B48425B09BD900860602 /* CheckBox.swift */; };
 		6060B48925B0A24000860602 /* ConditionsRadioButtonDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B48825B0A24000860602 /* ConditionsRadioButtonDelegate.swift */; };
 		60796F5925B1890E00988BC1 /* SearchSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */; };
-		60796F5E25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5D25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift */; };
+		60796F5E25B18E2500988BC1 /* SearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5D25B18E2500988BC1 /* SearchResultTableViewCell.swift */; };
 		60796F6A25B1E4E900988BC1 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F6925B1E4E900988BC1 /* AppCoordinator.swift */; };
 		60B642EF25B2D97700DE43EC /* SettingsSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */; };
 		60B642F425B2DD5C00DE43EC /* HomeSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */; };
 		60B642FA25B2DDC100DE43EC /* HomeSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */; };
 		60B6430025B2E7DA00DE43EC /* SearchSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642FF25B2E7DA00DE43EC /* SearchSceneCoordinator.swift */; };
 		60B6430425B2E86000DE43EC /* SearchSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6430325B2E86000DE43EC /* SearchSceneViewModel.swift */; };
+		60B6430E25B3027200DE43EC /* CityWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6430D25B3027200DE43EC /* CityWeather.swift */; };
+		60B6431125B3037100DE43EC /* MeassurmentUnits.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6431025B3037100DE43EC /* MeassurmentUnits.swift */; };
+		60B6431425B303DB00DE43EC /* CityTemperature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6431325B303DB00DE43EC /* CityTemperature.swift */; };
+		60B6431725B3128D00DE43EC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6431625B3128D00DE43EC /* Constants.swift */; };
+		60B6431C25B31C9F00DE43EC /* GeoNamesNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6431B25B31C9F00DE43EC /* GeoNamesNetworkService.swift */; };
+		60B6432225B31F3600DE43EC /* SearchRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6432125B31F3600DE43EC /* SearchRepositoryImpl.swift */; };
+		60B6432525B32DE100DE43EC /* GeoNameResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6432425B32DE100DE43EC /* GeoNameResponse.swift */; };
+		60B6432825B32E1400DE43EC /* GeoNameItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6432725B32E1400DE43EC /* GeoNameItem.swift */; };
+		60B6432B25B3323600DE43EC /* AdminCodes1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B6432A25B3323600DE43EC /* AdminCodes1.swift */; };
 		60D87ED825AF60360033CB7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87ED725AF60360033CB7A /* AppDelegate.swift */; };
 		60D87EE225AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EE025AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld */; };
 		60D87EE425AF60370033CB7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60D87EE325AF60370033CB7A /* Assets.xcassets */; };
@@ -67,13 +76,22 @@
 		6060B48425B09BD900860602 /* CheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBox.swift; sourceTree = "<group>"; };
 		6060B48825B0A24000860602 /* ConditionsRadioButtonDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionsRadioButtonDelegate.swift; sourceTree = "<group>"; };
 		60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneViewController.swift; sourceTree = "<group>"; };
-		60796F5D25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableCitiesTableViewCell.swift; sourceTree = "<group>"; };
+		60796F5D25B18E2500988BC1 /* SearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		60796F6925B1E4E900988BC1 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneViewModel.swift; sourceTree = "<group>"; };
 		60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneViewModel.swift; sourceTree = "<group>"; };
 		60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneCoordinator.swift; sourceTree = "<group>"; };
 		60B642FF25B2E7DA00DE43EC /* SearchSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneCoordinator.swift; sourceTree = "<group>"; };
 		60B6430325B2E86000DE43EC /* SearchSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneViewModel.swift; sourceTree = "<group>"; };
+		60B6430D25B3027200DE43EC /* CityWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityWeather.swift; sourceTree = "<group>"; };
+		60B6431025B3037100DE43EC /* MeassurmentUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeassurmentUnits.swift; sourceTree = "<group>"; };
+		60B6431325B303DB00DE43EC /* CityTemperature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityTemperature.swift; sourceTree = "<group>"; };
+		60B6431625B3128D00DE43EC /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = "TASK-WeatherApp/Common/Constants.swift"; sourceTree = SOURCE_ROOT; };
+		60B6431B25B31C9F00DE43EC /* GeoNamesNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoNamesNetworkService.swift; sourceTree = "<group>"; };
+		60B6432125B31F3600DE43EC /* SearchRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRepositoryImpl.swift; sourceTree = "<group>"; };
+		60B6432425B32DE100DE43EC /* GeoNameResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoNameResponse.swift; sourceTree = "<group>"; };
+		60B6432725B32E1400DE43EC /* GeoNameItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoNameItem.swift; sourceTree = "<group>"; };
+		60B6432A25B3323600DE43EC /* AdminCodes1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminCodes1.swift; sourceTree = "<group>"; };
 		60D87ED425AF60360033CB7A /* TASK-WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TASK-WeatherApp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60D87ED725AF60360033CB7A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60D87EE125AF60360033CB7A /* TASK_WeatherApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TASK_WeatherApp.xcdatamodel; sourceTree = "<group>"; };
@@ -159,7 +177,7 @@
 		60796F5725B188F000988BC1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				60796F5D25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift */,
+				60796F5D25B18E2500988BC1 /* SearchResultTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -202,6 +220,25 @@
 				60B6430325B2E86000DE43EC /* SearchSceneViewModel.swift */,
 			);
 			path = ViewModelSearchScene;
+			sourceTree = "<group>";
+		};
+		60B6431A25B31C8200DE43EC /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				60B6431B25B31C9F00DE43EC /* GeoNamesNetworkService.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		60B6432025B31F0300DE43EC /* ModelSearchScene */ = {
+			isa = PBXGroup;
+			children = (
+				60B6432125B31F3600DE43EC /* SearchRepositoryImpl.swift */,
+				60B6432425B32DE100DE43EC /* GeoNameResponse.swift */,
+				60B6432725B32E1400DE43EC /* GeoNameItem.swift */,
+				60B6432A25B3323600DE43EC /* AdminCodes1.swift */,
+			);
+			path = ModelSearchScene;
 			sourceTree = "<group>";
 		};
 		60D87ECB25AF60360033CB7A = {
@@ -249,11 +286,13 @@
 		60D87EF425AF623F0033CB7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				60B6431A25B31C8200DE43EC /* Networking */,
 				6060B44325B0339200860602 /* CustomViewsCommon */,
 				60D87F1C25AF65C80033CB7A /* ModelsCommon */,
 				60D87F1125AF653A0033CB7A /* ProtocolsCommon */,
 				60D87F0825AF63CF0033CB7A /* Spinner */,
 				60D87EF825AF62850033CB7A /* Extensions */,
+				60B6431625B3128D00DE43EC /* Constants.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -271,6 +310,7 @@
 		60D87EF625AF62510033CB7A /* SearchScene */ = {
 			isa = PBXGroup;
 			children = (
+				60B6432025B31F0300DE43EC /* ModelSearchScene */,
 				60B6430225B2E84700DE43EC /* ViewModelSearchScene */,
 				60B642FE25B2E7C800DE43EC /* CoordinatorSearchScene */,
 				60796F5625B188DD00988BC1 /* ViewSearchScene */,
@@ -328,6 +368,9 @@
 			isa = PBXGroup;
 			children = (
 				60D87F1D25AF65E00033CB7A /* NetworkError.swift */,
+				60B6430D25B3027200DE43EC /* CityWeather.swift */,
+				60B6431025B3037100DE43EC /* MeassurmentUnits.swift */,
+				60B6431325B303DB00DE43EC /* CityTemperature.swift */,
 			);
 			path = ModelsCommon;
 			sourceTree = "<group>";
@@ -489,19 +532,28 @@
 				60D87EFA25AF62990033CB7A /* UIView+Extensions.swift in Sources */,
 				60D87F1325AF654E0033CB7A /* ReusableView.swift in Sources */,
 				6060B45025B037BC00860602 /* UnitsCheckBoxTableViewCell.swift in Sources */,
+				60B6431725B3128D00DE43EC /* Constants.swift in Sources */,
 				60B6430025B2E7DA00DE43EC /* SearchSceneCoordinator.swift in Sources */,
-				60796F5E25B18E2500988BC1 /* AvailableCitiesTableViewCell.swift in Sources */,
+				60796F5E25B18E2500988BC1 /* SearchResultTableViewCell.swift in Sources */,
 				60D87F0625AF638B0033CB7A /* UIImageView+Extensions.swift in Sources */,
 				6060B43C25B02C7000860602 /* SettingsSceneViewController.swift in Sources */,
 				60D87F2825AF69420033CB7A /* HomeSceneViewController.swift in Sources */,
 				6060B46725B0549D00860602 /* UnitsRadioButtonType.swift in Sources */,
 				6060B44525B033B700860602 /* UnitsCheckBox.swift in Sources */,
 				60D87ED825AF60360033CB7A /* AppDelegate.swift in Sources */,
+				60B6432B25B3323600DE43EC /* AdminCodes1.swift in Sources */,
 				6060B45725B043ED00860602 /* UnitsRadioButton.swift in Sources */,
 				60D87EE225AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld in Sources */,
 				60D87F0E25AF63F60033CB7A /* SpinnerViewManager.swift in Sources */,
+				60B6432825B32E1400DE43EC /* GeoNameItem.swift in Sources */,
 				60D87F3725AF72040033CB7A /* ConditionsHomeSceneCollectionViewCell.swift in Sources */,
 				60D87F1725AF656B0033CB7A /* Coordinator.swift in Sources */,
+				60B6432525B32DE100DE43EC /* GeoNameResponse.swift in Sources */,
+				60B6431125B3037100DE43EC /* MeassurmentUnits.swift in Sources */,
+				60B6431425B303DB00DE43EC /* CityTemperature.swift in Sources */,
+				60B6430E25B3027200DE43EC /* CityWeather.swift in Sources */,
+				60B6431C25B31C9F00DE43EC /* GeoNamesNetworkService.swift in Sources */,
+				60B6432225B31F3600DE43EC /* SearchRepositoryImpl.swift in Sources */,
 				6060B48225B0952D00860602 /* ConditionsCheckBoxDelegate.swift in Sources */,
 				60D87F0025AF62EF0033CB7A /* UITableViewCell+Extensions.swift in Sources */,
 				60D87F0325AF63400033CB7A /* UIViewController+Extensions.swift in Sources */,

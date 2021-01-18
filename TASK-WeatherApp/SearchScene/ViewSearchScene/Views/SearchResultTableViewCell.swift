@@ -1,5 +1,5 @@
 //
-//  AvailableCitiesTableViewCell.swift
+//  SearchResultTableViewCell.swift
 //  TASK-WeatherApp
 //
 //  Created by Tomislav Gelesic on 15.01.2021..
@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class AvailableCitiesTableViewCell: UITableViewCell {
+class SearchResultTableViewCell: UITableViewCell {
 
     let label: UILabel = {
         let label = UILabel()
@@ -29,7 +29,7 @@ class AvailableCitiesTableViewCell: UITableViewCell {
     
 }
 
-extension AvailableCitiesTableViewCell {
+extension SearchResultTableViewCell {
     
     func setup() {
         

@@ -16,13 +16,9 @@ class SearchSceneViewModel {
     
     var viewModelData = [GeoNameItem]()
     
-    var spinnerSubject = PassthroughSubject<Bool, Never>()
-    
-    var alertSubject = PassthroughSubject<String, Never>()
-    
     var refreshUISubject = PassthroughSubject<Void, Never>()
     
-    var searchNewCitiesSubject = PassthroughSubject<URL, Never>()
+    var searchNewCitiesSubject = CurrentValueSubject<String, Never>("")
     
     init(searchRepository: NetworkRepository) {
         
@@ -32,20 +28,30 @@ class SearchSceneViewModel {
 
 extension SearchSceneViewModel {
     
-    func initializeSearchSubject(subject: AnyPublisher<URL, Never>) -> AnyCancellable {
+    func initializeSearchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
         
         return subject
-            .flatMap { [unowned self] (URLPath) -> AnyPublisher<GeoNameResponse, NetworkError> in
+            .removeDuplicates()
+            .map { [unowned self] (searchText) -> URL in
+                #warning("delete print")
+                print(searchText)
+                return self.makeGeoNamesURLRequest(for: searchText)
+            }
+            .map { [unowned self] (URLPath) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 
+                #warning("delete print")
+                print("im here")
                 return self.searchRepository.getNetworkSubject(ofType: GeoNameResponse.self, for: URLPath)
                 
             }
-            .throttle(for: 0.5, scheduler: DispatchQueue.global(qos: .background), latest: true)
-            .subscribe(on: DispatchQueue.global(qos: .background))
+            .switchToLatest()
+            .subscribe(on: RunLoop.main)
             .receive(on: RunLoop.main)
             .sink { (completion) in
                 switch completion {
                 case .finished:
+                    #warning("delete print")
+                    print("doing good")
                     break
                 case .failure(let error):
                     
@@ -53,7 +59,9 @@ extension SearchSceneViewModel {
                     case .badResponseCode,.decodingError,.noDataError:
                         break
                     case .other(let error):
-                        self.alertSubject.send("Unkown error occured: \n\(error.localizedDescription)")
+                        print("ERROR SearchSceneViewModel ERROR")
+                        print(error)
+                        break
                     }
                     break
                 }
@@ -61,6 +69,10 @@ extension SearchSceneViewModel {
             } receiveValue: { [unowned self] (newData) in
                 
                 self.viewModelData = newData.geonames
+                #warning("delete print")
+                for item in self.viewModelData {
+                    print(item.name)
+                }
                 self.refreshUISubject.send()
             }
 
@@ -69,5 +81,20 @@ extension SearchSceneViewModel {
     func getScreenData(for position: Int) -> String {
         
         return "\(viewModelData[position].name), (\(viewModelData[position].countryName))"
+    }
+    
+    func makeGeoNamesURLRequest(for searchText: String) -> URL {
+        
+        var path = String()
+        path.append(Constants.GeoNamesORG.BASE)
+        path.append(Constants.GeoNamesORG.GET_CITY_BY_NAME)
+        path.append(searchText)
+        path.append(Constants.GeoNamesORG.MAX_ROWS)
+        path.append("10")
+        path.append(Constants.GeoNamesORG.KEY)
+        
+        guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
+        
+        return url
     }
 }

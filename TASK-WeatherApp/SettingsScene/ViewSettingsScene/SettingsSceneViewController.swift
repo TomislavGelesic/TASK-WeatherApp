@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class SettingsSceneViewController: UIViewController {
+    
+    var disposeBag = Set<AnyCancellable>()
     
     var viewModel: SettingsSceneViewModel
     
@@ -104,7 +107,7 @@ class SettingsSceneViewController: UIViewController {
         setConstraints()
         setSubscribers()
         
-        viewModel.refreshUISubject.send()
+        viewModel.refreshUISubject.send(viewModel.userSettings)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -279,24 +282,25 @@ extension SettingsSceneViewController {
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (_) in
+            .sink { [unowned self] (settings) in
                 
                 self.locationsCollectionView.reloadData()
-                self.unitsCheckBox.setActiveRadioButton(for: viewModel.userSettings.measurmentUnit)
+                self.unitsCheckBox.setActiveRadioButton(for: settings.measurmentUnit)
                 
-                if viewModel.userSettings.shouldShowHumidity {
+                if settings.shouldShowHumidity {
                     self.conditionsCheckBox.setActive(for: .humidity)
                 }
                 
-                if viewModel.userSettings.shouldShowPressure {
+                if settings.shouldShowPressure {
                     self.conditionsCheckBox.setActive(for: .pressure)
                 }
                 
-                if viewModel.userSettings.shouldShowWindSpeed {
+                if settings.shouldShowWindSpeed {
                     self.conditionsCheckBox.setActive(for: .windSpeed)
                 }
                 
             }
+            .store(in: &disposeBag)
     }
 }
 

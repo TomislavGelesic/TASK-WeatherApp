@@ -7,6 +7,7 @@
 
 import Foundation
 
+#warning("It smells like hell - it will be a nightmare to test this.. right?!")
 class UserDefaultsService {
     
     var measurmentUnit: MeasurementUnits = .metric
@@ -64,7 +65,12 @@ extension UserDefaultsService {
         let userDefaults = UserDefaults.standard
         
         if let value = measurmentUnit {
-            userDefaults.setValue(value, forKey: Constants.UserDefaults.MEASURMENT_UNIT)
+            switch value {
+            case .imperial:
+                userDefaults.setValue("imperial", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
+            default:
+                userDefaults.setValue("metric", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
+            }
         }
         
         if let value = lastCityId {

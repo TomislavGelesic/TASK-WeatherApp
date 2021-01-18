@@ -121,17 +121,11 @@ extension SearchSceneViewController {
         
         if let validText = inputField.text {
             
-            if validText.isEmpty == false {
-                
-                let cityPath = "\(Constants.GeoNamesORG.BASE)\(Constants.GeoNamesORG.GET_CITY_BY_NAME)\(validText)\(Constants.GeoNamesORG.MAX_ROWS)\(10)\(Constants.GeoNamesORG.KEY)"
-                
-                guard let getCityURLPath = URL(string: cityPath) else { return }
-                
-                viewModel.searchNewCitiesSubject.send(getCityURLPath)
-            } else {
-            
+            if validText.isEmpty {
                 viewModel.viewModelData.removeAll()
                 viewModel.refreshUISubject.send()
+            } else {
+                viewModel.searchNewCitiesSubject.send(validText)
             }
         }
         
@@ -200,6 +194,65 @@ extension SearchSceneViewController {
         
     }
     
+    func setSubscribers() {
+        
+        viewModel.initializeSearchSubject(subject: viewModel.searchNewCitiesSubject.eraseToAnyPublisher())
+            .store(in: &disposeBag)
+        
+        viewModel.refreshUISubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (_) in
+    
+                self.tableView.reloadData()
+            }
+            .store(in: &disposeBag)
+    }
+}
+
+extension SearchSceneViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        inputField.resignFirstResponder()
+        return true
+    }
+}
+
+extension SearchSceneViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.viewModelData.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell: SearchResultTableViewCell = tableView.dequeueReusableCell(for: indexPath)
+        cell.configure(with: viewModel.getScreenData(for: indexPath.row))
+        return cell
+    }
+}
+
+extension SearchSceneViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let item = viewModel.viewModelData[indexPath.row]
+        
+        UserDefaultsService.updateUserSettings(measurmentUnit: nil,
+                                               lastCityId: item.geonameId,
+                                               shouldShowWindSpeed: nil,
+                                               shouldShowPressure: nil,
+                                               shouldShowHumidity: nil)
+        coordinator.goToHomeScene()
+    }
+}
+
+
+//MARK: CONSTRAINTS BELOW
+
+extension SearchSceneViewController {
+    
     func setConstraints() {
         
         setConstraints_backgroundImageView()
@@ -253,76 +306,5 @@ extension SearchSceneViewController {
             make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))
         }
     }
-    
-    func setSubscribers() {
-        
-        viewModel.initializeSearchSubject(subject: viewModel.searchNewCitiesSubject.eraseToAnyPublisher())
-            .store(in: &disposeBag)
-        
-        viewModel.alertSubject
-            .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: RunLoop.main)
-            .sink { [unowned self] (message) in
-                self.showAPIFailedAlert(for: message, completion: nil)
-            }
-            .store(in: &disposeBag)
-        
-        viewModel.spinnerSubject
-            .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: { [unowned self] (isVisible) in
-                
-                isVisible ? self.showSpinner() : self.hideSpinner()
-            })
-            .store(in: &disposeBag)
-        
-        viewModel.refreshUISubject
-            .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: RunLoop.main)
-            .sink { [unowned self] (_) in
-    
-                self.tableView.reloadData()
-            }
-            .store(in: &disposeBag)
-    }
 }
-
-extension SearchSceneViewController: UITextFieldDelegate {
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
-        inputField.resignFirstResponder()
-        return true
-    }
-}
-
-extension SearchSceneViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.viewModelData.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell: SearchResultTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        cell.configure(with: viewModel.getScreenData(for: indexPath.row))
-        return cell
-    }
-}
-
-extension SearchSceneViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        let item = viewModel.viewModelData[indexPath.row]
-        
-        UserDefaultsService.updateUserSettings(measurmentUnit: nil,
-                                               lastCityId: item.geonameId,
-                                               shouldShowWindSpeed: nil,
-                                               shouldShowPressure: nil,
-                                               shouldShowHumidity: nil)
-        coordinator.goToHomeScene()
-    }
-}
-
 

@@ -16,7 +16,7 @@ class HomeSceneViewModel {
     
     var refreshUISubject = PassthroughSubject<WeatherInfo, Never>()
     
-    var fetchWeatherSubject = PassthroughSubject<Void, Never>()
+    var fetchWeatherSubject = CurrentValueSubject<Bool, Never>(true)
     
     init(repository: NetworkRepository) {
         cityWeatherRepository = repository
@@ -25,7 +25,7 @@ class HomeSceneViewModel {
 
 extension HomeSceneViewModel {
     
-    func initializeFetchWeatherSubject(subject: AnyPublisher<Void, Never>) -> AnyCancellable {
+    func initializeFetchWeatherSubject(subject: AnyPublisher<Bool, Never>) -> AnyCancellable {
         
         return subject
             .flatMap { [unowned self] (_) -> AnyPublisher<CityWeatherResponse, NetworkError> in
@@ -34,7 +34,6 @@ extension HomeSceneViewModel {
                 
                 path.append(Constants.OpenWeatherMapORG.BASE)
                 path.append(Constants.OpenWeatherMapORG.GET_CITY_BY_ID)
-                print(userSettings.lastCityId)
                 path.append(userSettings.lastCityId)
                 path.append(Constants.OpenWeatherMapORG.KEY)
                 
@@ -47,7 +46,6 @@ extension HomeSceneViewModel {
                     path.append(Constants.OpenWeatherMapORG.WITH_IMPERIAL_UNITS)
                     break
                 }
-                
                 guard let urlPath = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR WEATHER") }
                 
                 return self.cityWeatherRepository.getNetworkSubject(ofType: CityWeatherResponse.self, for: urlPath)

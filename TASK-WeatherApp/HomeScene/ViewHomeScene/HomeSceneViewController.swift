@@ -153,12 +153,16 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setSubscribers()
+        
+        
+        viewModel.fetchWeatherSubject.send(true)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel.fetchWeatherSubject.send()
+        viewModel.fetchWeatherSubject.send(true)
     }
     
 }
@@ -254,26 +258,33 @@ extension HomeSceneViewController {
         
         switch viewModel.userSettings.measurmentUnit {
         case .imperial:
-            self.currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
-            self.minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
-            self.maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
             break
         case .metric:
-            self.currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
-            self.minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
-            self.maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
             break
         }
+        
+        currentTemperatureLabel.layoutIfNeeded()
+        minTemperatureLabel.layoutIfNeeded()
+        maxTemperatureLabel.layoutIfNeeded()
+
     }
     
     func updateCityName(with name: String) {
         
         cityNameLabel.text = name.uppercased()
+        cityNameLabel.layoutIfNeeded()
     }
     
     func updateWeatherDescription(with description: String) {
         
         weatherDescriptionLabel.text = description.uppercased()
+        weatherDescriptionLabel.layoutIfNeeded()
     }
 }
 

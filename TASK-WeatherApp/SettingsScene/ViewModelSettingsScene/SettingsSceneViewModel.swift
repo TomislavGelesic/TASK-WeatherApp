@@ -11,28 +11,37 @@ import SnapKit
 
 class SettingsSceneViewModel {
     
-    var savedCities:
+    var savedLocations = [CityWeather]()
     
-    var userSettings: UserSettings
+    var coreDataService = CoreDataService.sharedInstance
+    
+    var userSettings = UserDefaultsService.fetchUpdated()
     
     var refreshUISubject = PassthroughSubject<Void, Never>()
     
-    init(savedCities: ) {
-        userSettings = UserSettings(meassurmentUnit: <#T##MeassurmentUnits#>,
-                                    lastCityId: <#T##String#>,
-                                    shouldShowWindSpeed: <#T##Bool#>,
-                                    shouldShowPressure: <#T##Bool#>,
-                                    shouldShowHumidity: <#T##Bool#>)
+    init() {
+        
+        if let cities = coreDataService.get(.all) {
+            savedLocations = cities
+        }
     }
 }
 
 extension SettingsSceneViewModel {
     
+    func remove(at position: Int) {
+        
+        let id = savedLocations[position].id
+        savedLocations.remove(at: position)
+        coreDataService.delete(id)
+        refreshUISubject.send()
+    }
+    
     func saveUserSettings() {
         
         let userDefaults = UserDefaults.standard
         
-        switch userSettings.meassurmentUnit {
+        switch userSettings.measurmentUnit {
         case .imperial:
             userDefaults.setValue(true, forKey: "imperial")
             break

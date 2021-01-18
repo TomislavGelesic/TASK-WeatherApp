@@ -10,10 +10,10 @@ import Foundation
 
 struct Main_CityWeatherResponse:Codable {
     
-    var temp: String
-    var temp_min: String
-    var temp_max: String
-    var pressure: String
-    var humidity: String
+    var temp: Double
+    var temp_min: Double
+    var temp_max: Double
+    var pressure: Double
+    var humidity: Double
     
 }

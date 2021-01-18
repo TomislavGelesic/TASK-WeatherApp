@@ -139,7 +139,7 @@ extension SearchSceneViewController {
     
     @objc func cancellSearchTapped() {
         
-        coordinator.goToHomeScene(selectedCity_id: nil)
+        coordinator.goToHomeScene()
     }
     
     func setupKeyboardNotifications() {
@@ -196,7 +196,7 @@ extension SearchSceneViewController {
             completion: nil
         )
         
-        coordinator.goToHomeScene(selectedCity_id: nil)
+        coordinator.goToHomeScene()
         
     }
     
@@ -315,7 +315,13 @@ extension SearchSceneViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let item = viewModel.viewModelData[indexPath.row]
-        coordinator.goToHomeScene(selectedCity_id: item.geonameId)
+        
+        UserDefaultsService.updateUserSettings(measurmentUnit: nil,
+                                               lastCityId: item.geonameId,
+                                               shouldShowWindSpeed: nil,
+                                               shouldShowPressure: nil,
+                                               shouldShowHumidity: nil)
+        coordinator.goToHomeScene()
     }
 }
 

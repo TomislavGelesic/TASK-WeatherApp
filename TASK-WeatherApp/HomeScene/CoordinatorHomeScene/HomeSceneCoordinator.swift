@@ -15,26 +15,28 @@ class HomeSceneCoordinator: Coordinator {
     
     var navigationController: UINavigationController
     
-    var weather: WeatherInfo
-    
     func start() {
         
-        let viewModel = HomeSceneViewModel(weatherInfo: weather)
+        let viewModel = HomeSceneViewModel(repository: CityWeatherRepository())
         
         let viewController = HomeSceneViewController(coordinator: self, viewModel: viewModel)
         
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    init(parentCoordinator: AppCoordinator, navigationController: UINavigationController, weather: WeatherInfo) {
+    init(parentCoordinator: AppCoordinator, navigationController: UINavigationController) {
         
         self.parentCoordinator = parentCoordinator
         self.navigationController = navigationController
-        self.weather = weather
     }
 
     func goToSearchScene() {
         
         parentCoordinator.goToSearchScene()
+    }
+    
+    func goToSettingsScene() {
+        
+        parentCoordinator.goToSettingsScene()
     }
 }

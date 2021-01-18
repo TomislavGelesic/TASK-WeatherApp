@@ -10,13 +10,6 @@ import UIKit
 
 class AppCoordinator: Coordinator {
     
-    #warning("Incomplete UserSettings logic...")
-    var userSettings = UserSettings()
-    
-    var cityWeatherRepository = CityWeatherRepository()
-    
-    var coreDataService: CoreDataService = CoreDataService.sharedInstance
-    
     var parentCoordinator: Coordinator? = nil
     
     var childCoordinators: [Coordinator] = []
@@ -25,76 +18,37 @@ class AppCoordinator: Coordinator {
     
     func start() {
         
-        goToHomeScene(selectedCity_id: nil)
+        goToHomeScene()
     }
     
     init(navigationController: UINavigationController) {
         
         self.navigationController = navigationController
         
-        
-        let userDefaults = UserDefaults.standard
-        let settings = UserSettings()
-        
-        userDefaults.setValue(settings.lastCityId, forKey: "lastCityId")
-        userDefaults.setValue("metric", forKey: "meassurmentUnit")
-        userDefaults.setValue(settings.shouldShowHumidity, forKey: "humidity")
-        userDefaults.setValue(settings.shouldShowPressure, forKey: "pressure")
-        userDefaults.setValue(settings.shouldShowWindSpeed, forKey: "windSpeed")
+        initializeUserSettings()
     }
 }
 
 extension AppCoordinator {
     
-    func goToHomeScene(selectedCity_id: String?){
+    func initializeUserSettings() {
         
-        userSettings = UserDefaults.standard.object(forKey: "UserSettings") as? UserSettings ?? UserSettings()
-        
-        var path = String()
-        
-        path.append(Constants.OpenWeatherMapORG.BASE)
-        path.append(Constants.OpenWeatherMapORG.GET_CITY_BY_ID)
-        
-        if let id = selectedCity_id {
-            path.append(id)
-        } else {
-            path.append("2761369")
-        }
-        
-        path.append(Constants.OpenWeatherMapORG.KEY)
-        
-        if userSettings.meassurmentUnit == .metric {
-            path.append(Constants.OpenWeatherMapORG.WITH_METRIC_UNITS)
-        } else {
-            path.append(Constants.OpenWeatherMapORG.WITH_IMPERIAL_UNITS)
-        }
-        
-        guard let urlPath = URL(string: path) else { return }
-        
-        var weather = WeatherInfo()
-        
-        cityWeatherRepository
-            .getNetworkSubject(ofType: CityWeatherResponse.self, for: urlPath)
-            .sink { [unowned self] (completion) in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    print(error)
-                    break
-                }
-            } receiveValue: { [unowned self] (response) in
-                
-                weather = self.createCityWeatherItem(from: response)
-                
-            }.cancel()
+        let userDefaults = UserDefaults.standard
+        let settings = UserDefaultsService()
         
         
+        userDefaults.setValue(settings.lastCityId, forKey: Constants.UserDefaults.CITY_ID)
+        userDefaults.setValue("metric", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
+        userDefaults.setValue(settings.shouldShowHumidity, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
+        userDefaults.setValue(settings.shouldShowPressure, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
+        userDefaults.setValue(settings.shouldShowWindSpeed, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
+    }
+    
+    func goToHomeScene(){
+
         childCoordinators.removeAll()
         
-        navigationController.popViewController(animated: false)
-        
-        let child = HomeSceneCoordinator(parentCoordinator: self, navigationController: navigationController, weather: weather)
+        let child = HomeSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
         
         childCoordinators.append(child)
         
@@ -106,8 +60,6 @@ extension AppCoordinator {
         
         childCoordinators.removeAll()
         
-        navigationController.popViewController(animated: false)
-        
         let child = SearchSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
         
         childCoordinators.append(child)
@@ -115,17 +67,15 @@ extension AppCoordinator {
         child.start()
     }
     
-    func createCityWeatherItem(from response: CityWeatherResponse) -> WeatherInfo {
+    func goToSettingsScene() {
         
-        return WeatherInfo(id: response.id,
-                               cityName: response.name,
-                               weatherDescription: response.weather.description,
-                               pressure: response.main.pressure,
-                               windSpeed: response.wind.speed,
-                               humidity: response.main.humidity,
-                               min_Temperature: response.main.temp_min,
-                               current_Temperature: response.main.temp,
-                               max_Temperature: response.main.temp_max)
+        childCoordinators.removeAll()
+        
+        let child = SettingsSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
+        
+        childCoordinators.append(child)
+        
+        child.start()
     }
     
 }

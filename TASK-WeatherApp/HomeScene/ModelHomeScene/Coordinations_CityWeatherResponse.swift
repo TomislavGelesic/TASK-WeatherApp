@@ -8,6 +8,6 @@
 import Foundation
 
 struct Coordinations_CityWeatherResponse: Codable {
-    var lat: String
-    var lon: String
+    var lat: Double
+    var lon: Double
 }

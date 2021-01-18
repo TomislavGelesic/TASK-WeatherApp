@@ -9,5 +9,5 @@ import Foundation
 
 struct Wind_CityWeatherResponse: Codable {
     
-    var speed: String
+    var speed: Double
 }

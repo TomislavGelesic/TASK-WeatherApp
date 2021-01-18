@@ -10,6 +10,8 @@ import Foundation
 
 struct Constants{
     
+    static let DEFAULT_CITY_ID = "2761369"
+    
     struct GeoNamesORG  {
         
         static let BASE = "https://secure.geonames.org/searchJSON?"
@@ -21,6 +23,7 @@ struct Constants{
         static let KEY = "&username=tgelesic"
     }
     
+//    examples:
 //    https://secure.geonames.org/searchJSON?name_startsWith=Vienna&username=tgelesic
     
     
@@ -37,10 +40,18 @@ struct Constants{
         static let WITH_IMPERIAL_UNITS = "&units=imperial"
     }
     
+//    examples:
 //    https://api.openweathermap.org/data/2.5/weather?q=Vienna,WV&appid=c89f972e8095d59db84f5e88b5ad621e&units=metric
     
 //    https://api.openweathermap.org/data/2.5/weather?id=2761369&appid=c89f972e8095d59db84f5e88b5ad621e&units=metric
 
+    struct UserDefaults {
+        static let CITY_ID = "CITY_ID"
+        static let SHOULD_SHOW_HUMIDITY = "humidity"
+        static let SHOULD_SHOW_PRESSURE = "pressure"
+        static let SHOULD_SHOW_WIND_SPEED = "windspeed"
+        static let MEASURMENT_UNIT = "measurmentunit"
+    }
 }
 
 

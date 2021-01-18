@@ -30,8 +30,8 @@ class SearchSceneCoordinator: Coordinator {
         self.navigationController = navigationController
     }
     
-    func goToHomeScene(selectedCity_id: String?) {
+    func goToHomeScene() {
         
-        parentCoordinator.goToHomeScene(selectedCity_id: selectedCity_id)
+        parentCoordinator.goToHomeScene()
     }
 }

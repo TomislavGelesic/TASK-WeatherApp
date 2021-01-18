@@ -12,6 +12,8 @@ class SettingsSceneViewController: UIViewController {
     
     var viewModel: SettingsSceneViewModel
     
+    var coordinator: SettingsSceneCoordinator
+    
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "body_image-clear-day")
@@ -82,8 +84,9 @@ class SettingsSceneViewController: UIViewController {
     
     
     
-    init(viewModel: SettingsSceneViewModel) {
+    init(coordinator: SettingsSceneCoordinator, viewModel: SettingsSceneViewModel) {
         
+        self.coordinator = coordinator
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -99,6 +102,7 @@ class SettingsSceneViewController: UIViewController {
         setNavigationBar()
         setSubviews()
         setConstraints()
+        setSubscribers()
         
         viewModel.refreshUISubject.send()
     }
@@ -179,8 +183,6 @@ extension SettingsSceneViewController {
         locationsCollectionView.collectionViewLayout = locationsFlowLayout
         locationsCollectionView.reloadData()
         
-        unitsCheckBox.delegate = self
-        
         applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
     }
     
@@ -188,7 +190,7 @@ extension SettingsSceneViewController {
         
         viewModel.saveUserSettings()
         
-        dismiss(animated: true, completion: nil)
+        coordinator.returnToHomeScene()
     }
     
     func setConstraints() {
@@ -271,21 +273,48 @@ extension SettingsSceneViewController {
             make.bottom.trailing.equalTo(view).offset(-10)
         }
     }
+    
+    func setSubscribers() {
+        
+        viewModel.refreshUISubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (_) in
+                
+                self.locationsCollectionView.reloadData()
+                self.unitsCheckBox.setActiveRadioButton(for: viewModel.userSettings.measurmentUnit)
+                
+                if viewModel.userSettings.shouldShowHumidity {
+                    self.conditionsCheckBox.setActive(for: .humidity)
+                }
+                
+                if viewModel.userSettings.shouldShowPressure {
+                    self.conditionsCheckBox.setActive(for: .pressure)
+                }
+                
+                if viewModel.userSettings.shouldShowWindSpeed {
+                    self.conditionsCheckBox.setActive(for: .windSpeed)
+                }
+                
+            }
+    }
 }
 
 extension SettingsSceneViewController: UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return savedLocations.count
+        
+        return viewModel.savedLocations.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
-        cell.configure(with: savedLocations[indexPath.row])
-        
+        cell.configure(with: viewModel.savedLocations[indexPath.row])
+
         cell.removeButtonAction = { [unowned self] in
-            self.savedLocations.remove(at: indexPath.row)
-            self.locationsCollectionView.reloadData()
+            
+            self.viewModel.remove(at: indexPath.row)
         }
         
         return cell
@@ -310,33 +339,3 @@ extension SettingsSceneViewController: UICollectionViewDelegate {
     
 }
 
-extension SettingsSceneViewController: UnitsCheckBoxDelegate {
-    
-    func itemSelected(type: UnitsRadioButtonType) {
-        switch type {
-        case .metric:
-            userSettings.meassurmentUnit = .metric
-        case .imperial:
-            userSettings.meassurmentUnit = .imperial
-        }
-    }
-}
-
-extension SettingsSceneViewController: ConditionsCheckBoxDelegate {
-    
-    func itemSelected(type: ConditionsRadioButtonType) {
-        switch type {
-        case .humidity:
-            userSettings.shouldShowHumidity = !userSettings.shouldShowHumidity
-            break
-        case .pressure:
-            userSettings.shouldShowPressure = !userSettings.shouldShowPressure
-            break
-        case .wind:
-            userSettings.shouldShowWindSpeed = !userSettings.shouldShowWindSpeed
-            break
-        }
-    }
-    
-    
-}

@@ -9,8 +9,6 @@ import UIKit
 
 class UnitsCheckBox: UIView {
     
-    weak var delegate: UnitsCheckBoxDelegate?
-    
     var radioButtons = [UnitsRadioButton]()
 
     let tableView: UITableView = {
@@ -55,7 +53,20 @@ extension UnitsCheckBox {
         }
     }
     
-    func setActiveRadioButton(position: Int) {
+    func setActiveRadioButton(for type: MeasurementUnits) {
+        
+        for item in radioButtons {
+            item.isActive = false
+            
+            if item.type == type {
+                item.isActive = true
+            }
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func setActiveRadioButton(for position: Int) {
         
         for item in radioButtons {
             item.isActive = false
@@ -87,8 +98,6 @@ extension UnitsCheckBox: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        setActiveRadioButton(position: indexPath.row)
-        
-        delegate?.itemSelected(type: radioButtons[indexPath.row].type)
+        setActiveRadioButton(for: indexPath.row)
     }
 }

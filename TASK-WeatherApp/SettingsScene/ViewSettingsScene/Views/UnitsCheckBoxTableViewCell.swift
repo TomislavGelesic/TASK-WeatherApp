@@ -9,10 +9,12 @@ import UIKit
 
 class UnitsCheckBoxTableViewCell: UITableViewCell {
     
-    let button: UIButton = {
+    let radioButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "circle"), for: .normal)
-        button.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .selected)
+        button.setImage(UIImage(systemName: "circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.setImage(UIImage(systemName: "checkmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .selected)
+        button.tintColor = .white
+        button.backgroundColor = .clear
         return button
     }()
     
@@ -39,7 +41,9 @@ extension UnitsCheckBoxTableViewCell {
     
     func setup() {
         
-        addSubviews([button, buttonDescriptionLabel])
+        backgroundColor = .clear
+        
+        addSubviews([radioButton, buttonDescriptionLabel])
         
         setConstranints_button()
         setConstranints_buttonDescriptionLabel()
@@ -47,7 +51,7 @@ extension UnitsCheckBoxTableViewCell {
     
     func setConstranints_button() {
         
-        button.snp.makeConstraints { (make) in
+        radioButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
             make.centerY.equalTo(self)
             make.leading.equalTo(self)
@@ -59,14 +63,15 @@ extension UnitsCheckBoxTableViewCell {
         buttonDescriptionLabel.snp.makeConstraints { (make) in
             make.height.equalTo(30)
             make.top.bottom.trailing.equalTo(self)
-            make.leading.equalTo(button.snp.trailing).offset(5)
+            make.leading.equalTo(radioButton.snp.trailing).offset(5)
         }
     }
     
     func configure(with item: UnitsRadioButton) {
         
-        button.isSelected = item.isChecked
+        radioButton.isSelected = item.isActive
         
         buttonDescriptionLabel.text = item.description
     }
+    
 }

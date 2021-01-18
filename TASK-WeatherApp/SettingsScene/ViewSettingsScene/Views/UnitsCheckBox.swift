@@ -25,8 +25,8 @@ class UnitsCheckBox: UIView {
         super.init(frame: .zero)
         
         setup()
-        radioButtons.append(UnitsRadioButton(description: "Metric", isChecked: true, type: .metric))
-        radioButtons.append(UnitsRadioButton(description: "Imperial", isChecked: false, type: .imperial))
+        radioButtons.append(UnitsRadioButton(description: "Metric", active: true, type: .metric))
+        radioButtons.append(UnitsRadioButton(description: "Imperial", active: false, type: .imperial))
         
         tableView.reloadData()
     }
@@ -40,7 +40,6 @@ class UnitsCheckBox: UIView {
 extension UnitsCheckBox {
     
     func setup() {
-        
         addSubview(tableView)
         
         tableView.dataSource = self
@@ -54,6 +53,17 @@ extension UnitsCheckBox {
         tableView.snp.makeConstraints { (make) in
             make.edges.equalTo(self)
         }
+    }
+    
+    func setActiveRadioButton(position: Int) {
+        
+        for var item in radioButtons {
+            item.isActive = false
+        }
+        
+        radioButtons[position].isActive = true
+        
+        tableView.reloadData()
     }
 }
 
@@ -71,19 +81,13 @@ extension UnitsCheckBox: UITableViewDataSource {
         
         return cell
     }
-    
-    
 }
 
 extension UnitsCheckBox: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        for var item in radioButtons {
-            item.isChecked = false
-        }
-        radioButtons[indexPath.row].isChecked = !radioButtons[indexPath.row].isChecked
-        tableView.reloadData()
+        setActiveRadioButton(position: indexPath.row)
         
         delegate?.itemSelected(type: radioButtons[indexPath.row].type)
     }

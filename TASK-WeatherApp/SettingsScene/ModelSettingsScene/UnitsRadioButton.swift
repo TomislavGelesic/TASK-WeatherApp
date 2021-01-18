@@ -7,9 +7,15 @@
 
 import UIKit
 
-struct UnitsRadioButton {
+class UnitsRadioButton {
     
     var description: String = ""
-    var isChecked: Bool = false
+    var isActive: Bool = false
     var type: UnitsRadioButtonType = .metric
+    
+    init(description: String, active: Bool, type: UnitsRadioButtonType) {
+        self.description = description
+        self.isActive = active
+        self.type = type
+    }
 }

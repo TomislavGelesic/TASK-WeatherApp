@@ -9,6 +9,6 @@ import Foundation
 
 struct Weather_CityWeatherResponse: Codable {
     
-    var main: String
+    var id: Int
     var description: String
 }

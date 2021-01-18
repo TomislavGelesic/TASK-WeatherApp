@@ -102,6 +102,8 @@ extension HomeSceneViewModel {
                                humidity: String(response.main.humidity),
                                min_Temperature: String(response.main.temp_min),
                                current_Temperature: String(response.main.temp),
-                               max_Temperature: String(response.main.temp_max))
+                               max_Temperature: String(response.main.temp_max),
+                               weatherType: String(response.weather.id)
+        )
     }
 }

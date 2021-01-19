@@ -22,6 +22,8 @@ class SearchSceneViewModel {
     
     var inputSubject = CurrentValueSubject<String, Never>("")
     
+    let fetchCitySubject = PassthroughSubject<String, Never>()
+    
     init(searchRepository: NetworkRepository) {
         
         self.searchRepository = searchRepository
@@ -33,9 +35,22 @@ extension SearchSceneViewModel {
     func initializeInputSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
         
         return subject
-            .throttle(for: 0.5, scheduler: DispatchQueue.global(qos: .background), latest: true)
+            .throttle(for: 0.5, scheduler: DispatchQueue.global(), latest: true)
             .removeDuplicates()
-            .map { [unowned self] (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
+            .receive(on: RunLoop.main)
+            .sink { (completion) in
+                
+            } receiveValue: { [unowned self] (searchText) in
+                #warning("delete print")
+                print(searchText)
+                self.fetchCitySubject.send(searchText)
+            }
+    }
+    
+    func initializeFetchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
+        
+        return subject
+            .flatMap { (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 
                 var path = String()
                 path.append(Constants.GeoNamesORG.BASE)
@@ -46,48 +61,21 @@ extension SearchSceneViewModel {
                 path.append(Constants.GeoNamesORG.KEY)
                 #warning("delete print")
                 print(path)
+                
                 guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
                 
-                
+                return self.searchRepository.getNetworkSubject(ofType: GeoNameResponse.self, for: url).eraseToAnyPublisher()
                 
             }
-            .switchToLatest()
+            .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { (completion) in
+            .sink(receiveCompletion: { (completion) in
                 
-                switch completion {
-                case .finished:
-                    
-                    #warning("delete print")
-                    print("doing good")
-                    break
-                    
-                case .failure(let error):
-                    
-                    #warning("delete print")
-                    print("doing bad")
-                    print(error)
-                    
-                    switch error {
-                    case .badResponseCode,.decodingError,.noDataError:
-                        break
-                    case .other(let error):
-                        print("ERROR SearchSceneViewModel ERROR")
-                        print(error)
-                        break
-                    }
-                    break
-                }
-            } receiveValue: { [unowned self] (newData) in
+            }, receiveValue: { [unowned self] (response) in
                 
-                self.viewModelData = newData.geonames
-                #warning("delete print")
-                for item in self.viewModelData {
-                    print(item.name)
-                }
+                self.viewModelData = response.geonames
                 self.refreshUISubject.send()
-            }
-
+            })
     }
     
     func getScreenData(for position: Int) -> String {

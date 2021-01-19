@@ -203,6 +203,9 @@ extension SearchSceneViewController {
     
     func setSubscribers() {
         
+        viewModel.initializeFetchSubject(subject: viewModel.fetchCitySubject.eraseToAnyPublisher())
+            .store(in: &disposeBag)
+        
         viewModel.initializeInputSubject(subject: viewModel.inputSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         

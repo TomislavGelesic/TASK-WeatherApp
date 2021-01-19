@@ -11,34 +11,42 @@ import Alamofire
 
 class GeoNamesNetworkService<T: Codable> {
     
-    let publisher = PassthroughSubject<GeoNameResponse, NetworkError>()
-    
-    func fetch(url: URL) -> AnyPublisher<GeoNameResponse, NetworkError> {
+    func fetch<T: Codable>(url: URL, as: T.Type) -> AnyPublisher<T, NetworkError> {
         
-        AF
-            .request(url)
-            .validate()
-            .responseData { (response) in
+        return PassthroughSubject<T, NetworkError>
+            .flatMap { (_) -> AnyPublisher<T, NetworkError> in
                 
-                if let data = response.data {
-                    
-                    do {
-                        let ok = try JSONSerialization.jsonObject(with: data, options: [])
-                        let decoder = JSONDecoder()
-                        let decodedData: T = try decoder.decode(T.self, from: data)
-                        print(decodedData)
-                        //                            promise(.success(decodedData))
-                    }
-                    catch {
-                        promise(.failure(.decodingError))
-                    }
-                    
-                } else {
-                    
-                    promise(.failure(.noDataError))
-                }
+                return  Future<T, NetworkError> { promise in
+                    AF
+                        .request(url)
+                        .validate()
+                        .responseData { (response) in
+                            
+                            if let data = response.data {
+                                
+                                do {
+                                    let ok = try JSONSerialization.jsonObject(with: data, options: [])
+                                    print(ok)
+                                    let decoder = JSONDecoder()
+                                    let decodedData: T = try decoder.decode(T.self, from: data)
+                                    
+                                    #warning("delete print")
+                                    print(decodedData)
+                                    promise(.success(decodedData))
+                                }
+                                catch {
+                                    promise(.failure(.decodingError))
+                                }
+                                
+                            } else {
+                                
+                                promise(.failure(.noDataError))
+                            }
+                        }
+                }.eraseToAnyPublisher()
             }
-        return self.publisher.eraseToAnyPublisher()
+            
     }
+        
 }
 

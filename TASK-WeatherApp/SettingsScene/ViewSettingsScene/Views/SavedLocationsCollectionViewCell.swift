@@ -68,9 +68,9 @@ extension SavedLocationsCollectionViewCell {
         }
     }
     
-    func configure(with name: String) {
+    func configure(with city: CityWeather) {
         
-        cityNameLabel.text = name.uppercased()
+        cityNameLabel.text = (city.name ?? "").uppercased()
     }
     
     @objc func removeButtonTapped() {

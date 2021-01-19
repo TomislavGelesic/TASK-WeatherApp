@@ -130,7 +130,7 @@ extension SearchSceneViewController {
                 viewModel.searchNewCitiesSubject.send(getCityURLPath)
             } else {
             
-                viewModel.screenData.removeAll()
+                viewModel.viewModelData.removeAll()
                 viewModel.refreshUISubject.send()
             }
         }
@@ -178,7 +178,7 @@ extension SearchSceneViewController {
         
         guard let userInfo = notification.userInfo as? [String: Any] else { return }
         
-        let newBottomOffset_inputField = view.frame.height/4
+        let newBottomOffset = view.frame.height/4
         let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
@@ -190,7 +190,7 @@ extension SearchSceneViewController {
             options: animationCurve,
             animations: { [unowned self] in
                 
-                self.setConstraints_inputField(for: newBottomOffset_inputField)
+                self.setConstraints_inputField(for: newBottomOffset)
                 self.inputField.layoutIfNeeded()
             },
             completion: nil
@@ -299,14 +299,13 @@ extension SearchSceneViewController: UITextFieldDelegate {
 extension SearchSceneViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.screenData.count
+        return viewModel.viewModelData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell: SearchResultTableViewCell = tableView.dequeueReusableCell(for: indexPath)
-        print(viewModel.screenData[indexPath.row])
-        cell.configure(with: viewModel.screenData[indexPath.row])
+        cell.configure(with: viewModel.getScreenData(for: indexPath.row))
         return cell
     }
 }
@@ -315,8 +314,13 @@ extension SearchSceneViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-//        viewModel.citySelectionSubject.send( iso_3166_2 --> id )
-        print("selected city from tableView")
+        let item = viewModel.viewModelData[indexPath.row]
+        
+        UserDefaultsService.updateUserSettings(measurmentUnit: nil,
+                                               lastCityId: item.geonameId,
+                                               shouldShowWindSpeed: nil,
+                                               shouldShowPressure: nil,
+                                               shouldShowHumidity: nil)
         coordinator.goToHomeScene()
     }
 }

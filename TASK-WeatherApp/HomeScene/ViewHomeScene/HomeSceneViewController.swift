@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 import SnapKit
 
 class HomeSceneViewController: UIViewController {
@@ -13,6 +14,8 @@ class HomeSceneViewController: UIViewController {
     var coordinator: HomeSceneCoordinator
     
     var viewModel: HomeSceneViewModel
+    
+    var disposeBag = Set<AnyCancellable>()
     
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -56,6 +59,7 @@ class HomeSceneViewController: UIViewController {
     let minTemperatureLabelDescription: UILabel = {
         let label = UILabel()
         label.text = "Low"
+        label.textColor = .darkGray
         label.textAlignment = .center
         label.backgroundColor = .clear
         return label
@@ -72,6 +76,7 @@ class HomeSceneViewController: UIViewController {
     let maxTemperatureLabelDescription: UILabel = {
         let label = UILabel()
         label.text = "High"
+        label.textColor = .darkGray
         label.textAlignment = .center
         label.backgroundColor = .clear
         return label
@@ -79,27 +84,32 @@ class HomeSceneViewController: UIViewController {
     
     let verticalLine: UIView = {
         let view = UIView()
-        view.backgroundColor = .black
+        view.backgroundColor = .darkGray
         view.layer.cornerRadius = 5
         view.layer.masksToBounds = true
         return view
     }()
     
-    let conditionsFlowLayout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 10
-        layout.minimumInteritemSpacing = 20
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        return layout
+    let conditionsStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .equalSpacing
+        return stackView
     }()
     
-    let conditionsCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        collectionView.backgroundColor = .clear
-        collectionView.isUserInteractionEnabled = false
-        collectionView.register(ConditionsHomeSceneCollectionViewCell.self, forCellWithReuseIdentifier: ConditionsHomeSceneCollectionViewCell.reuseIdentifier)
-        return collectionView
+    let humidityConditionView: ConditionView = {
+        let view = ConditionView()
+        return view
+    }()
+    
+    let pressureConditionView: ConditionView = {
+        let view = ConditionView()
+        return view
+    }()
+    
+    let windConditionView: ConditionView = {
+        let view = ConditionView()
+        return view
     }()
     
     let settingsButton: UIButton = {
@@ -140,11 +150,15 @@ class HomeSceneViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .white
-        view.isUserInteractionEnabled = false
         setSubviews()
         setConstraints()
-        setupConditionsCollectionView()
-        view.isUserInteractionEnabled = true
+        setSubscribers()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        viewModel.fetchWeatherSubject.send()
     }
     
 }
@@ -160,7 +174,7 @@ extension HomeSceneViewController {
             currentTemperatureLabel,
             weatherDescriptionLabel,
             cityNameLabel,
-            conditionsCollectionView,
+            conditionsStackView,
             minTemperatureLabel,
             minTemperatureLabelDescription,
             verticalLine,
@@ -170,6 +184,20 @@ extension HomeSceneViewController {
             searchTextField
         ])
         
+        for item in viewModel.getConditions() {
+            switch item {
+            case .humidity:
+                conditionsStackView.addArrangedSubview(humidityConditionView)
+                break
+            case .windSpeed:
+                conditionsStackView.addArrangedSubview(windConditionView)
+                break
+            case .pressure:
+                conditionsStackView.addArrangedSubview(pressureConditionView)
+                break
+                
+            }
+        }
         searchTextField.delegate = self
         
         settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
@@ -177,15 +205,90 @@ extension HomeSceneViewController {
     
     @objc func settingsButtonTapped() {
         
-        
-        let viewModel = SettingsSceneViewModel()
-        
-        let viewController = SettingsSceneViewController(viewModel: viewModel)
-        viewController.modalPresentationStyle = .fullScreen
-        
-        navigationController?.present(viewController, animated: true)
-        
+        coordinator.goToSettingsScene()
     }
+    
+    func setSubscribers() {
+        
+        viewModel.initializeFetchWeatherSubject(subject: viewModel.fetchWeatherSubject.eraseToAnyPublisher())
+            .store(in: &disposeBag)
+        
+        viewModel.refreshUISubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (weatherInfo) in
+                
+                self.conditionsStackView.safelyRemoveArrangedSubviews()
+                
+                for item in viewModel.getConditions() {
+                    switch item {
+                    case .humidity:
+                        humidityConditionView.conditionValueLabel.text = weatherInfo.humidity
+                        conditionsStackView.addArrangedSubview(humidityConditionView)
+                        setConstraints_humidityConditionView()
+                        break
+                    case .pressure:
+                        pressureConditionView.conditionValueLabel.text = weatherInfo.pressure
+                        conditionsStackView.addArrangedSubview(pressureConditionView)
+                        setConstraints_pressureConditionView()
+                        break
+                    case .windSpeed:
+                        windConditionView.conditionValueLabel.text = weatherInfo.windSpeed
+                        conditionsStackView.addArrangedSubview(windConditionView)
+                        setConstraints_windConditionView()
+                        break
+                    }
+                }
+                
+                conditionsStackView.layoutIfNeeded()
+                
+                self.updateWeatherDescription(with: weatherInfo.weatherDescription)
+                self.updateTemperature(with: weatherInfo)
+                self.updateCityName(with: weatherInfo.cityName)
+                
+            }
+            .store(in: &disposeBag)
+    }
+    
+    func updateTemperature(with info: WeatherInfo) {
+        
+        switch viewModel.userSettings.measurmentUnit {
+        case .imperial:
+            self.currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
+            self.minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
+            self.maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
+            break
+        case .metric:
+            self.currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
+            self.minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
+            self.maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
+            break
+        }
+    }
+    
+    func updateCityName(with name: String) {
+        
+        cityNameLabel.text = name.uppercased()
+    }
+    
+    func updateWeatherDescription(with description: String) {
+        
+        weatherDescriptionLabel.text = description.uppercased()
+    }
+}
+
+extension HomeSceneViewController: UITextFieldDelegate {
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        
+        coordinator.goToSearchScene()
+        
+        return true
+    }
+}
+
+//MARK: CONSTRAINTS BELOW
+extension HomeSceneViewController {
     
     func setConstraints() {
         
@@ -198,7 +301,10 @@ extension HomeSceneViewController {
         setConstraints_verticalLine()
         setConstraints_maxTemperatureLabel()
         setConstraints_maxTemperatureLabelDescription()
-        setConstraints_conditionsCollectionView()
+        setConstraints_conditionsStackView()
+        setConstraints_humidityConditionView()
+        setConstraints_pressureConditionView()
+        setConstraints_windConditionView()
         setConstraints_settingsButton()
         setConstraints_searchTextField()
     }
@@ -213,7 +319,7 @@ extension HomeSceneViewController {
     func setConstraints_currentTemperatureLabel() {
         currentTemperatureLabel.snp.makeConstraints { (make) in
             make.top.equalTo(view.snp.top).offset(10)
-            make.width.height.equalTo(100)
+            make.height.equalTo(100)
             make.centerX.equalTo(view.snp.centerX)
         }
     }
@@ -221,7 +327,7 @@ extension HomeSceneViewController {
     func setConstraints_weatherDescriptionLabel() {
         weatherDescriptionLabel.snp.makeConstraints { (make) in
             make.top.equalTo(currentTemperatureLabel.snp.bottom).offset(10)
-            make.width.equalTo(view.frame.width/2)
+            make.width.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.centerX.equalTo(view.snp.centerX)
         }
     }
@@ -236,7 +342,7 @@ extension HomeSceneViewController {
     
     func setConstraints_minTemperatureLabel() {
         minTemperatureLabel.snp.makeConstraints { (make) in
-            make.width.height.equalTo(50)
+            make.height.equalTo(50)
             make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
             make.trailing.equalTo(verticalLine.snp.leading).offset(-15)
         }
@@ -262,7 +368,7 @@ extension HomeSceneViewController {
     
     func setConstraints_maxTemperatureLabel() {
         maxTemperatureLabel.snp.makeConstraints { (make) in
-            make.width.height.equalTo(50)
+            make.height.equalTo(50)
             make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
             make.leading.equalTo(verticalLine.snp.trailing).offset(15)
         }
@@ -277,13 +383,33 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_conditionsCollectionView() {
-        conditionsCollectionView.snp.makeConstraints { (make) in
+    func setConstraints_conditionsStackView() {
+        
+        conditionsStackView.snp.makeConstraints { (make) in
             make.top.equalTo(verticalLine.snp.bottom).offset(10)
-            make.leading.trailing.equalTo(view)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.bottom.equalTo(settingsButton.snp.top).offset(-5)
-            #warning("add collectionViewFlowLayout sizeForItemAt")
-            #warning("collection view height")
+        }
+    }
+    
+    func setConstraints_humidityConditionView() {
+        humidityConditionView.snp.makeConstraints { (make) in
+            make.width.equalTo(conditionsStackView.frame.width / 4)
+            make.height.equalTo(conditionsStackView.frame.height)
+        }
+    }
+    
+    func setConstraints_pressureConditionView() {
+        humidityConditionView.snp.makeConstraints { (make) in
+            make.width.equalTo(conditionsStackView.frame.width / 4)
+            make.height.equalTo(conditionsStackView.frame.height)
+        }
+    }
+    
+    func setConstraints_windConditionView() {
+        humidityConditionView.snp.makeConstraints { (make) in
+            make.width.equalTo(conditionsStackView.frame.width / 4)
+            make.height.equalTo(conditionsStackView.frame.height)
         }
     }
     
@@ -304,43 +430,5 @@ extension HomeSceneViewController {
             make.bottom.equalTo(view.snp.bottom).offset(-2)
         }
         
-    }
-    
-    func setupConditionsCollectionView() {
-        
-        conditionsCollectionView.collectionViewLayout = conditionsFlowLayout
-        conditionsCollectionView.delegate = self
-        conditionsCollectionView.dataSource = self
-        
-    }
-}
-
-extension HomeSceneViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ConditionsHomeSceneCollectionViewCell.reuseIdentifier, for: indexPath)
-        
-        return cell
-    }
-    
-    
-}
-
-extension HomeSceneViewController: UICollectionViewDelegate {
-    
-}
-
-extension HomeSceneViewController: UITextFieldDelegate {
-    
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        
-        coordinator.goToSearchScene()
-        
-        return true
     }
 }

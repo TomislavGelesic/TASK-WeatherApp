@@ -10,9 +10,9 @@ import SnapKit
 
 class SettingsSceneViewController: UIViewController {
     
-    var savedLocations = ["test 1", "test 2", "test 3", "test 4", "test 5", "test 6", "test 7", "test 8"]
-    
     var viewModel: SettingsSceneViewModel
+    
+    var coordinator: SettingsSceneCoordinator
     
     let backgroundImageView: UIImageView = {
         let imageView = UIImageView()
@@ -82,17 +82,11 @@ class SettingsSceneViewController: UIViewController {
         return button
     }()
     
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setNavigationBar()
-        setSubviews()
-        setConstraints()
-    }
     
-    init(viewModel: SettingsSceneViewModel) {
+    
+    init(coordinator: SettingsSceneCoordinator, viewModel: SettingsSceneViewModel) {
         
+        self.coordinator = coordinator
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -102,11 +96,35 @@ class SettingsSceneViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setNavigationBar()
+        setSubviews()
+        setConstraints()
+        setSubscribers()
+        
+        viewModel.refreshUISubject.send()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
 }
 
 extension SettingsSceneViewController {
     
     func setNavigationBar() {
+                
+        navigationController?.setNavigationBarHidden(false, animated: false)
         
         let coloredAppearance = UINavigationBarAppearance()
         coloredAppearance.configureWithTransparentBackground()
@@ -145,7 +163,7 @@ extension SettingsSceneViewController {
     
     @objc func backButtonPressed() {
         
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
     }
     
     func setSubviews() {
@@ -165,15 +183,14 @@ extension SettingsSceneViewController {
         locationsCollectionView.collectionViewLayout = locationsFlowLayout
         locationsCollectionView.reloadData()
         
-        unitsCheckBox.delegate = self
-        
         applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
     }
     
     @objc func applyButtonTapped() {
         
-        //save settings to CoreData
-        dismiss(animated: true, completion: nil)
+        viewModel.saveUserSettings()
+        
+        coordinator.returnToHomeScene()
     }
     
     func setConstraints() {
@@ -256,21 +273,48 @@ extension SettingsSceneViewController {
             make.bottom.trailing.equalTo(view).offset(-10)
         }
     }
+    
+    func setSubscribers() {
+        
+        viewModel.refreshUISubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (_) in
+                
+                self.locationsCollectionView.reloadData()
+                self.unitsCheckBox.setActiveRadioButton(for: viewModel.userSettings.measurmentUnit)
+                
+                if viewModel.userSettings.shouldShowHumidity {
+                    self.conditionsCheckBox.setActive(for: .humidity)
+                }
+                
+                if viewModel.userSettings.shouldShowPressure {
+                    self.conditionsCheckBox.setActive(for: .pressure)
+                }
+                
+                if viewModel.userSettings.shouldShowWindSpeed {
+                    self.conditionsCheckBox.setActive(for: .windSpeed)
+                }
+                
+            }
+    }
 }
 
 extension SettingsSceneViewController: UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return savedLocations.count
+        
+        return viewModel.savedLocations.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
-        cell.configure(with: savedLocations[indexPath.row])
-        
+        cell.configure(with: viewModel.savedLocations[indexPath.row])
+
         cell.removeButtonAction = { [unowned self] in
-            self.savedLocations.remove(at: indexPath.row)
-            self.locationsCollectionView.reloadData()
+            
+            self.viewModel.remove(at: indexPath.row)
         }
         
         return cell
@@ -295,18 +339,3 @@ extension SettingsSceneViewController: UICollectionViewDelegate {
     
 }
 
-extension SettingsSceneViewController: UnitsCheckBoxDelegate {
-    
-    func itemSelected(type: UnitsRadioButtonType) {
-        #warning("can i implement it with only one delegate for all radioButtons??")
-    }
-}
-
-extension SettingsSceneViewController: ConditionsCheckBoxDelegate {
-    
-    func itemSelected(type: ConditionsRadioButtonType) {
-        
-    }
-    
-    
-}

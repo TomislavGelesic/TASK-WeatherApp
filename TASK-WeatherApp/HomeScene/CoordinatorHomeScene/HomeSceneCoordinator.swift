@@ -17,7 +17,7 @@ class HomeSceneCoordinator: Coordinator {
     
     func start() {
         
-        let viewModel = HomeSceneViewModel()
+        let viewModel = HomeSceneViewModel(repository: CityWeatherRepository())
         
         let viewController = HomeSceneViewController(coordinator: self, viewModel: viewModel)
         
@@ -33,5 +33,10 @@ class HomeSceneCoordinator: Coordinator {
     func goToSearchScene() {
         
         parentCoordinator.goToSearchScene()
+    }
+    
+    func goToSettingsScene() {
+        
+        parentCoordinator.goToSettingsScene()
     }
 }

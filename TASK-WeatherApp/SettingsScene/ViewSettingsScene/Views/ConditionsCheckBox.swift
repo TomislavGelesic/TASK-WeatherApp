@@ -126,6 +126,18 @@ extension ConditionsCheckBox {
             make.height.equalTo(self)
         }
     }
+    
+    func setActive(for type: ConditionTypes) {
+        
+        switch type {
+        case .humidity:
+            humidityCheckBoxWithImage.radioButton.isSelected = true
+        case .pressure:
+            pressureCheckBoxWithImage.radioButton.isSelected = true
+        case .windSpeed:
+            windCheckBoxWithImage.radioButton.isSelected = true
+        }
+    }
 }
 
 

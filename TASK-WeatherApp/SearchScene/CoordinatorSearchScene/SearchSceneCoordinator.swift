@@ -29,7 +29,7 @@ class SearchSceneCoordinator: Coordinator {
         self.parentCoordinator = parentCoordinator
         self.navigationController = navigationController
     }
-
+    
     func goToHomeScene() {
         
         parentCoordinator.goToHomeScene()

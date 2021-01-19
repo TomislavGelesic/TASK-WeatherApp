@@ -1,13 +1,14 @@
 //
-//  ConditionsHomeSceneCollectionViewCell.swift
+//  ConditionsView.swift
 //  TASK-WeatherApp
 //
-//  Created by Tomislav Gelesic on 13.01.2021..
+//  Created by Tomislav Gelesic on 18.01.2021..
 //
 
 import UIKit
+import SnapKit
 
-class ConditionsHomeSceneCollectionViewCell: UICollectionViewCell {
+class ConditionView: UIView {
     
     let conditionImageView: UIImageView = {
         let imageView = UIImageView()
@@ -24,8 +25,8 @@ class ConditionsHomeSceneCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init() {
+        super.init(frame: .zero)
         
         setupViews()
     }
@@ -33,15 +34,14 @@ class ConditionsHomeSceneCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }
 
-extension ConditionsHomeSceneCollectionViewCell {
+extension ConditionView {
     
     private func setupViews() {
         
-        contentView.backgroundColor = .clear
-        contentView.addSubviews([conditionImageView, conditionValueLabel])
+        backgroundColor = .clear
+        addSubviews([conditionImageView, conditionValueLabel])
         
         conditionImageViewConstraints()
         conditionValueLabelConstraints()
@@ -50,16 +50,17 @@ extension ConditionsHomeSceneCollectionViewCell {
     private func conditionImageViewConstraints() {
         
         conditionImageView.snp.makeConstraints { (make) in
-            make.top.leading.trailing.equalTo(contentView)
-            make.height.equalTo(contentView.frame.height/2)
+            make.top.leading.trailing.equalTo(self)
+            make.height.equalTo(self.frame.height/2)
         }
     }
     
     private func conditionValueLabelConstraints() {
         
         conditionValueLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(conditionImageView.snp.bottom).inset(10)
-            make.leading.trailing.bottom.equalTo(contentView).inset(10)
+            make.top.equalTo(conditionImageView.snp.bottom).offset(10)
+            make.leading.trailing.bottom.equalTo(self).inset(UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10))
         }
     }
 }
+

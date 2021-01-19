@@ -14,7 +14,7 @@ class GeoNamesNetworkService<T: Codable> {
     func fetch<T: Codable>(url: URL, as: T.Type) -> AnyPublisher<T, NetworkError> {
         
         return PassthroughSubject<T, NetworkError>
-            .flatMap { (_) -> AnyPublisher<T, NetworkError> in
+            .map { (_) -> AnyPublisher<T, NetworkError> in
                 
                 return  Future<T, NetworkError> { promise in
                     AF

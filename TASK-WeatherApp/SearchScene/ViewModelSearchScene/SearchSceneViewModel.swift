@@ -88,7 +88,7 @@ extension SearchSceneViewModel {
         let item = viewModelData[position]
         
         UserDefaultsService.updateUserSettings(measurmentUnit: nil,
-                                               lastCityId: item.geonameId,
+                                               lastCityId: String(item.geonameId),
                                                shouldShowWindSpeed: nil,
                                                shouldShowPressure: nil,
                                                shouldShowHumidity: nil)

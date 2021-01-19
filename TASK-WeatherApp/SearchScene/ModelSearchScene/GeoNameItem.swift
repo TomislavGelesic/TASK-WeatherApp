@@ -9,11 +9,11 @@ import Foundation
 
 struct GeoNameItem: Codable {
     
-    var name: String = ""
-    var countryName: String = ""
-    var lat: String = ""
-    var lng: String = ""
-    var countryCode: String = ""
-    var geonameId: String = ""
+    var name: String
+    var countryName: String
+    var lat: String
+    var lng: String
+    var countryCode: String
+    var geonameId: Int
     
 }

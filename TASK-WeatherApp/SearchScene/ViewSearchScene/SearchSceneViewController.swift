@@ -53,7 +53,7 @@ class SearchSceneViewController: UIViewController {
         return imageView
     }()
     
-    let searchIconView: UIView = {
+    let searchIconContainer: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         return view
@@ -81,21 +81,25 @@ class SearchSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.isUserInteractionEnabled = false
         setupViews()
         setupKeyboardNotifications()
         setConstraints()
         setSubscribers()
-        view.isUserInteractionEnabled = true
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         inputField.becomeFirstResponder()
+        navigationController?.navigationBar.isHidden = true
     }
     
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationController?.navigationBar.isHidden = false
+    }
 }
 
 extension SearchSceneViewController {
@@ -104,12 +108,14 @@ extension SearchSceneViewController {
         
         view.addSubviews([backgroundImageView, cancelButton, tableView, inputField])
         
-        searchIconView.addSubview(searchIcon)
+        searchIconContainer.addSubview(searchIcon)
         
         inputField.delegate = self
         inputField.leftViewMode = .always
-        inputField.leftView = searchIconView
+        inputField.leftView = searchIconContainer
+        inputField.leftView?.layoutIfNeeded()
         inputField.addTarget(self, action: #selector(inputFieldDidChange), for: .allEditingEvents)
+        
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -139,6 +145,7 @@ extension SearchSceneViewController {
     func setupKeyboardNotifications() {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
@@ -259,7 +266,7 @@ extension SearchSceneViewController {
         setConstraints_cancelButton()
         setConstraints_availableCitiesTableView()
         setConstraints_searchIcon()
-        setConstraints_searchIconView()
+        setConstraints_searchIconContainer()
         setConstraints_inputField(for: 100)
     }
     
@@ -290,13 +297,14 @@ extension SearchSceneViewController {
         
         searchIcon.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
-            make.centerX.equalTo(searchIconView)
+            make.centerX.centerY.equalTo(searchIconContainer)
         }
     }
     
-    func setConstraints_searchIconView() {
-        searchIconView.snp.makeConstraints { (make) in
+    func setConstraints_searchIconContainer() {
+        searchIconContainer.snp.makeConstraints { (make) in
             make.width.equalTo(40)
+            make.height.equalTo(20)
         }
     }
     
@@ -304,6 +312,7 @@ extension SearchSceneViewController {
         
         inputField.snp.remakeConstraints { (make) in
             make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))
+            make.height.equalTo(20)
         }
     }
 }

@@ -48,15 +48,16 @@ extension SearchSceneViewModel {
             .subscribe(on: RunLoop.main)
             .receive(on: RunLoop.main)
             .sink { (completion) in
+                
                 switch completion {
                 case .finished:
                     #warning("delete print")
                     print("doing good")
                     break
                 case .failure(let error):
-                    
-                        #warning("delete print")
-                        print("doing bad")
+                    #warning("delete print")
+                    print("doing bad")
+                    print(error)
                     switch error {
                     case .badResponseCode,.decodingError,.noDataError:
                         break
@@ -67,7 +68,6 @@ extension SearchSceneViewModel {
                     }
                     break
                 }
-                
             } receiveValue: { [unowned self] (newData) in
                 
                 self.viewModelData = newData.geonames

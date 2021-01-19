@@ -21,7 +21,7 @@ class HomeSceneCoordinator: Coordinator {
         
         let viewController = HomeSceneViewController(coordinator: self, viewModel: viewModel)
         
-        navigationController.pushViewController(viewController, animated: true)
+        navigationController.pushViewController(viewController, animated: false)
     }
     
     init(parentCoordinator: AppCoordinator, navigationController: UINavigationController) {

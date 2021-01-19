@@ -21,7 +21,11 @@ class SearchSceneCoordinator: Coordinator {
         
         let viewController = SearchSceneViewController(coordinator: self, viewModel: viewModel)
         
-        navigationController.pushViewController(viewController, animated: true)
+        let subNavigationController = UINavigationController(rootViewController: viewController)
+        
+        subNavigationController.modalPresentationStyle = .fullScreen
+        
+        navigationController.present(subNavigationController, animated: true)
     }
     
     init(parentCoordinator: AppCoordinator, navigationController: UINavigationController) {
@@ -31,6 +35,8 @@ class SearchSceneCoordinator: Coordinator {
     }
     
     func goToHomeScene() {
+        
+        navigationController.dismiss(animated: true, completion: nil)
         
         parentCoordinator.goToHomeScene()
     }

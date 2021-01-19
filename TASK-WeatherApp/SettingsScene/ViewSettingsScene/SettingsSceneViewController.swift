@@ -129,17 +129,11 @@ extension SettingsSceneViewController {
                 
         navigationController?.setNavigationBarHidden(false, animated: false)
         
-        let coloredAppearance = UINavigationBarAppearance()
-        coloredAppearance.configureWithTransparentBackground()
-        coloredAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.clear]
-        
-        navigationController?.navigationBar.standardAppearance = coloredAppearance
-        navigationController?.navigationBar.compactAppearance = coloredAppearance
-        navigationController?.navigationBar.scrollEdgeAppearance = coloredAppearance
-        
         let backButton: UIBarButtonItem = {
-            let buttonImage = UIImage(systemName: "chevron.backward")
-            let button = UIBarButtonItem(image: buttonImage, style: .plain, target: self, action: #selector(backButtonPressed))
+            let button = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"),
+                                         style: .plain,
+                                         target: self,
+                                         action: #selector(backButtonPressed))
             button.tintColor = .black
             return button
         }()
@@ -147,8 +141,10 @@ extension SettingsSceneViewController {
         navigationItem.setLeftBarButton(backButton, animated: true)
         
         let rightButton: UIBarButtonItem = {
-            let buttonImage = UIImage(systemName: "text.justify")
-            let button = UIBarButtonItem(image: buttonImage, style: .plain, target: self, action: #selector(backButtonPressed))
+            let button = UIBarButtonItem(image: UIImage(systemName: "text.justify"),
+                                         style: .plain,
+                                         target: self,
+                                         action: #selector(backButtonPressed))
             button.tintColor = .black
             return button
         }()
@@ -162,11 +158,17 @@ extension SettingsSceneViewController {
         }()
         
         navigationItem.titleView = titleLabel
+        
+        navigationController?.navigationBar.tintColor = .black
+        
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
     }
     
     @objc func backButtonPressed() {
         
-        dismiss(animated: true, completion: nil)
+        coordinator.returnToHomeScene()
     }
     
     func setSubviews() {
@@ -194,87 +196,6 @@ extension SettingsSceneViewController {
         viewModel.saveUserSettings()
         
         coordinator.returnToHomeScene()
-    }
-    
-    func setConstraints() {
-        
-        setConstraints_backgroundImageView()
-        setConstraints_locationsLabelDescription()
-        setConstraints_locationsCollectionView()
-        setConstraints_unitsLabelDescription()
-        setConstraints_unitsCheckBox()
-        setConstraints_conditionsLabelDescription()
-        setConstraints_conditionsCheckBox()
-        setConstraints_applyButton()
-    }
-    
-    func setConstraints_backgroundImageView() {
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
-    }
-    
-    func setConstraints_locationsLabelDescription() {
-        locationsLabelDescription.snp.makeConstraints { (make) in
-            make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 5, bottom: 0, right: 5))
-            make.centerX.equalTo(view)
-            make.height.equalTo(30)
-            
-        }
-    }
-    
-    func setConstraints_locationsCollectionView() {
-        
-        locationsCollectionView.snp.makeConstraints { (make) in
-            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.top.equalTo(locationsLabelDescription.snp.bottom)
-            make.height.equalTo(view.frame.height/5)
-        }
-    }
-    
-    func setConstraints_unitsLabelDescription() {
-        
-        unitsLabelDescription.snp.makeConstraints { (make) in
-            make.top.equalTo(locationsCollectionView.snp.bottom).offset(10)
-            make.centerX.equalTo(view.snp.centerX).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.height.equalTo(20)
-        }
-    }
-    
-    func setConstraints_unitsCheckBox() {
-        
-        unitsCheckBox.snp.makeConstraints { (make) in
-            make.top.equalTo(unitsLabelDescription.snp.bottom).offset(5)
-            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.height.equalTo(60)
-        }
-    }
-    
-    func setConstraints_conditionsLabelDescription() {
-        
-        conditionsLabelDescription.snp.makeConstraints { (make) in
-            make.top.equalTo(unitsCheckBox.snp.bottom).offset(5)
-            make.centerX.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.height.equalTo(20)
-        }
-    }
-    
-    func setConstraints_conditionsCheckBox() {
-        
-        conditionsCheckBox.snp.makeConstraints { (make) in
-            make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(5)
-            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-        }
-    }
-    
-    func setConstraints_applyButton() {
-        
-        applyButton.snp.makeConstraints { (make) in
-            make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)
-            make.width.equalTo(88)
-            make.height.equalTo(44)
-            make.bottom.trailing.equalTo(view).offset(-10)
-        }
     }
     
     func setSubscribers() {
@@ -338,8 +259,94 @@ extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
     
 }
 
-extension SettingsSceneViewController: UICollectionViewDelegate {
-    
-    
-}
+extension SettingsSceneViewController: UICollectionViewDelegate { }
 
+
+
+//MARK: CONSTRAINTS BELOW
+
+extension SettingsSceneViewController {
+    
+    func setConstraints() {
+        
+        setConstraints_backgroundImageView()
+        setConstraints_locationsLabelDescription()
+        setConstraints_locationsCollectionView()
+        setConstraints_unitsLabelDescription()
+        setConstraints_unitsCheckBox()
+        setConstraints_conditionsLabelDescription()
+        setConstraints_conditionsCheckBox()
+        setConstraints_applyButton()
+    }
+    
+    func setConstraints_backgroundImageView() {
+        
+        backgroundImageView.snp.makeConstraints { (make) in
+            make.edges.equalTo(view)
+        }
+    }
+    
+    func setConstraints_locationsLabelDescription() {
+        
+        locationsLabelDescription.snp.makeConstraints { (make) in
+            make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 5, bottom: 0, right: 5))
+            make.centerX.equalTo(view)
+            make.height.equalTo(30)
+            
+        }
+    }
+    
+    func setConstraints_locationsCollectionView() {
+        
+        locationsCollectionView.snp.makeConstraints { (make) in
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.top.equalTo(locationsLabelDescription.snp.bottom)
+            make.height.equalTo(view.frame.height/5)
+        }
+    }
+    
+    func setConstraints_unitsLabelDescription() {
+        
+        unitsLabelDescription.snp.makeConstraints { (make) in
+            make.top.equalTo(locationsCollectionView.snp.bottom).offset(10)
+            make.centerX.equalTo(view.snp.centerX).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.height.equalTo(20)
+        }
+    }
+    
+    func setConstraints_unitsCheckBox() {
+        
+        unitsCheckBox.snp.makeConstraints { (make) in
+            make.top.equalTo(unitsLabelDescription.snp.bottom).offset(5)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.height.equalTo(60)
+        }
+    }
+    
+    func setConstraints_conditionsLabelDescription() {
+        
+        conditionsLabelDescription.snp.makeConstraints { (make) in
+            make.top.equalTo(unitsCheckBox.snp.bottom).offset(5)
+            make.centerX.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.height.equalTo(20)
+        }
+    }
+    
+    func setConstraints_conditionsCheckBox() {
+        
+        conditionsCheckBox.snp.makeConstraints { (make) in
+            make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(5)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+        }
+    }
+    
+    func setConstraints_applyButton() {
+        
+        applyButton.snp.makeConstraints { (make) in
+            make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)
+            make.width.equalTo(88)
+            make.height.equalTo(44)
+            make.bottom.trailing.equalTo(view).offset(-10)
+        }
+    }
+}

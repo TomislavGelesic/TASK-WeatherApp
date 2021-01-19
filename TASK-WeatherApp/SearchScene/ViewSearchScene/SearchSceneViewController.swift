@@ -131,7 +131,7 @@ extension SearchSceneViewController {
                 viewModel.viewModelData.removeAll()
                 viewModel.refreshUISubject.send()
             } else {
-                viewModel.searchNewCitiesSubject.send(validText)
+                viewModel.inputSubject.send(validText)
             }
         }
         
@@ -203,7 +203,7 @@ extension SearchSceneViewController {
     
     func setSubscribers() {
         
-        viewModel.initializeSearchSubject(subject: viewModel.searchNewCitiesSubject.eraseToAnyPublisher())
+        viewModel.initializeInputSubject(subject: viewModel.inputSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
         viewModel.refreshUISubject
@@ -244,13 +244,8 @@ extension SearchSceneViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let item = viewModel.viewModelData[indexPath.row]
+        viewModel.saveCity(at: indexPath.row)
         
-        UserDefaultsService.updateUserSettings(measurmentUnit: nil,
-                                               lastCityId: item.geonameId,
-                                               shouldShowWindSpeed: nil,
-                                               shouldShowPressure: nil,
-                                               shouldShowHumidity: nil)
         coordinator.goToHomeScene()
     }
 }

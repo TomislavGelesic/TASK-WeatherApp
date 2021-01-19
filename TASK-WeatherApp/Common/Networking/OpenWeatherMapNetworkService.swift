@@ -17,6 +17,7 @@ class OpenWeatherMapNetworkService {
                 .request(url)
                 .validate()
                 .responseData { (response) in
+                    
                     if let data = response.data {
                         do {
                             let decoder = JSONDecoder()
@@ -26,8 +27,11 @@ class OpenWeatherMapNetworkService {
                         catch {
                             promise(.failure(.decodingError))
                         }
+                        
+                    } else {
+                        
+                        promise(.failure(.noDataError))
                     }
-                    promise(.failure(.noDataError))
                 }
         }.eraseToAnyPublisher()
     }

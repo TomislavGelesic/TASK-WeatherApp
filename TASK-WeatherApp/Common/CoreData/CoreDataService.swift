@@ -81,6 +81,18 @@ extension CoreDataService {
         saveContext()
     }
     
+    func save(_ item: GeoNameItem) {
+        
+        let managedContext = persistentContainer.viewContext
+        
+        let city = CityWeather(context: managedContext)
+        
+        city.setValue(Int64(item.geonameId), forKey: "id")
+        city.setValue(item.name, forKey: "name")
+        
+        saveContext()
+    }
+    
     func delete(_ id: Int64) {
         
         if let savedMovie = get(.byId(id: id))?.first {

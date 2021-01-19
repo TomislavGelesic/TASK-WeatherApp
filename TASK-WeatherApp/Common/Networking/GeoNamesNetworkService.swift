@@ -9,35 +9,36 @@ import Foundation
 import Combine
 import Alamofire
 
-class GeoNamesNetworkService {
+class GeoNamesNetworkService<T: Codable> {
     
-    let subject = CurrentValueSubject<Bool, Never>(true)
+    let publisher = PassthroughSubject<GeoNameResponse, NetworkError>()
     
-    func fetch<T: Codable>(url: URL, as type: T.Type) -> AnyPublisher<T, NetworkError> {
+    func fetch(url: URL) -> AnyPublisher<GeoNameResponse, NetworkError> {
         
-        return subject
-            .flatMap { (_) in
+        AF
+            .request(url)
+            .validate()
+            .responseData { (response) in
                 
-                return Future<T, NetworkError> { promise in
-                AF
-                    .request(url)
-                    .validate()
-                    .responseData { (response) in
-                        if let data = response.data {
-                            do {
-                                let decoder = JSONDecoder()
-                                let decodedData: T = try decoder.decode(T.self, from: data)
-                                promise(.success(decodedData))
-                            }
-                            catch {
-                                promise(.failure(.decodingError))
-                            }
-                        } else {
-                            promise(.failure(.noDataError))
-                        }
+                if let data = response.data {
+                    
+                    do {
+                        let ok = try JSONSerialization.jsonObject(with: data, options: [])
+                        let decoder = JSONDecoder()
+                        let decodedData: T = try decoder.decode(T.self, from: data)
+                        print(decodedData)
+                        //                            promise(.success(decodedData))
                     }
-                }.eraseToAnyPublisher()
+                    catch {
+                        promise(.failure(.decodingError))
+                    }
+                    
+                } else {
+                    
+                    promise(.failure(.noDataError))
+                }
             }
-            .eraseToAnyPublisher()
+        return self.publisher.eraseToAnyPublisher()
     }
 }
+

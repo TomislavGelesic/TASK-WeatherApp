@@ -35,7 +35,7 @@ extension SearchSceneViewModel {
             .map { [unowned self] (searchText) -> URL in
                 #warning("delete print")
                 print(searchText)
-                return self.makeGeoNamesURLRequest(for: searchText)
+                return self.makeGeoNamesURL(for: searchText)
             }
             .map { [unowned self] (URLPath) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 
@@ -55,6 +55,8 @@ extension SearchSceneViewModel {
                     break
                 case .failure(let error):
                     
+                        #warning("delete print")
+                        print("doing bad")
                     switch error {
                     case .badResponseCode,.decodingError,.noDataError:
                         break
@@ -83,7 +85,7 @@ extension SearchSceneViewModel {
         return "\(viewModelData[position].name), (\(viewModelData[position].countryName))"
     }
     
-    func makeGeoNamesURLRequest(for searchText: String) -> URL {
+    func makeGeoNamesURL(for searchText: String) -> URL {
         
         var path = String()
         path.append(Constants.GeoNamesORG.BASE)

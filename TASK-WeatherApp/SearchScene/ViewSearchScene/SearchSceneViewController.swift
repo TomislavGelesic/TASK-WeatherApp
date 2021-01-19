@@ -53,7 +53,7 @@ class SearchSceneViewController: UIViewController {
         return imageView
     }()
     
-    let searchIconView: UIView = {
+    let searchIconContainer: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
         return view
@@ -81,21 +81,25 @@ class SearchSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.isUserInteractionEnabled = false
         setupViews()
         setupKeyboardNotifications()
         setConstraints()
         setSubscribers()
-        view.isUserInteractionEnabled = true
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         inputField.becomeFirstResponder()
+        navigationController?.navigationBar.isHidden = true
     }
     
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        navigationController?.navigationBar.isHidden = false
+    }
 }
 
 extension SearchSceneViewController {
@@ -104,12 +108,14 @@ extension SearchSceneViewController {
         
         view.addSubviews([backgroundImageView, cancelButton, tableView, inputField])
         
-        searchIconView.addSubview(searchIcon)
+        searchIconContainer.addSubview(searchIcon)
         
         inputField.delegate = self
         inputField.leftViewMode = .always
-        inputField.leftView = searchIconView
+        inputField.leftView = searchIconContainer
+        inputField.leftView?.layoutIfNeeded()
         inputField.addTarget(self, action: #selector(inputFieldDidChange), for: .allEditingEvents)
+        
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -121,17 +127,11 @@ extension SearchSceneViewController {
         
         if let validText = inputField.text {
             
-            if validText.isEmpty == false {
-                
-                let cityPath = "\(Constants.GeoNamesORG.BASE)\(Constants.GeoNamesORG.GET_CITY_BY_NAME)\(validText)\(Constants.GeoNamesORG.MAX_ROWS)\(10)\(Constants.GeoNamesORG.KEY)"
-                
-                guard let getCityURLPath = URL(string: cityPath) else { return }
-                
-                viewModel.searchNewCitiesSubject.send(getCityURLPath)
-            } else {
-            
+            if validText.isEmpty {
                 viewModel.viewModelData.removeAll()
                 viewModel.refreshUISubject.send()
+            } else {
+                viewModel.inputSubject.send(validText)
             }
         }
         
@@ -145,6 +145,7 @@ extension SearchSceneViewController {
     func setupKeyboardNotifications() {
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
@@ -200,80 +201,12 @@ extension SearchSceneViewController {
         
     }
     
-    func setConstraints() {
-        
-        setConstraints_backgroundImageView()
-        setConstraints_cancelButton()
-        setConstraints_availableCitiesTableView()
-        setConstraints_searchIcon()
-        setConstraints_searchIconView()
-        setConstraints_inputField(for: 100)
-    }
-    
-    func setConstraints_backgroundImageView() {
-        
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
-    }
-    
-    func setConstraints_cancelButton() {
-        cancelButton.snp.makeConstraints { (make) in
-            make.width.height.equalTo(20)
-            make.top.trailing.equalTo(view).inset(UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 5))
-        }
-    }
-    
-    func setConstraints_availableCitiesTableView() {
-        
-        tableView.snp.makeConstraints { (make) in
-            make.top.equalTo(cancelButton.snp.bottom).offset(10)
-            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.height.equalTo(200)
-        }
-    }
-    
-    func setConstraints_searchIcon() {
-        
-        searchIcon.snp.makeConstraints { (make) in
-            make.width.height.equalTo(20)
-            make.centerX.equalTo(searchIconView)
-        }
-    }
-    
-    func setConstraints_searchIconView() {
-        searchIconView.snp.makeConstraints { (make) in
-            make.width.equalTo(40)
-        }
-    }
-    
-    func setConstraints_inputField(for bottomOffset: CGFloat) {
-        
-        inputField.snp.remakeConstraints { (make) in
-            make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))
-        }
-    }
-    
     func setSubscribers() {
         
-        viewModel.initializeSearchSubject(subject: viewModel.searchNewCitiesSubject.eraseToAnyPublisher())
+        viewModel.initializeFetchSubject(subject: viewModel.fetchCitySubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
-        viewModel.alertSubject
-            .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: RunLoop.main)
-            .sink { [unowned self] (message) in
-                self.showAPIFailedAlert(for: message, completion: nil)
-            }
-            .store(in: &disposeBag)
-        
-        viewModel.spinnerSubject
-            .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: { [unowned self] (isVisible) in
-                
-                isVisible ? self.showSpinner() : self.hideSpinner()
-            })
+        viewModel.initializeInputSubject(subject: viewModel.inputSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
         viewModel.refreshUISubject
@@ -314,15 +247,71 @@ extension SearchSceneViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let item = viewModel.viewModelData[indexPath.row]
+        viewModel.saveCity(at: indexPath.row)
         
-        UserDefaultsService.updateUserSettings(measurmentUnit: nil,
-                                               lastCityId: item.geonameId,
-                                               shouldShowWindSpeed: nil,
-                                               shouldShowPressure: nil,
-                                               shouldShowHumidity: nil)
         coordinator.goToHomeScene()
     }
 }
 
+
+//MARK: CONSTRAINTS BELOW
+
+extension SearchSceneViewController {
+    
+    func setConstraints() {
+        
+        setConstraints_backgroundImageView()
+        setConstraints_cancelButton()
+        setConstraints_availableCitiesTableView()
+        setConstraints_searchIcon()
+        setConstraints_searchIconContainer()
+        setConstraints_inputField(for: 100)
+    }
+    
+    func setConstraints_backgroundImageView() {
+        
+        backgroundImageView.snp.makeConstraints { (make) in
+            make.edges.equalTo(view)
+        }
+    }
+    
+    func setConstraints_cancelButton() {
+        cancelButton.snp.makeConstraints { (make) in
+            make.width.height.equalTo(20)
+            make.top.trailing.equalTo(view).inset(UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 5))
+        }
+    }
+    
+    func setConstraints_availableCitiesTableView() {
+        
+        tableView.snp.makeConstraints { (make) in
+            make.top.equalTo(cancelButton.snp.bottom).offset(10)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.height.equalTo(200)
+        }
+    }
+    
+    func setConstraints_searchIcon() {
+        
+        searchIcon.snp.makeConstraints { (make) in
+            make.width.height.equalTo(20)
+            make.centerX.centerY.equalTo(searchIconContainer)
+        }
+    }
+    
+    func setConstraints_searchIconContainer() {
+        searchIconContainer.snp.makeConstraints { (make) in
+            make.width.equalTo(40)
+            make.height.equalTo(20)
+        }
+    }
+    
+    func setConstraints_inputField(for bottomOffset: CGFloat) {
+        
+        inputField.snp.remakeConstraints { (make) in
+            make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))
+            make.height.equalTo(20)
+        }
+    }
+}
 

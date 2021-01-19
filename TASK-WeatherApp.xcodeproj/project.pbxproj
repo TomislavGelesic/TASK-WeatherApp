@@ -15,7 +15,7 @@
 		6047F24125B447CC00C2D5F6 /* WeatherInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F24025B447CC00C2D5F6 /* WeatherInfo.swift */; };
 		6047F25125B4500A00C2D5F6 /* CityWeather+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F25025B4500A00C2D5F6 /* CityWeather+CoreDataClass.swift */; };
 		6047F25B25B4777A00C2D5F6 /* OpenWeatherMapNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F25A25B4777A00C2D5F6 /* OpenWeatherMapNetworkService.swift */; };
-		6047F25F25B477F400C2D5F6 /* CityWeatherRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F25E25B477F400C2D5F6 /* CityWeatherRepository.swift */; };
+		6047F25F25B477F400C2D5F6 /* CityWeatherRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F25E25B477F400C2D5F6 /* CityWeatherRepositoryImpl.swift */; };
 		6047F26325B4794F00C2D5F6 /* CityWeatherResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F26225B4794F00C2D5F6 /* CityWeatherResponse.swift */; };
 		6047F26625B47A1600C2D5F6 /* Coordinations_CityWeatherResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F26525B47A1600C2D5F6 /* Coordinations_CityWeatherResponse.swift */; };
 		6047F26925B47A4E00C2D5F6 /* Weather_CityWeatherResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6047F26825B47A4E00C2D5F6 /* Weather_CityWeatherResponse.swift */; };
@@ -78,7 +78,7 @@
 		6047F24025B447CC00C2D5F6 /* WeatherInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherInfo.swift; sourceTree = "<group>"; };
 		6047F25025B4500A00C2D5F6 /* CityWeather+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CityWeather+CoreDataClass.swift"; path = "/Users/tomislavgelesic/Desktop/TASK-WeatherApp/TASK-WeatherApp/Common/CoreData/CityWeather+CoreDataClass.swift"; sourceTree = "<absolute>"; };
 		6047F25A25B4777A00C2D5F6 /* OpenWeatherMapNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWeatherMapNetworkService.swift; sourceTree = "<group>"; };
-		6047F25E25B477F400C2D5F6 /* CityWeatherRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityWeatherRepository.swift; sourceTree = "<group>"; };
+		6047F25E25B477F400C2D5F6 /* CityWeatherRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityWeatherRepositoryImpl.swift; sourceTree = "<group>"; };
 		6047F26225B4794F00C2D5F6 /* CityWeatherResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityWeatherResponse.swift; sourceTree = "<group>"; };
 		6047F26525B47A1600C2D5F6 /* Coordinations_CityWeatherResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinations_CityWeatherResponse.swift; sourceTree = "<group>"; };
 		6047F26825B47A4E00C2D5F6 /* Weather_CityWeatherResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather_CityWeatherResponse.swift; sourceTree = "<group>"; };
@@ -433,7 +433,7 @@
 				60B6431025B3037100DE43EC /* MeasurementUnits.swift */,
 				60B6431325B303DB00DE43EC /* CityTemperature.swift */,
 				6047F23C25B4477800C2D5F6 /* SavedCitiesOptions.swift */,
-				6047F25E25B477F400C2D5F6 /* CityWeatherRepository.swift */,
+				6047F25E25B477F400C2D5F6 /* CityWeatherRepositoryImpl.swift */,
 			);
 			path = ModelsCommon;
 			sourceTree = "<group>";
@@ -616,7 +616,7 @@
 				60B6431C25B31C9F00DE43EC /* GeoNamesNetworkService.swift in Sources */,
 				60B6432225B31F3600DE43EC /* SearchRepositoryImpl.swift in Sources */,
 				6047F25125B4500A00C2D5F6 /* CityWeather+CoreDataClass.swift in Sources */,
-				6047F25F25B477F400C2D5F6 /* CityWeatherRepository.swift in Sources */,
+				6047F25F25B477F400C2D5F6 /* CityWeatherRepositoryImpl.swift in Sources */,
 				60D87F0025AF62EF0033CB7A /* UITableViewCell+Extensions.swift in Sources */,
 				6047F26F25B47AD400C2D5F6 /* Wind_CityWeatherResponse.swift in Sources */,
 				60D87F0325AF63400033CB7A /* UIViewController+Extensions.swift in Sources */,

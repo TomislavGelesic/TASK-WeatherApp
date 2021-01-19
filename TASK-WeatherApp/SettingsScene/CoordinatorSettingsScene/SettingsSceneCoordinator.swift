@@ -25,19 +25,13 @@ extension SettingsSceneCoordinator {
     
     func start() {
         
-        let subNavigationController = UINavigationController(rootViewController: SettingsSceneViewController(coordinator: self,
-                                                                                                             viewModel: SettingsSceneViewModel()
-        ))
+        let viewController = SettingsSceneViewController(coordinator: self, viewModel: SettingsSceneViewModel())
         
-        subNavigationController.modalPresentationStyle = .fullScreen
-        
-        navigationController.present(subNavigationController, animated: true)
-        
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     func returnToHomeScene() {
         
-        navigationController.dismiss(animated: true, completion: nil)
         parentCoordinator.goToHomeScene()
     }
 }

@@ -12,7 +12,6 @@ class SearchRepositoryImpl: NetworkRepository {
     
     func getNetworkSubject<DATA_TYPE: Codable>(ofType type: DATA_TYPE.Type, for url: URL) -> AnyPublisher<DATA_TYPE, NetworkError> {
         
-        
-        return GeoNamesNetworkService().fetch(url: url, as: type).eraseToAnyPublisher()
+        return GeoNamesNetworkService<DATA_TYPE>().fetch(url: url, as: type)
     }
 }

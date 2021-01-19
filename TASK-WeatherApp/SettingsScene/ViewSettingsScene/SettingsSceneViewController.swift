@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class SettingsSceneViewController: UIViewController {
+    
+    var disposeBag = Set<AnyCancellable>()
     
     var viewModel: SettingsSceneViewModel
     
@@ -104,7 +107,7 @@ class SettingsSceneViewController: UIViewController {
         setConstraints()
         setSubscribers()
         
-        viewModel.refreshUISubject.send()
+        viewModel.refreshUISubject.send(viewModel.userSettings)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -126,17 +129,11 @@ extension SettingsSceneViewController {
                 
         navigationController?.setNavigationBarHidden(false, animated: false)
         
-        let coloredAppearance = UINavigationBarAppearance()
-        coloredAppearance.configureWithTransparentBackground()
-        coloredAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.clear]
-        
-        navigationController?.navigationBar.standardAppearance = coloredAppearance
-        navigationController?.navigationBar.compactAppearance = coloredAppearance
-        navigationController?.navigationBar.scrollEdgeAppearance = coloredAppearance
-        
         let backButton: UIBarButtonItem = {
-            let buttonImage = UIImage(systemName: "chevron.backward")
-            let button = UIBarButtonItem(image: buttonImage, style: .plain, target: self, action: #selector(backButtonPressed))
+            let button = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"),
+                                         style: .plain,
+                                         target: self,
+                                         action: #selector(backButtonPressed))
             button.tintColor = .black
             return button
         }()
@@ -144,8 +141,10 @@ extension SettingsSceneViewController {
         navigationItem.setLeftBarButton(backButton, animated: true)
         
         let rightButton: UIBarButtonItem = {
-            let buttonImage = UIImage(systemName: "text.justify")
-            let button = UIBarButtonItem(image: buttonImage, style: .plain, target: self, action: #selector(backButtonPressed))
+            let button = UIBarButtonItem(image: UIImage(systemName: "text.justify"),
+                                         style: .plain,
+                                         target: self,
+                                         action: #selector(backButtonPressed))
             button.tintColor = .black
             return button
         }()
@@ -159,11 +158,17 @@ extension SettingsSceneViewController {
         }()
         
         navigationItem.titleView = titleLabel
+        
+        navigationController?.navigationBar.tintColor = .black
+        
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.isTranslucent = true
     }
     
     @objc func backButtonPressed() {
         
-        dismiss(animated: true, completion: nil)
+        coordinator.returnToHomeScene()
     }
     
     func setSubviews() {
@@ -193,6 +198,75 @@ extension SettingsSceneViewController {
         coordinator.returnToHomeScene()
     }
     
+    func setSubscribers() {
+        
+        viewModel.refreshUISubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (settings) in
+                
+                self.locationsCollectionView.reloadData()
+                self.unitsCheckBox.setActiveRadioButton(for: settings.measurmentUnit)
+                
+                if settings.shouldShowHumidity {
+                    self.conditionsCheckBox.setActive(for: .humidity)
+                }
+                
+                if settings.shouldShowPressure {
+                    self.conditionsCheckBox.setActive(for: .pressure)
+                }
+                
+                if settings.shouldShowWindSpeed {
+                    self.conditionsCheckBox.setActive(for: .windSpeed)
+                }
+                
+            }
+            .store(in: &disposeBag)
+    }
+}
+
+extension SettingsSceneViewController: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        return viewModel.savedLocations.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
+        cell.configure(with: viewModel.savedLocations[indexPath.row])
+
+        cell.removeButtonAction = { [unowned self] in
+            
+            self.viewModel.remove(at: indexPath.row)
+        }
+        
+        return cell
+    }
+    
+    
+    
+}
+
+extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellWidth = locationsCollectionView.frame.width
+        let cellHeight = CGFloat(30.0)
+        return CGSize(width: cellWidth, height: cellHeight)
+    }
+    
+}
+
+extension SettingsSceneViewController: UICollectionViewDelegate { }
+
+
+
+//MARK: CONSTRAINTS BELOW
+
+extension SettingsSceneViewController {
+    
     func setConstraints() {
         
         setConstraints_backgroundImageView()
@@ -206,12 +280,14 @@ extension SettingsSceneViewController {
     }
     
     func setConstraints_backgroundImageView() {
+        
         backgroundImageView.snp.makeConstraints { (make) in
             make.edges.equalTo(view)
         }
     }
     
     func setConstraints_locationsLabelDescription() {
+        
         locationsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 5, bottom: 0, right: 5))
             make.centerX.equalTo(view)
@@ -273,69 +349,4 @@ extension SettingsSceneViewController {
             make.bottom.trailing.equalTo(view).offset(-10)
         }
     }
-    
-    func setSubscribers() {
-        
-        viewModel.refreshUISubject
-            .subscribe(on: DispatchQueue.global(qos: .background))
-            .receive(on: RunLoop.main)
-            .sink { [unowned self] (_) in
-                
-                self.locationsCollectionView.reloadData()
-                self.unitsCheckBox.setActiveRadioButton(for: viewModel.userSettings.measurmentUnit)
-                
-                if viewModel.userSettings.shouldShowHumidity {
-                    self.conditionsCheckBox.setActive(for: .humidity)
-                }
-                
-                if viewModel.userSettings.shouldShowPressure {
-                    self.conditionsCheckBox.setActive(for: .pressure)
-                }
-                
-                if viewModel.userSettings.shouldShowWindSpeed {
-                    self.conditionsCheckBox.setActive(for: .windSpeed)
-                }
-                
-            }
-    }
 }
-
-extension SettingsSceneViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return viewModel.savedLocations.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
-        cell.configure(with: viewModel.savedLocations[indexPath.row])
-
-        cell.removeButtonAction = { [unowned self] in
-            
-            self.viewModel.remove(at: indexPath.row)
-        }
-        
-        return cell
-    }
-    
-    
-    
-}
-
-extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let cellWidth = locationsCollectionView.frame.width
-        let cellHeight = CGFloat(30.0)
-        return CGSize(width: cellWidth, height: cellHeight)
-    }
-    
-}
-
-extension SettingsSceneViewController: UICollectionViewDelegate {
-    
-    
-}
-

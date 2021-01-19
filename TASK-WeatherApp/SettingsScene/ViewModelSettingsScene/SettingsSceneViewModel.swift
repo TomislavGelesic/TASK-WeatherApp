@@ -17,7 +17,7 @@ class SettingsSceneViewModel {
     
     var userSettings = UserDefaultsService.fetchUpdated()
     
-    var refreshUISubject = PassthroughSubject<Void, Never>()
+    var refreshUISubject = PassthroughSubject<UserDefaultsService, Never>()
     
     init() {
         
@@ -34,24 +34,18 @@ extension SettingsSceneViewModel {
         let id = savedLocations[position].id
         savedLocations.remove(at: position)
         coreDataService.delete(id)
-        refreshUISubject.send()
+        refreshUISubject.send(userSettings)
     }
     
     func saveUserSettings() {
         
-        let userDefaults = UserDefaults.standard
+        UserDefaultsService.updateUserSettings(measurmentUnit: userSettings.measurmentUnit,
+                                               lastCityId: nil,
+                                               shouldShowWindSpeed: userSettings.shouldShowWindSpeed,
+                                               shouldShowPressure: userSettings.shouldShowPressure,
+                                               shouldShowHumidity: userSettings.shouldShowHumidity)
         
-        switch userSettings.measurmentUnit {
-        case .imperial:
-            userDefaults.setValue(true, forKey: "imperial")
-            break
-        case .metric:
-            userDefaults.setValue(true, forKey: "metric")
-            break
-        }
-        userDefaults.setValue(userSettings.shouldShowPressure, forKey: "pressure")
-        userDefaults.setValue(userSettings.shouldShowHumidity, forKey: "humidity")
-        userDefaults.setValue(userSettings.shouldShowWindSpeed, forKey: "windSpeed")
+        userSettings = UserDefaultsService.fetchUpdated()
         
     }
 }

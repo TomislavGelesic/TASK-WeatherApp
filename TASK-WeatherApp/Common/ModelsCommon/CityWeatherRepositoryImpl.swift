@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class CityWeatherRepository: NetworkRepository {
+class CityWeatherRepositoryImpl: NetworkRepository {
     
     func getNetworkSubject<DATA_TYPE>(ofType type: DATA_TYPE.Type, for url: URL) -> AnyPublisher<DATA_TYPE, NetworkError> where DATA_TYPE : Decodable, DATA_TYPE : Encodable {
         

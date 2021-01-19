@@ -153,12 +153,16 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setSubscribers()
+        
+        
+        viewModel.fetchWeatherSubject.send(true)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel.fetchWeatherSubject.send()
+        viewModel.fetchWeatherSubject.send(true)
     }
     
 }
@@ -245,6 +249,7 @@ extension HomeSceneViewController {
                 self.updateWeatherDescription(with: weatherInfo.weatherDescription)
                 self.updateTemperature(with: weatherInfo)
                 self.updateCityName(with: weatherInfo.cityName)
+                self.updateBackgroundImage(for: Int(weatherInfo.weatherType) ?? 800)
                 
             }
             .store(in: &disposeBag)
@@ -254,26 +259,74 @@ extension HomeSceneViewController {
         
         switch viewModel.userSettings.measurmentUnit {
         case .imperial:
-            self.currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
-            self.minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
-            self.maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
             break
         case .metric:
-            self.currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
-            self.minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
-            self.maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
             break
         }
+        
+        currentTemperatureLabel.layoutIfNeeded()
+        minTemperatureLabel.layoutIfNeeded()
+        maxTemperatureLabel.layoutIfNeeded()
+
     }
     
     func updateCityName(with name: String) {
         
         cityNameLabel.text = name.uppercased()
+        cityNameLabel.layoutIfNeeded()
     }
     
     func updateWeatherDescription(with description: String) {
         
         weatherDescriptionLabel.text = description.uppercased()
+        weatherDescriptionLabel.layoutIfNeeded()
+    }
+    
+    func updateBackgroundImage(for weatherType: Int) {
+        
+        switch weatherType {
+        
+        // Thunderstorm
+        case 200..<300:
+            backgroundImageView.image = UIImage(named: "body_image-thunderstorm")
+            break
+            
+        // Drizzle & Rain
+        case 300..<600:
+            backgroundImageView.image = UIImage(named: "body_image-rain")
+            break
+            
+        // Snow
+        case 600..<700:
+            backgroundImageView.image = UIImage(named: "body_image-snow")
+            break
+            
+        // Atmosphere
+        case 700..<800:
+            if weatherType == 741 {
+                backgroundImageView.image = UIImage(named: "body_image-fog")
+            }
+            if weatherType == 781 {
+                backgroundImageView.image = UIImage(named: "body_image-tornado")
+            }
+            break
+        // Clouds
+        case 801..<810:
+            backgroundImageView.image = UIImage(named: "body_image-cloudy")
+            break
+            
+        // Clear // => 800
+        default:
+            backgroundImageView.image = UIImage(named: "body_image-clear-day")
+            break
+
+        }
     }
 }
 

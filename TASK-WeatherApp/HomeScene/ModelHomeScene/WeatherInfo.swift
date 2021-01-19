@@ -18,6 +18,7 @@ class WeatherInfo {
     var min_Temperature: String = "X"
     var current_Temperature: String = "X"
     var max_Temperature: String = "X"
+    var weatherType: String = "800"
     
     internal init(id: String = "-1",
                   cityName: String = "",
@@ -27,7 +28,8 @@ class WeatherInfo {
                   humidity: String = "-1",
                   min_Temperature: String = "X",
                   current_Temperature: String = "X",
-                  max_Temperature: String = "X") {
+                  max_Temperature: String = "X",
+                  weatherType: String = "800") {
         self.id = id
         self.cityName = cityName
         self.weatherDescription = weatherDescription
@@ -37,6 +39,7 @@ class WeatherInfo {
         self.min_Temperature = min_Temperature
         self.current_Temperature = current_Temperature
         self.max_Temperature = max_Temperature
+        self.weatherType = weatherType
     }
     
     init(_ coreDataItem: CityWeather) {

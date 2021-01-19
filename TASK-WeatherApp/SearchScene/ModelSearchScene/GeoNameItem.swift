@@ -15,4 +15,5 @@ struct GeoNameItem: Codable {
     var lng: String = ""
     var countryCode: String = ""
     var geonameId: String = ""
+    
 }

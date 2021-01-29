@@ -45,11 +45,11 @@ extension UnitsCheckBoxTableViewCell {
         
         addSubviews([radioButton, buttonDescriptionLabel])
         
-        setConstranints_button()
-        setConstranints_buttonDescriptionLabel()
+        setConstranintsOnButton()
+        setConstranintsOnButtonDescriptionLabel()
     }
     
-    func setConstranints_button() {
+    func setConstranintsOnButton() {
         
         radioButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
@@ -58,7 +58,7 @@ extension UnitsCheckBoxTableViewCell {
         }
     }
     
-    func setConstranints_buttonDescriptionLabel() {
+    func setConstranintsOnButtonDescriptionLabel() {
         
         buttonDescriptionLabel.snp.makeConstraints { (make) in
             make.height.equalTo(30)

@@ -8,10 +8,10 @@
 import UIKit
 import Combine
 
-class CityWeatherRepositoryImpl: NetworkRepository {
+class CityWeatherRepositoryImpl: NetworkService {
     
-    func getNetworkSubject<DATA_TYPE>(ofType type: DATA_TYPE.Type, for url: URL) -> AnyPublisher<DATA_TYPE, NetworkError> where DATA_TYPE : Decodable, DATA_TYPE : Encodable {
-        
-        return OpenWeatherMapNetworkService().fetch(url: url, as: type)
-    }
+//    func getNetworkSubject<DATA_TYPE>(ofType type: DATA_TYPE.Type, for url: URL) -> AnyPublisher<DATA_TYPE, NetworkError> where DATA_TYPE : Decodable, DATA_TYPE : Encodable {
+//        
+//        return OpenWeatherMapNetworkService().fetch(url: url, as: type)
+//    }
 }

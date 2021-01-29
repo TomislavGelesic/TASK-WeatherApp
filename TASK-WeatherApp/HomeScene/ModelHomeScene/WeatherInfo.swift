@@ -20,7 +20,7 @@ class WeatherInfo {
     var max_Temperature: String = "X"
     var weatherType: String = "800"
     
-    internal init(id: String = "-1",
+    init(id: String = "-1",
                   cityName: String = "",
                   weatherDescription: String = "",
                   pressure: String = "-1",

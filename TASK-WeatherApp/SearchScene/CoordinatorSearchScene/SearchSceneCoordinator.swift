@@ -38,6 +38,6 @@ class SearchSceneCoordinator: Coordinator {
         
         navigationController.dismiss(animated: true, completion: nil)
         
-        parentCoordinator.goToHomeScene()
+        parentCoordinator.childDidFinish(self, goTo: .homeScene)
     }
 }

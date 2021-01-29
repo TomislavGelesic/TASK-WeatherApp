@@ -142,6 +142,10 @@ class HomeSceneViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    deinit {
+        print("HomeSceneViewController deinit")
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -153,9 +157,6 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setSubscribers()
-        
-        
-        viewModel.fetchWeatherSubject.send(true)
         
     }
     
@@ -202,6 +203,8 @@ extension HomeSceneViewController {
                 
             }
         }
+        conditionsStackView.setNeedsLayout()
+        
         searchTextField.delegate = self
         
         settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
@@ -229,17 +232,17 @@ extension HomeSceneViewController {
                     case .humidity:
                         humidityConditionView.conditionValueLabel.text = weatherInfo.humidity
                         conditionsStackView.addArrangedSubview(humidityConditionView)
-                        setConstraints_humidityConditionView()
+                        setConstraintsOnHumidityConditionView()
                         break
                     case .pressure:
                         pressureConditionView.conditionValueLabel.text = weatherInfo.pressure
                         conditionsStackView.addArrangedSubview(pressureConditionView)
-                        setConstraints_pressureConditionView()
+                        setConstraintsOnPressureConditionView()
                         break
                     case .windSpeed:
                         windConditionView.conditionValueLabel.text = weatherInfo.windSpeed
                         conditionsStackView.addArrangedSubview(windConditionView)
-                        setConstraints_windConditionView()
+                        setConstraintsOnWindConditionView()
                         break
                     }
                 }
@@ -345,31 +348,31 @@ extension HomeSceneViewController {
     
     func setConstraints() {
         
-        setConstraints_backgroundImageView()
-        setConstraints_currentTemperatureLabel()
-        setConstraints_weatherDescriptionLabel()
-        setConstraints_cityNameLabel()
-        setConstraints_minTemperatureLabel()
-        setConstraints_minTemperatureLabelDescription()
-        setConstraints_verticalLine()
-        setConstraints_maxTemperatureLabel()
-        setConstraints_maxTemperatureLabelDescription()
-        setConstraints_conditionsStackView()
-        setConstraints_humidityConditionView()
-        setConstraints_pressureConditionView()
-        setConstraints_windConditionView()
-        setConstraints_settingsButton()
-        setConstraints_searchTextField()
+        setConstraintsOnBackgroundImageView()
+        setConstraintsOnCurrentTemperatureLabel()
+        setConstraintsOnWeatherDescriptionLabel()
+        setConstraintsOnCityNameLabel()
+        setConstraintsOnMinTemperatureLabel()
+        setConstraintsOnMinTemperatureLabelDescription()
+        setConstraintsOnVerticalLine()
+        setConstraintsOnMaxTemperatureLabel()
+        setConstraintsOnMaxTemperatureLabelDescription()
+        setConstraintsOnConditionsStackView()
+        setConstraintsOnHumidityConditionView()
+        setConstraintsOnPressureConditionView()
+        setConstraintsOnWindConditionView()
+        setConstraintsOnSettingsButton()
+        setConstraintsOnSearchTextField()
     }
     
-    func setConstraints_backgroundImageView() {
+    func setConstraintsOnBackgroundImageView() {
         
         backgroundImageView.snp.makeConstraints { (make) in
             make.edges.equalTo(view)
         }
     }
     
-    func setConstraints_currentTemperatureLabel() {
+    func setConstraintsOnCurrentTemperatureLabel() {
         currentTemperatureLabel.snp.makeConstraints { (make) in
             make.top.equalTo(view.snp.top).offset(10)
             make.height.equalTo(100)
@@ -377,7 +380,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_weatherDescriptionLabel() {
+    func setConstraintsOnWeatherDescriptionLabel() {
         weatherDescriptionLabel.snp.makeConstraints { (make) in
             make.top.equalTo(currentTemperatureLabel.snp.bottom).offset(10)
             make.width.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -385,7 +388,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_cityNameLabel() {
+    func setConstraintsOnCityNameLabel() {
         cityNameLabel.snp.makeConstraints { (make) in
             make.top.equalTo(weatherDescriptionLabel.snp.bottom).offset(50)
             make.width.equalTo(view.frame.width / 2)
@@ -393,7 +396,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_minTemperatureLabel() {
+    func setConstraintsOnMinTemperatureLabel() {
         minTemperatureLabel.snp.makeConstraints { (make) in
             make.height.equalTo(50)
             make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
@@ -401,7 +404,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_minTemperatureLabelDescription() {
+    func setConstraintsOnMinTemperatureLabelDescription() {
         minTemperatureLabelDescription.snp.makeConstraints { (make) in
             make.width.equalTo(50)
             make.bottom.equalTo(verticalLine.snp.bottom).offset(-10)
@@ -410,7 +413,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_verticalLine() {
+    func setConstraintsOnVerticalLine() {
         verticalLine.snp.makeConstraints { (make) in
             make.width.equalTo(2)
             make.height.equalTo(90)
@@ -419,7 +422,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_maxTemperatureLabel() {
+    func setConstraintsOnMaxTemperatureLabel() {
         maxTemperatureLabel.snp.makeConstraints { (make) in
             make.height.equalTo(50)
             make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
@@ -427,7 +430,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_maxTemperatureLabelDescription() {
+    func setConstraintsOnMaxTemperatureLabelDescription() {
         maxTemperatureLabelDescription.snp.makeConstraints { (make) in
             make.width.equalTo(50)
             make.bottom.equalTo(verticalLine.snp.bottom).offset(-10)
@@ -436,7 +439,7 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_conditionsStackView() {
+    func setConstraintsOnConditionsStackView() {
         
         conditionsStackView.snp.makeConstraints { (make) in
             make.top.equalTo(verticalLine.snp.bottom).offset(10)
@@ -445,28 +448,28 @@ extension HomeSceneViewController {
         }
     }
     
-    func setConstraints_humidityConditionView() {
+    func setConstraintsOnHumidityConditionView() {
         humidityConditionView.snp.makeConstraints { (make) in
             make.width.equalTo(conditionsStackView.frame.width / 4)
             make.height.equalTo(conditionsStackView.frame.height)
         }
     }
     
-    func setConstraints_pressureConditionView() {
+    func setConstraintsOnPressureConditionView() {
         humidityConditionView.snp.makeConstraints { (make) in
             make.width.equalTo(conditionsStackView.frame.width / 4)
             make.height.equalTo(conditionsStackView.frame.height)
         }
     }
     
-    func setConstraints_windConditionView() {
+    func setConstraintsOnWindConditionView() {
         humidityConditionView.snp.makeConstraints { (make) in
             make.width.equalTo(conditionsStackView.frame.width / 4)
             make.height.equalTo(conditionsStackView.frame.height)
         }
     }
     
-    func setConstraints_settingsButton() {
+    func setConstraintsOnSettingsButton() {
         settingsButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(44)
             make.bottom.equalTo(view.snp.bottom).offset(-2)
@@ -475,7 +478,7 @@ extension HomeSceneViewController {
         
     }
     
-    func setConstraints_searchTextField() {
+    func setConstraintsOnSearchTextField() {
         searchTextField.snp.makeConstraints { (make) in
             make.width.equalTo(view.frame.width - 44 - 30)
             make.height.equalTo(44)

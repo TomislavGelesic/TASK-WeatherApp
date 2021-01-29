@@ -7,7 +7,6 @@
 
 import Foundation
 
-#warning("It smells like hell - it will be a nightmare to test this.. right?!")
 class UserDefaultsService {
     
     var measurmentUnit: MeasurementUnits = .metric

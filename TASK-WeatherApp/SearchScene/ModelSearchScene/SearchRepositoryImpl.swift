@@ -8,10 +8,10 @@
 import Foundation
 import Combine
 
-class SearchRepositoryImpl: NetworkRepository {
+class SearchRepositoryImpl: NetworkService {
     
-    func getNetworkSubject<DATA_TYPE: Codable>(ofType type: DATA_TYPE.Type, for url: URL) -> AnyPublisher<DATA_TYPE, NetworkError> {
-        
-        return GeoNamesNetworkService<DATA_TYPE>().fetch(url: url, as: type)
-    }
+//    func getNetworkSubject<DATA_TYPE: Codable>(ofType type: DATA_TYPE.Type, for url: URL) -> AnyPublisher<DATA_TYPE, NetworkError> {
+//        
+//        return NetworkService<DATA_TYPE>().fetch(url: url, as: type)
+//    }
 }

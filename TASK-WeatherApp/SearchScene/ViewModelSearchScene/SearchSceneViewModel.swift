@@ -14,7 +14,7 @@ class SearchSceneViewModel {
     
     var coreDataService = CoreDataService.sharedInstance
     
-    var searchRepository: NetworkRepository
+    var searchRepository: NetworkService
     
     var viewModelData = [GeoNameItem]()
     
@@ -24,9 +24,13 @@ class SearchSceneViewModel {
     
     let fetchCitySubject = PassthroughSubject<String, Never>()
     
-    init(searchRepository: NetworkRepository) {
+    init(searchRepository: NetworkService) {
         
         self.searchRepository = searchRepository
+    }
+    
+    deinit {
+        print("SearchSceneViewModel deinit")
     }
 }
 
@@ -41,8 +45,8 @@ extension SearchSceneViewModel {
             .sink { (completion) in
                 
             } receiveValue: { [unowned self] (searchText) in
-                #warning("delete print")
-                print(searchText)
+//                #warning("delete print")
+//                print(searchText)
                 self.fetchCitySubject.send(searchText)
             }
     }
@@ -59,12 +63,12 @@ extension SearchSceneViewModel {
                 path.append(Constants.GeoNamesORG.MAX_ROWS)
                 path.append("10")
                 path.append(Constants.GeoNamesORG.KEY)
-                #warning("delete print")
-                print(path)
+//                #warning("delete print")
+//                print(path)
                 
                 guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
                 
-                return self.searchRepository.getNetworkSubject(ofType: GeoNameResponse.self, for: url).eraseToAnyPublisher()
+                return self.searchRepository.getNetworkSubject(for: url).eraseToAnyPublisher()
                 
             }
             .subscribe(on: DispatchQueue.global(qos: .background))

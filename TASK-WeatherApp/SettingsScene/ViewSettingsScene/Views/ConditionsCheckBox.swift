@@ -97,31 +97,31 @@ extension ConditionsCheckBox {
     
     func setConstraints() {
         
-        setConstraints_stackView()
-        setConstraint_humidityCheckBoxWithImage()
-        setConstraint_windCheckBoxWithImage()
-        setConstraint_pressureCheckBoxWithImage()
+        setConstraintsOnStackView()
+        setConstraintOnHumidityCheckBoxWithImage()
+        setConstraintOnWindCheckBoxWithImage()
+        setConstraintOnOPressureCheckBoxWithImage()
     }
     
-    func setConstraints_stackView() {
+    func setConstraintsOnStackView() {
         stackView.snp.makeConstraints { (make) in
             make.edges.equalTo(self).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
         }
     }
     
-    func setConstraint_humidityCheckBoxWithImage() {
+    func setConstraintOnHumidityCheckBoxWithImage() {
         humidityCheckBoxWithImage.snp.makeConstraints { (make) in
             make.height.equalTo(self)
         }
     }
     
-    func setConstraint_windCheckBoxWithImage() {
+    func setConstraintOnWindCheckBoxWithImage() {
         humidityCheckBoxWithImage.snp.makeConstraints { (make) in
             make.height.equalTo(self)
         }
     }
     
-    func setConstraint_pressureCheckBoxWithImage() {
+    func setConstraintOnOPressureCheckBoxWithImage() {
         humidityCheckBoxWithImage.snp.makeConstraints { (make) in
             make.height.equalTo(self)
         }

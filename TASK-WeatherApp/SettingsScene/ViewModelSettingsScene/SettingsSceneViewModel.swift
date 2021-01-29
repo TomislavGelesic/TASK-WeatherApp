@@ -25,6 +25,10 @@ class SettingsSceneViewModel {
             savedLocations = cities
         }
     }
+    
+    deinit {
+        print("SettingsSceneViewModel deinit")
+    }
 }
 
 extension SettingsSceneViewModel {

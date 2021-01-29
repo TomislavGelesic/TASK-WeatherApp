@@ -95,6 +95,10 @@ class SettingsSceneViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    deinit {
+        print("SettingsSceneViewController deinit")
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -269,24 +273,24 @@ extension SettingsSceneViewController {
     
     func setConstraints() {
         
-        setConstraints_backgroundImageView()
-        setConstraints_locationsLabelDescription()
-        setConstraints_locationsCollectionView()
-        setConstraints_unitsLabelDescription()
-        setConstraints_unitsCheckBox()
-        setConstraints_conditionsLabelDescription()
-        setConstraints_conditionsCheckBox()
-        setConstraints_applyButton()
+        setConstraintsOnBackgroundImageView()
+        setConstraintsOnLocationsLabelDescription()
+        setConstraintsOnLocationsCollectionView()
+        setConstraintsOnUnitsLabelDescription()
+        setConstraintsOnUnitsCheckBox()
+        setConstraintsOnConditionsLabelDescription()
+        setConstraintsOnConditionsCheckBox()
+        setConstraintsOnApplyButton()
     }
     
-    func setConstraints_backgroundImageView() {
+    func setConstraintsOnBackgroundImageView() {
         
         backgroundImageView.snp.makeConstraints { (make) in
             make.edges.equalTo(view)
         }
     }
     
-    func setConstraints_locationsLabelDescription() {
+    func setConstraintsOnLocationsLabelDescription() {
         
         locationsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 5, bottom: 0, right: 5))
@@ -296,7 +300,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_locationsCollectionView() {
+    func setConstraintsOnLocationsCollectionView() {
         
         locationsCollectionView.snp.makeConstraints { (make) in
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -305,7 +309,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_unitsLabelDescription() {
+    func setConstraintsOnUnitsLabelDescription() {
         
         unitsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(locationsCollectionView.snp.bottom).offset(10)
@@ -314,7 +318,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_unitsCheckBox() {
+    func setConstraintsOnUnitsCheckBox() {
         
         unitsCheckBox.snp.makeConstraints { (make) in
             make.top.equalTo(unitsLabelDescription.snp.bottom).offset(5)
@@ -323,7 +327,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_conditionsLabelDescription() {
+    func setConstraintsOnConditionsLabelDescription() {
         
         conditionsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(unitsCheckBox.snp.bottom).offset(5)
@@ -332,7 +336,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_conditionsCheckBox() {
+    func setConstraintsOnConditionsCheckBox() {
         
         conditionsCheckBox.snp.makeConstraints { (make) in
             make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(5)
@@ -340,7 +344,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_applyButton() {
+    func setConstraintsOnApplyButton() {
         
         applyButton.snp.makeConstraints { (make) in
             make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)

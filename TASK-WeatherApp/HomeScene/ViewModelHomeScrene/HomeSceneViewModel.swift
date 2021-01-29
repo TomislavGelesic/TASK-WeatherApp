@@ -10,7 +10,7 @@ import Combine
 
 class HomeSceneViewModel {
     
-    var cityWeatherRepository: NetworkRepository
+    var cityWeatherRepository: NetworkService
     
     var userSettings = UserDefaultsService.fetchUpdated()
     
@@ -18,8 +18,12 @@ class HomeSceneViewModel {
     
     var fetchWeatherSubject = CurrentValueSubject<Bool, Never>(true)
     
-    init(repository: NetworkRepository) {
+    init(repository: NetworkService) {
         cityWeatherRepository = repository
+    }
+    
+    deinit {
+        print("HomeSceneViewModel deinit")
     }
 }
 
@@ -48,7 +52,7 @@ extension HomeSceneViewModel {
                 }
                 guard let urlPath = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR WEATHER") }
                 
-                return self.cityWeatherRepository.getNetworkSubject(ofType: CityWeatherResponse.self, for: urlPath)
+                return self.cityWeatherRepository.getNetworkSubject(for: urlPath)
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)

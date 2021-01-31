@@ -11,27 +11,26 @@ import SnapKit
 
 class SettingsSceneViewModel {
     
-    var savedLocations = [CityWeather]()
-    
-    var coreDataService = CoreDataService.sharedInstance
-    
-    var userSettings = UserDefaultsService.fetchUpdated()
+    var settingsRepository: SettingsRepositoryImpl
     
     var refreshUISubject = PassthroughSubject<UserDefaultsService, Never>()
     
-    init() {
+    init(repository: SettingsRepositoryImpl) {
         
-        if let cities = coreDataService.get(.all) {
-            savedLocations = cities
-        }
+        self.settingsRepository = repository
+        
+        setSubscribers()
     }
     
     deinit {
+        
         print("SettingsSceneViewModel deinit")
     }
 }
 
 extension SettingsSceneViewModel {
+    
+    func setSubscribers() {    }
     
     func remove(at position: Int) {
         

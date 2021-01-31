@@ -163,7 +163,7 @@ class HomeSceneViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel.fetchWeatherSubject.send(true)
+        viewModel.refreshUISubject.send()
     }
     
 }
@@ -189,7 +189,7 @@ extension HomeSceneViewController {
             searchTextField
         ])
         
-        for item in viewModel.getConditions() {
+        for item in viewModel.getConditionsToShow() {
             switch item {
             case .humidity:
                 conditionsStackView.addArrangedSubview(humidityConditionView)
@@ -217,30 +217,29 @@ extension HomeSceneViewController {
     
     func setSubscribers() {
         
-        viewModel.initializeFetchWeatherSubject(subject: viewModel.fetchWeatherSubject.eraseToAnyPublisher())
-            .store(in: &disposeBag)
-        
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (weatherInfo) in
+            .sink { [unowned self] () in
+                
+                self.hideSpinner()
                 
                 self.conditionsStackView.safelyRemoveArrangedSubviews()
                 
-                for item in viewModel.getConditions() {
+                for item in viewModel.getConditionsToShow() {
                     switch item {
                     case .humidity:
-                        humidityConditionView.conditionValueLabel.text = weatherInfo.humidity
+                        humidityConditionView.conditionValueLabel.text = viewModel.weatherRepository.data.humidity
                         conditionsStackView.addArrangedSubview(humidityConditionView)
                         setConstraintsOnHumidityConditionView()
                         break
                     case .pressure:
-                        pressureConditionView.conditionValueLabel.text = weatherInfo.pressure
+                        pressureConditionView.conditionValueLabel.text = viewModel.weatherRepository.data.pressure
                         conditionsStackView.addArrangedSubview(pressureConditionView)
                         setConstraintsOnPressureConditionView()
                         break
                     case .windSpeed:
-                        windConditionView.conditionValueLabel.text = weatherInfo.windSpeed
+                        windConditionView.conditionValueLabel.text = viewModel.weatherRepository.data.windSpeed
                         conditionsStackView.addArrangedSubview(windConditionView)
                         setConstraintsOnWindConditionView()
                         break
@@ -249,18 +248,16 @@ extension HomeSceneViewController {
                 
                 conditionsStackView.layoutIfNeeded()
                 
-                self.updateWeatherDescription(with: weatherInfo.weatherDescription)
-                self.updateTemperature(with: weatherInfo)
-                self.updateCityName(with: weatherInfo.cityName)
-                self.updateBackgroundImage(for: Int(weatherInfo.weatherType) ?? 800)
+                self.updateWeather(with: viewModel.weatherRepository.data)
+                
                 
             }
             .store(in: &disposeBag)
     }
     
-    func updateTemperature(with info: WeatherInfo) {
+    func updateWeather(with info: WeatherInfo) {
         
-        switch viewModel.userSettings.measurmentUnit {
+        switch viewModel.weatherRepository.userSettings.measurmentUnit {
         case .imperial:
             currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
             minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
@@ -272,23 +269,14 @@ extension HomeSceneViewController {
             maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
             break
         }
-        
-        currentTemperatureLabel.layoutIfNeeded()
-        minTemperatureLabel.layoutIfNeeded()
-        maxTemperatureLabel.layoutIfNeeded()
 
-    }
-    
-    func updateCityName(with name: String) {
         
-        cityNameLabel.text = name.uppercased()
-        cityNameLabel.layoutIfNeeded()
-    }
-    
-    func updateWeatherDescription(with description: String) {
+        cityNameLabel.text = viewModel.weatherRepository.data.cityName.uppercased()
         
-        weatherDescriptionLabel.text = description.uppercased()
-        weatherDescriptionLabel.layoutIfNeeded()
+        weatherDescriptionLabel.text = viewModel.weatherRepository.data.weatherDescription.uppercased()
+        
+        
+        updateBackgroundImage(for: Int(viewModel.weatherRepository.data.weatherType) ?? 800)
     }
     
     func updateBackgroundImage(for weatherType: Int) {

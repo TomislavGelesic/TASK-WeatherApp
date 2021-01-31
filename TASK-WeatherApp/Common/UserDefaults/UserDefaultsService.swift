@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 class UserDefaultsService {
     
@@ -87,5 +88,9 @@ extension UserDefaultsService {
         if let value = shouldShowWindSpeed {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
         }
+    }
+    
+    static func getSubject() -> AnyPublisher<UserDefaultsService, Never> {
+        return CurrentValueSubject<UserDefaultsService, Never>(UserDefaultsService.fetchUpdated()).eraseToAnyPublisher()
     }
 }

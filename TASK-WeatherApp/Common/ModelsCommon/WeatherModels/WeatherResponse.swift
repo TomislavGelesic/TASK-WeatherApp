@@ -7,21 +7,20 @@
 
 import Foundation
 
+struct WeatherResponse: Codable {
 
-struct CityWeatherResponse: Codable {
-    
-    
+
     var id: Double
     var name: String
     var coord: Coordinations_CityWeatherResponse
     var weather: Weather_CityWeatherResponse
     var main: Main_CityWeatherResponse
     var wind: Wind_CityWeatherResponse
-    
+
     init(from decoder: Decoder) throws {
-        
+
         let keyedDecoder = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         try self.id = keyedDecoder.decode(Double.self, forKey: .id)
         try self.name = keyedDecoder.decode(String.self, forKey: .name)
         try self.coord = keyedDecoder.decode(Coordinations_CityWeatherResponse.self, forKey: .coord)
@@ -31,10 +30,10 @@ struct CityWeatherResponse: Codable {
     }
 }
 
-extension CityWeatherResponse {
-    
+extension WeatherResponse {
+
     enum CodingKeys: CodingKey {
-        
+
         case id
         case name
         case coord

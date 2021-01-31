@@ -111,7 +111,7 @@ class SettingsSceneViewController: UIViewController {
         setConstraints()
         setSubscribers()
         
-        viewModel.refreshUISubject.send(viewModel.userSettings)
+        viewModel.refreshUISubject.send()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -210,6 +210,7 @@ extension SettingsSceneViewController {
             .sink { [unowned self] (settings) in
                 
                 self.locationsCollectionView.reloadData()
+                
                 self.unitsCheckBox.setActiveRadioButton(for: settings.measurmentUnit)
                 
                 if settings.shouldShowHumidity {

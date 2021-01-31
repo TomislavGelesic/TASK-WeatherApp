@@ -8,5 +8,6 @@
 import Foundation
 
 protocol ConditionsRadioButtonDelegate: class {
+    
     func radioButtonTapped(type: ConditionsRadioButtonType)
 }

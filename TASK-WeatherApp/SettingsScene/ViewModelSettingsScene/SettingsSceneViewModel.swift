@@ -11,33 +11,53 @@ import SnapKit
 
 class SettingsSceneViewModel {
     
-    var settingsRepository: SettingsRepositoryImpl
+    var savedLocations = [WeatherInfo]()
     
-    var refreshUISubject = PassthroughSubject<UserDefaultsService, Never>()
+    var coreDataService = CoreDataService.sharedInstance
     
-    init(repository: SettingsRepositoryImpl) {
+    var userSettings = UserDefaultsService.fetchUpdated()
+    
+    var refreshUISubject = PassthroughSubject<Void, Never>()
+    
+    var getData = CurrentValueSubject<Bool, Never>(true)
+    
+    init() {
         
-        self.settingsRepository = repository
-        
-        setSubscribers()
+        if let cities = coreDataService.get(.all) {
+            savedLocations = cities
+        }
     }
     
     deinit {
-        
         print("SettingsSceneViewModel deinit")
     }
 }
 
 extension SettingsSceneViewModel {
     
-    func setSubscribers() {    }
+    func initializeGetData(for subject: CurrentValueSubject<Bool, Never>)-> AnyCancellable {
+        
+        return subject.map({ [unowned self] (_) -> [WeatherInfo] in
+            if let valid = self.coreDataService.get(.all) {
+                return valid
+            }
+            return [WeatherInfo]()
+        })
+        .subscribe(on: RunLoop.main)
+        .receive(on: RunLoop.main)
+        .sink(receiveValue: { [unowned self] savedCities in
+            self.savedLocations = savedCities
+            self.refreshUISubject.send()
+        })
+    }
     
     func remove(at position: Int) {
         
-        let id = savedLocations[position].id
-        savedLocations.remove(at: position)
-        coreDataService.delete(id)
-        refreshUISubject.send(userSettings)
+        if let id = Int64(savedLocations[position].id) {
+            savedLocations.remove(at: position)
+            coreDataService.delete(id)
+            refreshUISubject.send()
+        }
     }
     
     func saveUserSettings() {

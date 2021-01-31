@@ -51,7 +51,6 @@
 		60BE221E25C47E630023C97E /* SceneOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BE221D25C47E630023C97E /* SceneOption.swift */; };
 		60BE223125C493410023C97E /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BE223025C493410023C97E /* Repository.swift */; };
 		60BE223425C4938A0023C97E /* RepositoryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BE223325C4938A0023C97E /* RepositoryError.swift */; };
-		60BE225525C71C8C0023C97E /* SettingsRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BE225425C71C8C0023C97E /* SettingsRepositoryImpl.swift */; };
 		60D87ED825AF60360033CB7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87ED725AF60360033CB7A /* AppDelegate.swift */; };
 		60D87EE225AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EE025AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld */; };
 		60D87EE425AF60370033CB7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60D87EE325AF60370033CB7A /* Assets.xcassets */; };
@@ -115,7 +114,6 @@
 		60BE221D25C47E630023C97E /* SceneOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneOption.swift; sourceTree = "<group>"; };
 		60BE223025C493410023C97E /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		60BE223325C4938A0023C97E /* RepositoryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryError.swift; sourceTree = "<group>"; };
-		60BE225425C71C8C0023C97E /* SettingsRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepositoryImpl.swift; sourceTree = "<group>"; };
 		60D87ED425AF60360033CB7A /* TASK-WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TASK-WeatherApp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60D87ED725AF60360033CB7A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60D87EE125AF60360033CB7A /* TASK_WeatherApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TASK_WeatherApp.xcdatamodel; sourceTree = "<group>"; };
@@ -217,7 +215,6 @@
 				6060B45625B043ED00860602 /* UnitsRadioButton.swift */,
 				6060B46C25B05ABA00860602 /* ConditionsRadioButton.swift */,
 				6060B46F25B05B2B00860602 /* ConditionsRadioButtonType.swift */,
-				60BE225425C71C8C0023C97E /* SettingsRepositoryImpl.swift */,
 			);
 			path = ModelSettingsScene;
 			sourceTree = "<group>";
@@ -630,7 +627,6 @@
 				60D87F0E25AF63F60033CB7A /* SpinnerViewManager.swift in Sources */,
 				60B6432825B32E1400DE43EC /* GeoNameItem.swift in Sources */,
 				6047F28025B5B11200C2D5F6 /* SettingsSceneCoordinator.swift in Sources */,
-				60BE225525C71C8C0023C97E /* SettingsRepositoryImpl.swift in Sources */,
 				6047F23A25B4465D00C2D5F6 /* CoreDataService.swift in Sources */,
 				60D87F1725AF656B0033CB7A /* Coordinator.swift in Sources */,
 				60B6432525B32DE100DE43EC /* GeoNameResponse.swift in Sources */,

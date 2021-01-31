@@ -158,6 +158,7 @@ class HomeSceneViewController: UIViewController {
         setConstraints()
         setSubscribers()
         
+        viewModel.weatherRepository.getData.send(true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -251,6 +252,14 @@ extension HomeSceneViewController {
                 self.updateWeather(with: viewModel.weatherRepository.data)
                 
                 
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.getData
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (_) in
+                self.viewModel.refreshUISubject.send()
             }
             .store(in: &disposeBag)
     }

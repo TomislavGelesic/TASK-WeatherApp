@@ -207,21 +207,21 @@ extension SettingsSceneViewController {
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (settings) in
+            .sink { [unowned self] (_) in
                 
                 self.locationsCollectionView.reloadData()
                 
-                self.unitsCheckBox.setActiveRadioButton(for: settings.measurmentUnit)
+                self.unitsCheckBox.setActiveRadioButton(for: UserDefaultsService.fetchUpdated().measurmentUnit)
                 
-                if settings.shouldShowHumidity {
+                if UserDefaultsService.fetchUpdated().shouldShowHumidity {
                     self.conditionsCheckBox.setActive(for: .humidity)
                 }
                 
-                if settings.shouldShowPressure {
+                if UserDefaultsService.fetchUpdated().shouldShowPressure {
                     self.conditionsCheckBox.setActive(for: .pressure)
                 }
                 
-                if settings.shouldShowWindSpeed {
+                if UserDefaultsService.fetchUpdated().shouldShowWindSpeed {
                     self.conditionsCheckBox.setActive(for: .windSpeed)
                 }
                 

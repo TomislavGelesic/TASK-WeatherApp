@@ -17,6 +17,8 @@ class HomeSceneViewModel {
     var alertSubject = PassthroughSubject<String, Never>()
     
     var refreshUISubject = PassthroughSubject<Void, Never>()
+    
+    var getData = PassthroughSubject<Void, Never>()
 
     var disposeBag = Set<AnyCancellable>()
     

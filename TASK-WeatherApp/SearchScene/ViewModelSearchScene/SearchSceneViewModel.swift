@@ -68,7 +68,7 @@ extension SearchSceneViewModel {
                 
                 guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
                 
-                return self.searchRepository.getNetworkSubject(for: url).eraseToAnyPublisher()
+                return self.searchRepository.fetchData(for: url).eraseToAnyPublisher()
                 
             }
             .subscribe(on: DispatchQueue.global(qos: .background))

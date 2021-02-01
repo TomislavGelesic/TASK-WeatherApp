@@ -11,4 +11,5 @@ struct Weather_CityWeatherResponse: Codable {
     
     var id: Int
     var description: String
+    var icon: String
 }

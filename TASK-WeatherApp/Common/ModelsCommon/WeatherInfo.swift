@@ -19,17 +19,20 @@ class WeatherInfo {
     var current_Temperature: String = "X"
     var max_Temperature: String = "X"
     var weatherType: String = "800"
+    var daytime: Bool = false
     
     init(id: String = "-1",
-                  cityName: String = "",
-                  weatherDescription: String = "",
-                  pressure: String = "-1",
-                  windSpeed: String = "-1",
-                  humidity: String = "-1",
-                  min_Temperature: String = "X",
-                  current_Temperature: String = "X",
-                  max_Temperature: String = "X",
-                  weatherType: String = "800") {
+         cityName: String = "",
+         weatherDescription: String = "",
+         pressure: String = "-1",
+         windSpeed: String = "-1",
+         humidity: String = "-1",
+         min_Temperature: String = "X",
+         current_Temperature: String = "X",
+         max_Temperature: String = "X",
+         weatherType: String = "800",
+         daytime: Bool = false) {
+        
         self.id = id
         self.cityName = cityName
         self.weatherDescription = weatherDescription
@@ -40,6 +43,7 @@ class WeatherInfo {
         self.current_Temperature = current_Temperature
         self.max_Temperature = max_Temperature
         self.weatherType = weatherType
+        self.daytime = daytime
     }
     
     init(_ coreDataItem: CityWeather) {

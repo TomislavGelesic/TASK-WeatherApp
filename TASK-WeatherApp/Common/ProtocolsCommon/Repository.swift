@@ -10,11 +10,6 @@ import Combine
 
 protocol Repository {
     
-    associatedtype T
+    func getCurrentWeather() -> AnyPublisher<WeatherResponse, NetworkError> 
     
-    var repositoryChanged: PassthroughSubject<T, RepositoryError> { get set }
-    
-    var getData: CurrentValueSubject<Bool, Never> { get set }
-    
-    var data: T { get set }
 }

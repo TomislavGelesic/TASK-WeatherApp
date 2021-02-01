@@ -78,7 +78,7 @@
 		6047F23C25B4477800C2D5F6 /* SavedCitiesOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedCitiesOptions.swift; sourceTree = "<group>"; };
 		6047F24025B447CC00C2D5F6 /* WeatherInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherInfo.swift; sourceTree = "<group>"; };
 		6047F25025B4500A00C2D5F6 /* CityWeather+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CityWeather+CoreDataClass.swift"; path = "/Users/tomislavgelesic/Desktop/TASK-WeatherApp/TASK-WeatherApp/Common/CoreData/CityWeather+CoreDataClass.swift"; sourceTree = "<absolute>"; };
-		6047F25E25B477F400C2D5F6 /* WeatherRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRepositoryImpl.swift; sourceTree = "<group>"; };
+		6047F25E25B477F400C2D5F6 /* WeatherRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WeatherRepositoryImpl.swift; path = "TASK-WeatherApp/Common/WeatherRepositoryImpl.swift"; sourceTree = SOURCE_ROOT; };
 		6047F26225B4794F00C2D5F6 /* WeatherResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherResponse.swift; sourceTree = "<group>"; };
 		6047F26525B47A1600C2D5F6 /* Coordinations_CityWeatherResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinations_CityWeatherResponse.swift; sourceTree = "<group>"; };
 		6047F26825B47A4E00C2D5F6 /* Weather_CityWeatherResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather_CityWeatherResponse.swift; sourceTree = "<group>"; };
@@ -357,6 +357,7 @@
 		60D87EF425AF623F0033CB7A /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				6047F25E25B477F400C2D5F6 /* WeatherRepositoryImpl.swift */,
 				6047F28525B5C37B00C2D5F6 /* UserDefaults */,
 				6047F23825B4464B00C2D5F6 /* CoreData */,
 				60B6431A25B31C8200DE43EC /* Networking */,
@@ -447,7 +448,6 @@
 				60D87F1D25AF65E00033CB7A /* NetworkError.swift */,
 				60B6431025B3037100DE43EC /* MeasurementUnits.swift */,
 				6047F23C25B4477800C2D5F6 /* SavedCitiesOptions.swift */,
-				6047F25E25B477F400C2D5F6 /* WeatherRepositoryImpl.swift */,
 				60BE221D25C47E630023C97E /* SceneOption.swift */,
 				60BE223325C4938A0023C97E /* RepositoryError.swift */,
 			);

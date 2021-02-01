@@ -93,22 +93,26 @@ class HomeSceneViewController: UIViewController {
     let conditionsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .fillEqually
+        stackView.backgroundColor = .clear
         return stackView
     }()
     
     let humidityConditionView: ConditionView = {
         let view = ConditionView()
+        view.isHidden = true
         return view
     }()
     
     let pressureConditionView: ConditionView = {
         let view = ConditionView()
+        view.isHidden = true
         return view
     }()
     
     let windConditionView: ConditionView = {
         let view = ConditionView()
+        view.isHidden = true
         return view
     }()
     
@@ -157,14 +161,12 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setSubscribers()
-        
-        viewModel.weatherRepository.getData.send(true)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel.refreshUISubject.send()
+        viewModel.getNewScreenData.send(true)
     }
     
 }
@@ -190,21 +192,25 @@ extension HomeSceneViewController {
             searchTextField
         ])
         
-        for item in viewModel.getConditionsToShow() {
-            switch item {
+        
+        conditionsStackView.addArrangedSubview(humidityConditionView)
+        conditionsStackView.addArrangedSubview(pressureConditionView)
+        conditionsStackView.addArrangedSubview(windConditionView)
+        
+        for value in viewModel.getConditionsToShow() {
+            switch value {
             case .humidity:
-                conditionsStackView.addArrangedSubview(humidityConditionView)
+                humidityConditionView.isHidden = false
                 break
             case .windSpeed:
-                conditionsStackView.addArrangedSubview(windConditionView)
+                pressureConditionView.isHidden = false
                 break
             case .pressure:
-                conditionsStackView.addArrangedSubview(pressureConditionView)
+                windConditionView.isHidden = false
                 break
-                
+
             }
         }
-        conditionsStackView.setNeedsLayout()
         
         searchTextField.delegate = self
         
@@ -223,50 +229,53 @@ extension HomeSceneViewController {
             .receive(on: RunLoop.main)
             .sink { [unowned self] () in
                 
-                self.hideSpinner()
-                
-                self.conditionsStackView.safelyRemoveArrangedSubviews()
-                
-                for item in viewModel.getConditionsToShow() {
-                    switch item {
-                    case .humidity:
-                        humidityConditionView.conditionValueLabel.text = viewModel.weatherRepository.data.humidity
-                        conditionsStackView.addArrangedSubview(humidityConditionView)
-                        setConstraintsOnHumidityConditionView()
-                        break
-                    case .pressure:
-                        pressureConditionView.conditionValueLabel.text = viewModel.weatherRepository.data.pressure
-                        conditionsStackView.addArrangedSubview(pressureConditionView)
-                        setConstraintsOnPressureConditionView()
-                        break
-                    case .windSpeed:
-                        windConditionView.conditionValueLabel.text = viewModel.weatherRepository.data.windSpeed
-                        conditionsStackView.addArrangedSubview(windConditionView)
-                        setConstraintsOnWindConditionView()
-                        break
-                    }
-                }
-                
-                conditionsStackView.layoutIfNeeded()
-                
-                self.updateWeather(with: viewModel.weatherRepository.data)
-                
-                
+                self.updateWeather(with: viewModel.screenData)
             }
             .store(in: &disposeBag)
         
-        viewModel.getData
+        viewModel.initializeScreenData(for: viewModel.getNewScreenData.eraseToAnyPublisher())
+            .store(in: &disposeBag)
+        
+        viewModel.alertSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (_) in
-                self.viewModel.refreshUISubject.send()
+            .sink { [unowned self] (error) in
+                self.showAPIFailedAlert(for: error, completion: {
+                    #warning("i wanted to recall network api when user taps ok on alertView")
+                    //                    self.viewModel.getNewScreenData.send(true)
+                })
+            }
+            .store(in: &disposeBag)
+        
+        viewModel.spinnerSubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (shouldShow) in
+                shouldShow ? self.showSpinner() : self.hideSpinner()
             }
             .store(in: &disposeBag)
     }
     
     func updateWeather(with info: WeatherInfo) {
         
-        switch viewModel.weatherRepository.userSettings.measurmentUnit {
+        for item in viewModel.getConditionsToShow() {
+            switch item {
+            case .humidity:
+                humidityConditionView.isHidden = false
+                humidityConditionView.conditionValueLabel.text = viewModel.screenData.humidity
+                break
+            case .pressure:
+                pressureConditionView.isHidden = false
+                pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure
+                break
+            case .windSpeed:
+                windConditionView.isHidden = false
+                windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed
+                break
+            }
+        }
+        
+        switch UserDefaultsService.fetchUpdated().measurmentUnit {
         case .imperial:
             currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
             minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
@@ -280,15 +289,15 @@ extension HomeSceneViewController {
         }
 
         
-        cityNameLabel.text = viewModel.weatherRepository.data.cityName.uppercased()
+        cityNameLabel.text = viewModel.screenData.cityName.uppercased()
         
-        weatherDescriptionLabel.text = viewModel.weatherRepository.data.weatherDescription.uppercased()
+        weatherDescriptionLabel.text = viewModel.screenData.weatherDescription.uppercased()
         
         
-        updateBackgroundImage(for: Int(viewModel.weatherRepository.data.weatherType) ?? 800)
+        updateBackgroundImage(for: Int(viewModel.screenData.weatherType) ?? 800, daytime: viewModel.screenData.daytime)
     }
     
-    func updateBackgroundImage(for weatherType: Int) {
+    func updateBackgroundImage(for weatherType: Int, daytime: Bool) {
         
         switch weatherType {
         
@@ -318,11 +327,19 @@ extension HomeSceneViewController {
             break
         // Clouds
         case 801..<810:
-            backgroundImageView.image = UIImage(named: "body_image-cloudy")
+            if daytime {
+            backgroundImageView.image = UIImage(named: "body_image-partly-cloudy-day")
+            break
+        }
+            backgroundImageView.image = UIImage(named: "body_image-partly-cloudy-night")
             break
             
         // Clear // => 800
         default:
+            if daytime {
+                backgroundImageView.image = UIImage(named: "body_image-clear-night")
+                break
+            }
             backgroundImageView.image = UIImage(named: "body_image-clear-day")
             break
 
@@ -355,9 +372,6 @@ extension HomeSceneViewController {
         setConstraintsOnMaxTemperatureLabel()
         setConstraintsOnMaxTemperatureLabelDescription()
         setConstraintsOnConditionsStackView()
-        setConstraintsOnHumidityConditionView()
-        setConstraintsOnPressureConditionView()
-        setConstraintsOnWindConditionView()
         setConstraintsOnSettingsButton()
         setConstraintsOnSearchTextField()
     }
@@ -372,7 +386,7 @@ extension HomeSceneViewController {
     func setConstraintsOnCurrentTemperatureLabel() {
         currentTemperatureLabel.snp.makeConstraints { (make) in
             make.top.equalTo(view.snp.top).offset(10)
-            make.height.equalTo(100)
+            make.height.equalTo(80)
             make.centerX.equalTo(view.snp.centerX)
         }
     }
@@ -382,14 +396,16 @@ extension HomeSceneViewController {
             make.top.equalTo(currentTemperatureLabel.snp.bottom).offset(10)
             make.width.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.centerX.equalTo(view.snp.centerX)
+            make.height.equalTo(30)
         }
     }
     
     func setConstraintsOnCityNameLabel() {
         cityNameLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(weatherDescriptionLabel.snp.bottom).offset(50)
+            make.top.equalTo(weatherDescriptionLabel.snp.bottom).offset(30)
             make.width.equalTo(view.frame.width / 2)
             make.centerX.equalTo(view.snp.centerX)
+            make.height.equalTo(30)
         }
     }
     
@@ -440,29 +456,8 @@ extension HomeSceneViewController {
         
         conditionsStackView.snp.makeConstraints { (make) in
             make.top.equalTo(verticalLine.snp.bottom).offset(10)
-            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.bottom.equalTo(settingsButton.snp.top).offset(-5)
-        }
-    }
-    
-    func setConstraintsOnHumidityConditionView() {
-        humidityConditionView.snp.makeConstraints { (make) in
-            make.width.equalTo(conditionsStackView.frame.width / 4)
-            make.height.equalTo(conditionsStackView.frame.height)
-        }
-    }
-    
-    func setConstraintsOnPressureConditionView() {
-        humidityConditionView.snp.makeConstraints { (make) in
-            make.width.equalTo(conditionsStackView.frame.width / 4)
-            make.height.equalTo(conditionsStackView.frame.height)
-        }
-    }
-    
-    func setConstraintsOnWindConditionView() {
-        humidityConditionView.snp.makeConstraints { (make) in
-            make.width.equalTo(conditionsStackView.frame.width / 4)
-            make.height.equalTo(conditionsStackView.frame.height)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20))
+            make.bottom.equalTo(searchTextField.snp.top).offset(-10)
         }
     }
     

@@ -26,7 +26,7 @@ struct WeatherResponse: Codable {
         try self.coord = keyedDecoder.decode(Coordinations_CityWeatherResponse.self, forKey: .coord)
         try self.main = keyedDecoder.decode(Main_CityWeatherResponse.self, forKey: .main)
         try self.wind = keyedDecoder.decode(Wind_CityWeatherResponse.self, forKey: .wind)
-        try self.weather = keyedDecoder.decode([Weather_CityWeatherResponse].self, forKey: .weather).first ?? Weather_CityWeatherResponse(id: 800, description: "fail")
+        try self.weather = keyedDecoder.decode([Weather_CityWeatherResponse].self, forKey: .weather).first ?? Weather_CityWeatherResponse(id: 800, description: "fail", icon: "d")
     }
 }
 

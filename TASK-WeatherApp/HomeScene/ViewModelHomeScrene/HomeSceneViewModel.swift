@@ -97,4 +97,9 @@ extension HomeSceneViewModel {
         
         return conditions
     }
+    
+    func getUserSettings() -> UserDefaultsService {
+        
+        return UserDefaultsService.fetchUpdated()
+    }
 }

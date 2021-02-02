@@ -60,6 +60,7 @@ extension AppCoordinator {
         navigationController.viewControllers.removeAll()
         
         var indexToRemove = 0
+        
         for (index, childCoordinator) in childCoordinators.enumerated() {
             if childCoordinator === coordinator {
                 indexToRemove = index

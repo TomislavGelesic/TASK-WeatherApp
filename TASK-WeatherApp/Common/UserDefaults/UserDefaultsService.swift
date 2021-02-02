@@ -89,8 +89,4 @@ extension UserDefaultsService {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
         }
     }
-    
-    static func getSubject() -> AnyPublisher<UserDefaultsService, Never> {
-        return CurrentValueSubject<UserDefaultsService, Never>(UserDefaultsService.fetchUpdated()).eraseToAnyPublisher()
-    }
 }

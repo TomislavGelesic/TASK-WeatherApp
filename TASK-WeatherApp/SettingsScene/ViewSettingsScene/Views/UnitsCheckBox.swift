@@ -10,6 +10,8 @@ import UIKit
 class UnitsCheckBox: UIView {
     
     var radioButtons = [UnitsRadioButton]()
+    
+    var selectedUnit: MeasurementUnits = .metric
 
     let tableView: UITableView = {
         let tableView = UITableView()
@@ -23,6 +25,8 @@ class UnitsCheckBox: UIView {
         super.init(frame: .zero)
         
         setup()
+        
+        // order important because tag isn't used for 'selectedUnit' property
         radioButtons.append(UnitsRadioButton(description: "Metric", active: true, type: .metric))
         radioButtons.append(UnitsRadioButton(description: "Imperial", active: false, type: .imperial))
         
@@ -72,9 +76,22 @@ extension UnitsCheckBox {
             item.isActive = false
         }
         
+        switch position {
+        case 1:
+            selectedUnit = .imperial
+            break
+        default:    // position = 0;
+            selectedUnit = .metric
+        }
         radioButtons[position].isActive = true
         
+        print("Selected unit is: \(selectedUnit)")
+        
         tableView.reloadData()
+    }
+    
+    func getSelectedUnit() -> MeasurementUnits {
+        return selectedUnit
     }
 }
 

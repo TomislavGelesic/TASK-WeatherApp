@@ -99,19 +99,19 @@ class HomeSceneViewController: UIViewController {
     }()
     
     let humidityConditionView: ConditionView = {
-        let view = ConditionView()
+        let view = ConditionView(image: UIImage(named: "humidity_icon")?.withRenderingMode(.alwaysTemplate))
         view.isHidden = true
         return view
     }()
     
     let pressureConditionView: ConditionView = {
-        let view = ConditionView()
+        let view = ConditionView(image: UIImage(named: "pressure_icon")?.withRenderingMode(.alwaysTemplate))
         view.isHidden = true
         return view
     }()
     
     let windConditionView: ConditionView = {
-        let view = ConditionView()
+        let view = ConditionView(image: UIImage(named: "wind_icon")?.withRenderingMode(.alwaysTemplate))
         view.isHidden = true
         return view
     }()
@@ -258,24 +258,34 @@ extension HomeSceneViewController {
     
     func updateWeather(with info: WeatherInfo) {
         
+        humidityConditionView.isHidden = true
+        pressureConditionView.isHidden = true
+        windConditionView.isHidden = true
+        
+        
+        cityNameLabel.text = info.cityName.uppercased()
+        weatherDescriptionLabel.text = info.weatherDescription.uppercased()
+        humidityConditionView.conditionValueLabel.text = info.humidity
+        pressureConditionView.conditionValueLabel.text = info.pressure
+        windConditionView.conditionValueLabel.text = info.windSpeed
+        
+        updateBackgroundImage(for: Int(info.weatherType) ?? 800, daytime: info.daytime)
+        
         for item in viewModel.getConditionsToShow() {
             switch item {
             case .humidity:
                 humidityConditionView.isHidden = false
-                humidityConditionView.conditionValueLabel.text = viewModel.screenData.humidity
                 break
             case .pressure:
                 pressureConditionView.isHidden = false
-                pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure
                 break
             case .windSpeed:
                 windConditionView.isHidden = false
-                windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed
                 break
             }
         }
         
-        switch UserDefaultsService.fetchUpdated().measurmentUnit {
+        switch viewModel.getUserSettings().measurmentUnit {
         case .imperial:
             currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
             minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
@@ -287,14 +297,6 @@ extension HomeSceneViewController {
             maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
             break
         }
-
-        
-        cityNameLabel.text = viewModel.screenData.cityName.uppercased()
-        
-        weatherDescriptionLabel.text = viewModel.screenData.weatherDescription.uppercased()
-        
-        
-        updateBackgroundImage(for: Int(viewModel.screenData.weatherType) ?? 800, daytime: viewModel.screenData.daytime)
     }
     
     func updateBackgroundImage(for weatherType: Int, daytime: Bool) {

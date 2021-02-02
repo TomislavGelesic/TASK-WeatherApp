@@ -13,27 +13,21 @@ class ConditionsCheckBox: UIView {
     weak var delegate: ConditionsRadioButtonDelegate?
     
     let humidityCheckBoxWithImage: CheckBox = {
-        
         let image = UIImage(named: "humidity_icon")?.withRenderingMode(.alwaysTemplate)
-        
         let box = CheckBox(with: image, active: false)
         box.backgroundColor = .clear
         return box
     }()
     
     let windCheckBoxWithImage: CheckBox = {
-        
         let image = UIImage(named: "wind_icon")?.withRenderingMode(.alwaysTemplate)
-        
         let box = CheckBox(with: image, active: false)
         box.backgroundColor = .clear
         return box
     }()
     
     let pressureCheckBoxWithImage: CheckBox = {
-        
         let image = UIImage(named: "pressure_icon")?.withRenderingMode(.alwaysTemplate)
-        
         let box = CheckBox(with: image, active: false)
         box.backgroundColor = .clear
         return box
@@ -94,6 +88,28 @@ extension ConditionsCheckBox {
         pressureCheckBoxWithImage.radioButton.isSelected = !pressureCheckBoxWithImage.radioButton.isSelected
         delegate?.radioButtonTapped(type: .pressure)
     }
+    
+    func getSelectedConditions() -> [ConditionTypes] {
+        var conditions = [ConditionTypes]()
+        
+        if humidityCheckBoxWithImage.radioButton.isSelected {
+            conditions.append(.humidity)
+        }
+        if pressureCheckBoxWithImage.radioButton.isSelected {
+            conditions.append(.pressure)
+        }
+        if windCheckBoxWithImage.radioButton.isSelected {
+            conditions.append(.windSpeed)
+        }
+        
+        return conditions
+    }
+    
+}
+
+extension ConditionsCheckBox {
+    
+    //MARK: COONSTRAINTS BELOW
     
     func setConstraints() {
         

@@ -17,9 +17,7 @@ class SettingsSceneViewModel {
     
     var userSettings = UserDefaultsService.fetchUpdated()
     
-    var refreshUISubject = PassthroughSubject<Void, Never>()
-    
-    var getData = CurrentValueSubject<Bool, Never>(true)
+    var refreshUISubject = CurrentValueSubject<Bool, Never>(true)
     
     init() {
         
@@ -35,33 +33,45 @@ class SettingsSceneViewModel {
 
 extension SettingsSceneViewModel {
     
-    func initializeGetData(for subject: CurrentValueSubject<Bool, Never>)-> AnyCancellable {
-        
-        return subject.map({ [unowned self] (_) -> [WeatherInfo] in
-            if let valid = self.coreDataService.get(.all) {
-                return valid
-            }
-            return [WeatherInfo]()
-        })
-        .subscribe(on: RunLoop.main)
-        .receive(on: RunLoop.main)
-        .sink(receiveValue: { [unowned self] savedCities in
-            self.savedLocations = savedCities
-            self.refreshUISubject.send()
-        })
-    }
-    
     func remove(at position: Int) {
         
         if let id = Int64(savedLocations[position].id) {
             savedLocations.remove(at: position)
             coreDataService.delete(id)
-            refreshUISubject.send()
+            refreshUISubject.send(true)
         }
     }
     
-    func saveUserSettings() {
+    func saveUserSettings(measurmentUnit: MeasurementUnits?, conditions: [ConditionTypes]?) {
         
+        if let unitToSave = measurmentUnit {
+            
+            switch unitToSave {
+            case .imperial:
+                userSettings.measurmentUnit = .imperial
+                break
+            default:
+                userSettings.measurmentUnit = .metric
+                break
+            }
+        }
+                
+        if let conditionsToSave = conditions {
+            for condition in conditionsToSave {
+                switch condition {
+                case .humidity:
+                    userSettings.shouldShowHumidity = true
+                    break
+                case .pressure:
+                    userSettings.shouldShowPressure = true
+                    break
+                case .windSpeed:
+                    userSettings.shouldShowWindSpeed = true
+                    break
+                }
+            }
+            
+        }
         UserDefaultsService.updateUserSettings(measurmentUnit: userSettings.measurmentUnit,
                                                lastCityId: nil,
                                                shouldShowWindSpeed: userSettings.shouldShowWindSpeed,
@@ -69,6 +79,6 @@ extension SettingsSceneViewModel {
                                                shouldShowHumidity: userSettings.shouldShowHumidity)
         
         userSettings = UserDefaultsService.fetchUpdated()
-        
+        refreshUISubject.send(true)
     }
 }

@@ -26,9 +26,11 @@ class ConditionView: UIView {
         return label
     }()
     
-    init() {
+    init(image: UIImage?) {
         super.init(frame: .zero)
+        backgroundColor = .red
         
+        conditionImageView.image = image
         setupViews()
     }
     
@@ -60,16 +62,16 @@ extension ConditionView {
              enables 'isHidden' property auto-animation (on stackView arranged subview) to
              take over process of setting frame to CGRect.zero and hide it
             */
-            make.width.height.equalTo(70).priority(999)
+            make.width.equalTo(60).priority(999)
+            make.height.equalTo(conditionImageView.snp.width)
         }
     }
     
     private func conditionValueLabelConstraints() {
         
         conditionValueLabel.snp.makeConstraints { (make) in
-            make.width.equalTo(70)
             make.height.equalTo(20)
-            make.top.equalTo(conditionImageView.snp.bottom).offset(10)
+            make.bottom.equalTo(self.snp.bottom)
             make.centerX.bottom.equalTo(self)
         }
     }

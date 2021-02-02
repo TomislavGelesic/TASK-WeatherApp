@@ -198,9 +198,6 @@ extension SearchSceneViewController {
             },
             completion: nil
         )
-        
-        coordinator.goToHomeScene()
-        
     }
     
     func setSubscribers() {
@@ -227,6 +224,7 @@ extension SearchSceneViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         inputField.resignFirstResponder()
+        coordinator.goToHomeScene()
         return true
     }
 }

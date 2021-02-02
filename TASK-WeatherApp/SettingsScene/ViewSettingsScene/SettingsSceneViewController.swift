@@ -111,12 +111,13 @@ class SettingsSceneViewController: UIViewController {
         setConstraints()
         setSubscribers()
         
-        viewModel.refreshUISubject.send()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         navigationController?.setNavigationBarHidden(false, animated: false)
+        viewModel.refreshUISubject.send(true)
 
     }
     
@@ -148,7 +149,7 @@ extension SettingsSceneViewController {
             let button = UIBarButtonItem(image: UIImage(systemName: "text.justify"),
                                          style: .plain,
                                          target: self,
-                                         action: #selector(backButtonPressed))
+                                         action: nil)
             button.tintColor = .black
             return button
         }()
@@ -157,7 +158,7 @@ extension SettingsSceneViewController {
         
         let titleLabel: UILabel = {
             let label = UILabel()
-            label.text = "settings".uppercased()
+            label.text = "SETTINGS"
             return label
         }()
         
@@ -197,7 +198,7 @@ extension SettingsSceneViewController {
     
     @objc func applyButtonTapped() {
         
-        viewModel.saveUserSettings()
+        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(), conditions: conditionsCheckBox.getSelectedConditions())
         
         coordinator.returnToHomeScene()
     }

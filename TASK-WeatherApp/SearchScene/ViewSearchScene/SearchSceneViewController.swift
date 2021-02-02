@@ -128,9 +128,8 @@ extension SearchSceneViewController {
     @objc func inputFieldDidChange() {
         
         if let validText = inputField.text {
-            
             if validText.isEmpty {
-                viewModel.viewModelData.removeAll()
+                viewModel.screenData.removeAll()
                 viewModel.refreshUISubject.send()
             } else {
                 viewModel.inputSubject.send(validText)
@@ -212,7 +211,11 @@ extension SearchSceneViewController {
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (_) in
-    
+
+                if let text = inputField.text,
+                   text.isEmpty {
+                    viewModel.screenData.removeAll()
+                }
                 self.tableView.reloadData()
             }
             .store(in: &disposeBag)
@@ -232,7 +235,7 @@ extension SearchSceneViewController: UITextFieldDelegate {
 extension SearchSceneViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.viewModelData.count
+        return viewModel.screenData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

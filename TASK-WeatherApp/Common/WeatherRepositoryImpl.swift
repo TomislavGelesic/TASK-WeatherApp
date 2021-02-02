@@ -10,7 +10,7 @@ import Combine
 
 class WeatherRepositoryImpl: Repository {
     
-    func getCurrentWeather() -> AnyPublisher<WeatherResponse, NetworkError> {
+    func fetchNewData() -> AnyPublisher<WeatherResponse, NetworkError> {
         
         var path = String()
         path.append(Constants.OpenWeatherMapORG.BASE)

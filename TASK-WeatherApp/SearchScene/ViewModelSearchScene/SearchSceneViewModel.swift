@@ -14,9 +14,9 @@ class SearchSceneViewModel {
     
     var coreDataService = CoreDataService.sharedInstance
     
-    var searchRepository: NetworkService
+    var searchRepository: GeoNamesRepository
     
-    var viewModelData = [GeoNameItem]()
+    var screenData = [GeoNameItem]()
     
     var refreshUISubject = PassthroughSubject<Void, Never>()
     
@@ -24,7 +24,7 @@ class SearchSceneViewModel {
     
     let fetchCitySubject = PassthroughSubject<String, Never>()
     
-    init(searchRepository: NetworkService) {
+    init(searchRepository: GeoNamesRepository) {
         
         self.searchRepository = searchRepository
     }
@@ -45,8 +45,6 @@ extension SearchSceneViewModel {
             .sink { (completion) in
                 
             } receiveValue: { [unowned self] (searchText) in
-//                #warning("delete print")
-//                print(searchText)
                 self.fetchCitySubject.send(searchText)
             }
     }
@@ -54,22 +52,9 @@ extension SearchSceneViewModel {
     func initializeFetchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
         
         return subject
-            .flatMap { (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
+            .flatMap { [unowned self] (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 
-                var path = String()
-                path.append(Constants.GeoNamesORG.BASE)
-                path.append(Constants.GeoNamesORG.GET_CITY_BY_NAME)
-                path.append(searchText)
-                path.append(Constants.GeoNamesORG.MAX_ROWS)
-                path.append("10")
-                path.append(Constants.GeoNamesORG.KEY)
-//                #warning("delete print")
-//                print(path)
-                
-                guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
-                
-                return self.searchRepository.fetchData(for: url).eraseToAnyPublisher()
-                
+                return self.searchRepository.fetchSearchResult(for: searchText)
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
@@ -77,19 +62,19 @@ extension SearchSceneViewModel {
                 
             }, receiveValue: { [unowned self] (response) in
                 
-                self.viewModelData = response.geonames
+                self.screenData = response.geonames
                 self.refreshUISubject.send()
             })
     }
     
     func getScreenData(for position: Int) -> String {
         
-        return "\(viewModelData[position].name), (\(viewModelData[position].countryName))"
+        return "\(screenData[position].name), (\(screenData[position].countryName))"
     }
     
     func saveCity(at position: Int) {
         
-        let item = viewModelData[position]
+        let item = screenData[position]
         
         UserDefaultsService.updateUserSettings(measurmentUnit: nil,
                                                lastCityId: String(item.geonameId),

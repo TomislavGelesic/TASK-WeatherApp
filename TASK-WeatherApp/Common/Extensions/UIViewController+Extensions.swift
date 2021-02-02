@@ -21,7 +21,8 @@ extension UIViewController {
     func showAPIFailedAlert(for errorMessage: String, completion: (() -> ())?) {
         
         let alert: UIAlertController = {
-            let alert = UIAlertController(title: "Error", message: "Ups, error occured!\n\(errorMessage)", preferredStyle: .alert)
+            print(errorMessage)
+            let alert = UIAlertController(title: "Sorry", message: "No weather data for this city, yet!", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .cancel))
             return alert
         }()

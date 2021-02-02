@@ -112,12 +112,15 @@ extension CoreDataService {
         
         let managedContext = persistentContainer.viewContext
         
-        let city = CityWeather(context: managedContext)
-        
-        city.setValue(Int64(item.geonameId), forKey: "id")
-        city.setValue(item.name, forKey: "name")
-        
-        saveContext()
+        if let exists = get(id: Int64(item.geonameId)) { return }
+        else {
+            let city = CityWeather(context: managedContext)
+            
+            city.setValue(Int64(item.geonameId), forKey: "id")
+            city.setValue(item.name, forKey: "name")
+            
+            saveContext()
+        }
     }
     
     func delete(_ id: Int64) {
@@ -142,18 +145,6 @@ extension CoreDataService {
                 }
             }
         }
-    }
-    
-    static func getSubject () -> AnyPublisher<WeatherInfo, RepositoryError>? {
-        
-        if let id = Int64(UserDefaultsService.fetchUpdated().lastCityId),
-           let savedCities = CoreDataService.sharedInstance.get(SavedCitiesOptions.byId(id: id)),
-           let cityWeather = savedCities.first {
-            
-            return CurrentValueSubject<WeatherInfo, RepositoryError>(cityWeather).eraseToAnyPublisher()
-        }
-        
-        return nil
     }
 }
 

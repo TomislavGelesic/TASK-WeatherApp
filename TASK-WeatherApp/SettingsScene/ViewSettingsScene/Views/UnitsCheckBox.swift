@@ -29,7 +29,6 @@ class UnitsCheckBox: UIView {
         // order important because tag isn't used for 'selectedUnit' property
         radioButtons.append(UnitsRadioButton(description: "Metric", active: true, type: .metric))
         radioButtons.append(UnitsRadioButton(description: "Imperial", active: false, type: .imperial))
-        
         tableView.reloadData()
     }
     

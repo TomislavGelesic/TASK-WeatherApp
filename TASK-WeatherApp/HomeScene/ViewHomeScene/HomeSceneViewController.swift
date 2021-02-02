@@ -265,9 +265,8 @@ extension HomeSceneViewController {
         
         cityNameLabel.text = info.cityName.uppercased()
         weatherDescriptionLabel.text = info.weatherDescription.uppercased()
-        humidityConditionView.conditionValueLabel.text = info.humidity
-        pressureConditionView.conditionValueLabel.text = info.pressure
-        windConditionView.conditionValueLabel.text = info.windSpeed
+        humidityConditionView.conditionValueLabel.text = info.humidity + " %"
+        
         
         updateBackgroundImage(for: Int(info.weatherType) ?? 800, daytime: info.daytime)
         
@@ -290,11 +289,15 @@ extension HomeSceneViewController {
             currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
             minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
             maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " mph"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " psi"
             break
         case .metric:
             currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
             minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
             maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " km/h"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " hPa"
             break
         }
     }
@@ -339,10 +342,10 @@ extension HomeSceneViewController {
         // Clear // => 800
         default:
             if daytime {
-                backgroundImageView.image = UIImage(named: "body_image-clear-night")
+                backgroundImageView.image = UIImage(named: "body_image-clear-day")
                 break
             }
-            backgroundImageView.image = UIImage(named: "body_image-clear-day")
+            backgroundImageView.image = UIImage(named: "body_image-clear-night")
             break
 
         }
@@ -457,7 +460,7 @@ extension HomeSceneViewController {
     func setConstraintsOnConditionsStackView() {
         
         conditionsStackView.snp.makeConstraints { (make) in
-            make.top.equalTo(verticalLine.snp.bottom).offset(10)
+            make.top.equalTo(verticalLine.snp.bottom).offset(30)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20))
             make.bottom.equalTo(searchTextField.snp.top).offset(-10)
         }

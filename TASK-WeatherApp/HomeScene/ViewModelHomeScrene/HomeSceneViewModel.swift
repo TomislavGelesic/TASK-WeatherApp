@@ -40,7 +40,7 @@ extension HomeSceneViewModel {
         return subject
             .flatMap {[unowned self] (_) -> AnyPublisher<WeatherResponse, NetworkError> in
                 self.spinnerSubject.send(true)
-                return self.weatherRepository.getCurrentWeather()
+                return self.weatherRepository.fetchNewData()
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)

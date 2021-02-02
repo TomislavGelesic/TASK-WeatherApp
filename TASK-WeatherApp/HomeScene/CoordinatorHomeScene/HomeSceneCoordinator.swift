@@ -17,7 +17,7 @@ class HomeSceneCoordinator: Coordinator {
     
     func start() {
         
-        let viewModel = HomeSceneViewModel(repository: WeatherRepositoryImpl())
+        let viewModel = HomeSceneViewModel(repository: HomeSceneRepositoryImpl())
         
         let viewController = HomeSceneViewController(coordinator: self, viewModel: viewModel)
         

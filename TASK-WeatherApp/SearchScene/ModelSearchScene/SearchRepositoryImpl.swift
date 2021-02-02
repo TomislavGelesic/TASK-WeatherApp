@@ -12,8 +12,9 @@ class SearchRepositoryImpl: GeoNamesRepository {
     
     
     func fetchSearchResult(for searchText: String) -> AnyPublisher<GeoNameResponse, NetworkError> {
+        
         var path = String()
-        path.append(Constants.GeoNamesORG.BASE)
+        path.append(Constants.GeoNamesORG.BASE_SearchScene)
         path.append(Constants.GeoNamesORG.GET_CITY_BY_NAME)
         path.append(searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
         path.append(Constants.GeoNamesORG.MAX_ROWS)

@@ -21,6 +21,7 @@ class ConditionView: UIView {
     let conditionValueLabel: UILabel = {
         let label = UILabel()
         label.text = "Value"
+        label.font = label.font.withSize(12)
         label.textAlignment = .center
         label.backgroundColor = .clear
         return label
@@ -72,7 +73,7 @@ extension ConditionView {
         conditionValueLabel.snp.makeConstraints { (make) in
             make.height.equalTo(20)
             make.bottom.equalTo(self.snp.bottom)
-            make.centerX.bottom.equalTo(self)
+            make.leading.trailing.equalTo(self).inset(UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10))
         }
     }
 }

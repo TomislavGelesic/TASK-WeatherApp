@@ -5,7 +5,7 @@
 //  Created by Tomislav Gelesic on 17.01.2021..
 //
 
-import Foundation
+import UIKit
 import Combine
 
 class UserDefaultsService {
@@ -15,13 +15,17 @@ class UserDefaultsService {
     var shouldShowWindSpeed: Bool = false
     var shouldShowPressure: Bool = false
     var shouldShowHumidity: Bool = false
+    var weatherType: Int = 800
+    var dayTime: Bool = true
     
-    init(measurmentUnit: MeasurementUnits = .metric, lastCityId: String = "2761369", shouldShowWindSpeed: Bool = false, shouldShowPressure: Bool = false, shouldShowHumidity: Bool = false) {
+    init(measurmentUnit: MeasurementUnits = .metric, lastCityId: String = "2761369", shouldShowWindSpeed: Bool = false, shouldShowPressure: Bool = false, shouldShowHumidity: Bool = false, weatherType: Int = 800, dayTime: Bool = true) {
         self.measurmentUnit = measurmentUnit
         self.lastCityId = lastCityId
         self.shouldShowWindSpeed = shouldShowWindSpeed
         self.shouldShowPressure = shouldShowPressure
         self.shouldShowHumidity = shouldShowHumidity
+        self.weatherType = weatherType
+        self.dayTime = dayTime
     }
 }
 
@@ -57,6 +61,14 @@ extension UserDefaultsService {
             userSettings.shouldShowPressure = should
         }
         
+        if let weatherType = userDefaults.value(forKey: Constants.UserDefaults.WEATHER_TYPE) as? Int {
+            userSettings.weatherType = weatherType
+        }
+        
+        if let dayTime = userDefaults.value(forKey: Constants.UserDefaults.IS_DAY_TIME) as? Bool {
+            userSettings.dayTime = dayTime
+        }
+        
         return userSettings
     }
     
@@ -88,5 +100,59 @@ extension UserDefaultsService {
         if let value = shouldShowWindSpeed {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
         }
+    }
+    
+    static func updateBackgorundImage(weatherType: Int, daytime: Bool) {
+        
+        let userDefaults = UserDefaults.standard
+        
+        userDefaults.setValue(weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
+        userDefaults.setValue(daytime, forKey: Constants.UserDefaults.IS_DAY_TIME)
+    }
+    
+    static func getBackgroundImage() -> UIImage? {
+        
+        let userSettings = UserDefaultsService.fetchUpdated()
+        let weatherType = userSettings.weatherType
+        let dayTime = userSettings.dayTime
+        
+        switch weatherType {
+        
+        // Thunderstorm
+        case 200..<300:
+            return UIImage(named: "body_image-thunderstorm")
+        // Drizzle & Rain
+        case 300..<600:
+            return UIImage(named: "body_image-rain")
+            
+        // Snow
+        case 600..<700:
+            return UIImage(named: "body_image-snow")
+            
+        // Atmosphere
+        case 700..<800:
+            if weatherType == 741 {
+                return UIImage(named: "body_image-fog")
+            }
+            if weatherType == 781 {
+                return UIImage(named: "body_image-tornado")
+            }
+        // Clouds
+        case 801..<810:
+            if dayTime {
+                return UIImage(named: "body_image-partly-cloudy-day")
+            }
+            return UIImage(named: "body_image-partly-cloudy-night")
+            
+        // Clear // => 800
+        default:
+            if dayTime {
+                return UIImage(named: "body_image-clear-day")
+            }
+            return UIImage(named: "body_image-clear-night")
+            
+        }
+        
+        return UIImage(named: "body_image-clear-day")
     }
 }

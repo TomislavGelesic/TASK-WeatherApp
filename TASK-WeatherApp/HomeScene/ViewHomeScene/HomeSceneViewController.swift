@@ -8,6 +8,7 @@
 import UIKit
 import Combine
 import SnapKit
+import MapKit
 
 class HomeSceneViewController: UIViewController {
     
@@ -17,11 +18,7 @@ class HomeSceneViewController: UIViewController {
     
     var disposeBag = Set<AnyCancellable>()
     
-    let backgroundImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "body_image-clear-day")
-        return imageView
-    }()
+    var locationManager: CLLocationManager
     
     let currentTemperatureLabel: UILabel = {
         let label = UILabel()
@@ -93,7 +90,7 @@ class HomeSceneViewController: UIViewController {
     let conditionsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.distribution = .fillEqually
+        stackView.distribution = .equalCentering
         stackView.backgroundColor = .clear
         return stackView
     }()
@@ -142,6 +139,7 @@ class HomeSceneViewController: UIViewController {
         
         self.coordinator = coordinator
         self.viewModel = viewModel
+        self.locationManager = CLLocationManager()
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -157,16 +155,17 @@ class HomeSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .white
+        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
         setSubviews()
         setConstraints()
         setSubscribers()
+        setLocationManager()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel.getNewScreenData.send(true)
+        checkLocationServices()
     }
     
 }
@@ -178,7 +177,6 @@ extension HomeSceneViewController {
         view.backgroundColor = .lightGray
         
         view.addSubviews([
-            backgroundImageView,
             currentTemperatureLabel,
             weatherDescriptionLabel,
             cityNameLabel,
@@ -236,14 +234,15 @@ extension HomeSceneViewController {
         viewModel.initializeScreenData(for: viewModel.getNewScreenData.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
+        viewModel.initializeLocationSubject(subject: viewModel.getCityIdForLocation.eraseToAnyPublisher())
+            .store(in: &disposeBag)
+        
         viewModel.alertSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (error) in
-                self.showAPIFailedAlert(for: error, completion: {
-                    #warning("i wanted to recall network api when user taps ok on alertView")
-                    //                    self.viewModel.getNewScreenData.send(true)
-                })
+                
+                self.showAPIFailedAlert(for: error)
             }
             .store(in: &disposeBag)
         
@@ -265,10 +264,9 @@ extension HomeSceneViewController {
         
         cityNameLabel.text = info.cityName.uppercased()
         weatherDescriptionLabel.text = info.weatherDescription.uppercased()
-        humidityConditionView.conditionValueLabel.text = info.humidity + " %"
+        humidityConditionView.conditionValueLabel.text = info.humidity + " [%]"
         
-        
-        updateBackgroundImage(for: Int(info.weatherType) ?? 800, daytime: info.daytime)
+        UserDefaultsService.updateBackgorundImage(weatherType: Int(info.weatherType) ?? 800, daytime: info.daytime)
         
         for item in viewModel.getConditionsToShow() {
             switch item {
@@ -289,66 +287,30 @@ extension HomeSceneViewController {
             currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
             minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
             maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
-            windConditionView.conditionValueLabel.text = info.windSpeed + " mph"
-            pressureConditionView.conditionValueLabel.text = info.pressure + " psi"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " [mph]"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " [psi]"
             break
         case .metric:
             currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
             minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
             maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
-            windConditionView.conditionValueLabel.text = info.windSpeed + " km/h"
-            pressureConditionView.conditionValueLabel.text = info.pressure + " hPa"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " [km/h]"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " [hPa]"
             break
         }
     }
     
-    func updateBackgroundImage(for weatherType: Int, daytime: Bool) {
-        
-        switch weatherType {
-        
-        // Thunderstorm
-        case 200..<300:
-            backgroundImageView.image = UIImage(named: "body_image-thunderstorm")
-            break
-            
-        // Drizzle & Rain
-        case 300..<600:
-            backgroundImageView.image = UIImage(named: "body_image-rain")
-            break
-            
-        // Snow
-        case 600..<700:
-            backgroundImageView.image = UIImage(named: "body_image-snow")
-            break
-            
-        // Atmosphere
-        case 700..<800:
-            if weatherType == 741 {
-                backgroundImageView.image = UIImage(named: "body_image-fog")
-            }
-            if weatherType == 781 {
-                backgroundImageView.image = UIImage(named: "body_image-tornado")
-            }
-            break
-        // Clouds
-        case 801..<810:
-            if daytime {
-            backgroundImageView.image = UIImage(named: "body_image-partly-cloudy-day")
-            break
+    func checkLocationServices() {
+        if CLLocationManager.locationServicesEnabled() {
+            viewModel.getCityIdForLocation.send(locationManager.location?.coordinate)
         }
-            backgroundImageView.image = UIImage(named: "body_image-partly-cloudy-night")
-            break
-            
-        // Clear // => 800
-        default:
-            if daytime {
-                backgroundImageView.image = UIImage(named: "body_image-clear-day")
-                break
-            }
-            backgroundImageView.image = UIImage(named: "body_image-clear-night")
-            break
-
-        }
+        locationManager.requestWhenInUseAuthorization()
+        viewModel.getNewScreenData.send()
+    }
+    
+    func setLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
 }
 
@@ -362,12 +324,39 @@ extension HomeSceneViewController: UITextFieldDelegate {
     }
 }
 
+extension HomeSceneViewController: CLLocationManagerDelegate {
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .authorizedAlways, .authorizedWhenInUse:
+            checkLocationServices()
+            break
+        default:
+            showAPIFailedAlert(for: "Enable location to get weather information for your location or search for your place manually.")
+            break
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        
+        switch status {
+        case .authorizedWhenInUse:
+            viewModel.getNewScreenData.send()
+            break
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        default:
+            break
+        }
+    }
+}
+
 //MARK: CONSTRAINTS BELOW
 extension HomeSceneViewController {
     
     func setConstraints() {
         
-        setConstraintsOnBackgroundImageView()
         setConstraintsOnCurrentTemperatureLabel()
         setConstraintsOnWeatherDescriptionLabel()
         setConstraintsOnCityNameLabel()
@@ -379,13 +368,6 @@ extension HomeSceneViewController {
         setConstraintsOnConditionsStackView()
         setConstraintsOnSettingsButton()
         setConstraintsOnSearchTextField()
-    }
-    
-    func setConstraintsOnBackgroundImageView() {
-        
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
     }
     
     func setConstraintsOnCurrentTemperatureLabel() {

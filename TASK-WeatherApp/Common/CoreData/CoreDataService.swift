@@ -112,7 +112,11 @@ extension CoreDataService {
         
         let managedContext = persistentContainer.viewContext
         
-        if let exists = get(id: Int64(item.geonameId)) { return }
+        if let exists = get(id: Int64(item.geonameId))?.first {
+            print("\(item.name) already saved.")
+            return
+            
+        }
         else {
             let city = CityWeather(context: managedContext)
             

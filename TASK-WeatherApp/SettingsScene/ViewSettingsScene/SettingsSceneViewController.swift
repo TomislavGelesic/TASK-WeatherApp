@@ -17,12 +17,6 @@ class SettingsSceneViewController: UIViewController {
     
     var coordinator: SettingsSceneCoordinator
     
-    let backgroundImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "body_image-clear-day")
-        return imageView
-    }()
-    
     let locationsLabelDescription: UILabel = {
         let label = UILabel()
         label.text = "Locations"
@@ -105,7 +99,8 @@ class SettingsSceneViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
         setNavigationBar()
         setSubviews()
         setConstraints()
@@ -178,7 +173,6 @@ extension SettingsSceneViewController {
     
     func setSubviews() {
         view.addSubviews([
-            backgroundImageView,
             locationsLabelDescription,
             locationsCollectionView,
             unitsLabelDescription,
@@ -198,7 +192,7 @@ extension SettingsSceneViewController {
     
     @objc func applyButtonTapped() {
         
-        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(), conditions: conditionsCheckBox.getSelectedConditions())
+        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(), wantedCity: nil, conditions: conditionsCheckBox.getSelectedConditions())
         
         coordinator.returnToHomeScene()
     }
@@ -265,7 +259,14 @@ extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
     
 }
 
-extension SettingsSceneViewController: UICollectionViewDelegate { }
+extension SettingsSceneViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        viewModel.saveUserSettings(measurmentUnit: nil, wantedCity: indexPath.row, conditions: nil)
+        coordinator.returnToHomeScene()
+    }
+}
 
 
 
@@ -275,7 +276,6 @@ extension SettingsSceneViewController {
     
     func setConstraints() {
         
-        setConstraintsOnBackgroundImageView()
         setConstraintsOnLocationsLabelDescription()
         setConstraintsOnLocationsCollectionView()
         setConstraintsOnUnitsLabelDescription()
@@ -283,13 +283,6 @@ extension SettingsSceneViewController {
         setConstraintsOnConditionsLabelDescription()
         setConstraintsOnConditionsCheckBox()
         setConstraintsOnApplyButton()
-    }
-    
-    func setConstraintsOnBackgroundImageView() {
-        
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
     }
     
     func setConstraintsOnLocationsLabelDescription() {

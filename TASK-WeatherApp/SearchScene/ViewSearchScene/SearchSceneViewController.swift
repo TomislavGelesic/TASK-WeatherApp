@@ -15,12 +15,6 @@ class SearchSceneViewController: UIViewController {
     var viewModel: SearchSceneViewModel
     
     var coordinator: SearchSceneCoordinator
-   
-    let backgroundImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "body_image-clear-day")
-        return imageView
-    }()
     
     let cancelButton: UIButton = {
         let button = UIButton()
@@ -83,6 +77,7 @@ class SearchSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
         setupViews()
         setupKeyboardNotifications()
         setConstraints()
@@ -108,7 +103,7 @@ extension SearchSceneViewController {
     
     func setupViews() {
         
-        view.addSubviews([backgroundImageView, cancelButton, tableView, inputField])
+        view.addSubviews([cancelButton, tableView, inputField])
         
         searchIconContainer.addSubview(searchIcon)
         
@@ -263,19 +258,11 @@ extension SearchSceneViewController {
     
     func setConstraints() {
         
-        setConstraintsOnBackgroundImageView()
         setConstraintsOnCancelButton()
         setConstraintsOnAvailableCitiesTableView()
         setConstraintsOnSearchIcon()
         setConstraintsOnSearchIconContainer()
         setConstraintsOnInputField(for: 100)
-    }
-    
-    func setConstraintsOnBackgroundImageView() {
-        
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
     }
     
     func setConstraintsOnCancelButton() {

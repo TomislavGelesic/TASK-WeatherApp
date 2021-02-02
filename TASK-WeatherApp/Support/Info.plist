@@ -52,5 +52,7 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow location data to retrieve updated weather for your location.</string>
 </dict>
 </plist>

@@ -7,10 +7,11 @@
 
 import UIKit
 import Combine
+import MapKit
 
 class HomeSceneViewModel {
     
-    var weatherRepository: WeatherRepositoryImpl
+    var homeSceneRepositoryImpl: HomeSceneRepositoryImpl
     
     var spinnerSubject = PassthroughSubject<Bool, Never>()
     
@@ -18,14 +19,15 @@ class HomeSceneViewModel {
     
     var refreshUISubject = PassthroughSubject<Void, Never>()
     
-    var getNewScreenData = CurrentValueSubject<Bool, Never>(true)
+    var getNewScreenData = PassthroughSubject<Void, Never>()
+    
+    var getCityIdForLocation = CurrentValueSubject<CLLocationCoordinate2D?, Never>(nil)
     
     var screenData = WeatherInfo()
     
-    init(repository: WeatherRepositoryImpl) {
+    init(repository: HomeSceneRepositoryImpl) {
         
-        weatherRepository = repository
-        
+        homeSceneRepositoryImpl = repository
     }
     
     deinit {
@@ -35,12 +37,12 @@ class HomeSceneViewModel {
 
 extension HomeSceneViewModel {
     
-    func initializeScreenData(for subject: AnyPublisher<Bool, Never>) -> AnyCancellable {
+    func initializeScreenData(for subject: AnyPublisher<Void, Never>) -> AnyCancellable {
         
         return subject
             .flatMap {[unowned self] (_) -> AnyPublisher<WeatherResponse, NetworkError> in
                 self.spinnerSubject.send(true)
-                return self.weatherRepository.fetchNewData()
+                return self.homeSceneRepositoryImpl.fetchNewData()
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
@@ -52,13 +54,68 @@ extension HomeSceneViewModel {
                 case .finished:
                     break
                 case .failure(let error):
-                    self.alertSubject.send(error.localizedDescription)
+                    print(error)
+                    self.alertSubject.send("Error connecting to 'openweather.org' service.")
                 }
             }, receiveValue: {[unowned self] data in
                 self.screenData = data
                 self.refreshUISubject.send()
                 self.spinnerSubject.send(false)
             })
+    }
+    
+    func initializeLocationSubject(subject: AnyPublisher<CLLocationCoordinate2D?, Never>) -> AnyCancellable {
+        
+        return subject
+            .flatMap({ [unowned self] (coordinate) -> AnyPublisher<GeoNameResponse, NetworkError> in
+                
+                if let safeCoordinate = coordinate {
+                    let search = "lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)"
+                    print("lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)")
+                    self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
+                        .receive(on: RunLoop.main)
+                        .subscribe(on: RunLoop.main)
+                        .sink { (completion) in
+                        } receiveValue: { (response) in
+                            
+                            if let id = response.geonames.first?.geonameId {
+                                
+                                UserDefaultsService.updateUserSettings(measurmentUnit: nil,
+                                                                       lastCityId: String(id),
+                                                                       shouldShowWindSpeed: nil,
+                                                                       shouldShowPressure: nil,
+                                                                       shouldShowHumidity: nil)
+                            }
+                        }.cancel()
+
+                }
+                let search = "lat=48.210033&lng=16.363449)"
+                return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
+            
+            })
+            .receive(on: RunLoop.main)
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .sink { (completion) in
+                
+                switch completion {
+                case .finished:
+                    break
+                case .failure(_):
+                    
+                    break
+                }
+            } receiveValue: { [unowned self] (response) in
+                
+                if let id = response.geonames.first?.geonameId {
+                    
+                    UserDefaultsService.updateUserSettings(measurmentUnit: nil,
+                                                           lastCityId: String(id),
+                                                           shouldShowWindSpeed: nil,
+                                                           shouldShowPressure: nil,
+                                                           shouldShowHumidity: nil)
+                    self.getNewScreenData.send()
+                }
+            }
     }
     
     func createCityWeatherItem(from response: WeatherResponse) -> WeatherInfo {
@@ -102,4 +159,7 @@ extension HomeSceneViewModel {
         
         return UserDefaultsService.fetchUpdated()
     }
+    
+    
+    
 }

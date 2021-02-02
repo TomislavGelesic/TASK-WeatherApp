@@ -42,7 +42,7 @@ extension SettingsSceneViewModel {
         }
     }
     
-    func saveUserSettings(measurmentUnit: MeasurementUnits?, conditions: [ConditionTypes]?) {
+    func saveUserSettings(measurmentUnit: MeasurementUnits?, wantedCity position: Int?, conditions: [ConditionTypes]?) {
         
         if let unitToSave = measurmentUnit {
             
@@ -54,6 +54,10 @@ extension SettingsSceneViewModel {
                 userSettings.measurmentUnit = .metric
                 break
             }
+        }
+        
+        if let position = position {
+            userSettings.lastCityId = savedLocations[position].id
         }
                 
         if let conditionsToSave = conditions {
@@ -72,8 +76,9 @@ extension SettingsSceneViewModel {
             }
             
         }
+        
         UserDefaultsService.updateUserSettings(measurmentUnit: userSettings.measurmentUnit,
-                                               lastCityId: nil,
+                                               lastCityId: userSettings.lastCityId,
                                                shouldShowWindSpeed: userSettings.shouldShowWindSpeed,
                                                shouldShowPressure: userSettings.shouldShowPressure,
                                                shouldShowHumidity: userSettings.shouldShowHumidity)

@@ -112,7 +112,8 @@ extension CoreDataService {
         
         let managedContext = persistentContainer.viewContext
         
-        if let exists = get(id: Int64(item.geonameId))?.first {
+        if let _ = get(id: Int64(item.geonameId))?.first {
+            #warning("print delete")
             print("\(item.name) already saved.")
             return
             

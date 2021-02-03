@@ -87,18 +87,26 @@ extension UserDefaultsService {
         
         if let value = lastCityId {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.CITY_ID)
+            #warning("print delete")
+            print("saving lastCityID as \(value)")
         }
         
         if let value = shouldShowPressure {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
+            #warning("print delete")
+            print("saving pressure as \(value)")
         }
         
         if let value = shouldShowHumidity {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
+            #warning("print delete")
+            print("saving humidity as \(value)")
         }
         
         if let value = shouldShowWindSpeed {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
+            #warning("print delete")
+            print("saving windSpeed as \(value)")
         }
     }
     
@@ -117,7 +125,6 @@ extension UserDefaultsService {
         let dayTime = userSettings.dayTime
         
         switch weatherType {
-        
         // Thunderstorm
         case 200..<300:
             return UIImage(named: "body_image-thunderstorm")
@@ -137,6 +144,7 @@ extension UserDefaultsService {
             if weatherType == 781 {
                 return UIImage(named: "body_image-tornado")
             }
+           return UIImage(named: "body_image-fog")
         // Clouds
         case 801..<810:
             if dayTime {
@@ -144,15 +152,12 @@ extension UserDefaultsService {
             }
             return UIImage(named: "body_image-partly-cloudy-night")
             
-        // Clear // => 800
+        // Clear == 800, or others - currently don't exist on server
         default:
             if dayTime {
                 return UIImage(named: "body_image-clear-day")
             }
             return UIImage(named: "body_image-clear-night")
-            
         }
-        
-        return UIImage(named: "body_image-clear-day")
     }
 }

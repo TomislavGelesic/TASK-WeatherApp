@@ -115,6 +115,7 @@
 		60B6432125B31F3600DE43EC /* SearchRepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchRepositoryImpl.swift; sourceTree = "<group>"; };
 		60B6432425B32DE100DE43EC /* GeoNameResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoNameResponse.swift; sourceTree = "<group>"; };
 		60B6432725B32E1400DE43EC /* GeoNameItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoNameItem.swift; sourceTree = "<group>"; };
+		60B8AA1C25CA937F00124113 /* OsijekLocation.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = OsijekLocation.gpx; sourceTree = "<group>"; };
 		60BE221D25C47E630023C97E /* SceneOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneOption.swift; sourceTree = "<group>"; };
 		60BE223025C493410023C97E /* WeatherRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRepository.swift; sourceTree = "<group>"; };
 		60BE223325C4938A0023C97E /* RepositoryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryError.swift; sourceTree = "<group>"; };
@@ -306,6 +307,14 @@
 			path = ModelSearchScene;
 			sourceTree = "<group>";
 		};
+		60B8AA1B25CA934B00124113 /* SimulationLocation */ = {
+			isa = PBXGroup;
+			children = (
+				60B8AA1C25CA937F00124113 /* OsijekLocation.gpx */,
+			);
+			path = SimulationLocation;
+			sourceTree = "<group>";
+		};
 		60BE223725C496390023C97E /* WeatherModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -360,6 +369,7 @@
 		60D87EF325AF616F0033CB7A /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				60B8AA1B25CA934B00124113 /* SimulationLocation */,
 				60796F6925B1E4E900988BC1 /* AppCoordinator.swift */,
 				60D87ED725AF60360033CB7A /* AppDelegate.swift */,
 				60D87EE325AF60370033CB7A /* Assets.xcassets */,

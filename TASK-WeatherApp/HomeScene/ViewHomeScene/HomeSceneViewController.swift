@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 import SnapKit
-import MapKit
+import CoreLocation
 
 class HomeSceneViewController: UIViewController {
     
@@ -155,7 +155,6 @@ class HomeSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
         setSubviews()
         setConstraints()
         setSubscribers()
@@ -165,7 +164,7 @@ class HomeSceneViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        checkLocationServices()
+        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
     }
     
 }
@@ -216,7 +215,8 @@ extension HomeSceneViewController {
     }
     
     @objc func settingsButtonTapped() {
-        
+        #warning("delete print")
+        print("step 1")
         coordinator.goToSettingsScene()
     }
     
@@ -257,6 +257,10 @@ extension HomeSceneViewController {
     
     func updateWeather(with info: WeatherInfo) {
         
+        UserDefaultsService.updateBackgorundImage(weatherType: Int(info.weatherType) ?? 800, daytime: info.daytime)
+        
+        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
+        
         humidityConditionView.isHidden = true
         pressureConditionView.isHidden = true
         windConditionView.isHidden = true
@@ -265,8 +269,6 @@ extension HomeSceneViewController {
         cityNameLabel.text = info.cityName.uppercased()
         weatherDescriptionLabel.text = info.weatherDescription.uppercased()
         humidityConditionView.conditionValueLabel.text = info.humidity + " [%]"
-        
-        UserDefaultsService.updateBackgorundImage(weatherType: Int(info.weatherType) ?? 800, daytime: info.daytime)
         
         for item in viewModel.getConditionsToShow() {
             switch item {
@@ -300,18 +302,15 @@ extension HomeSceneViewController {
         }
     }
     
-    func checkLocationServices() {
-        if CLLocationManager.locationServicesEnabled() {
-            viewModel.getCityIdForLocation.send(locationManager.location?.coordinate)
-        }
-        locationManager.requestWhenInUseAuthorization()
-        viewModel.getNewScreenData.send()
-    }
-    
     func setLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        
+        #warning("print delete")
+        print("step 2 - LocationManager init")
     }
+    
 }
 
 extension HomeSceneViewController: UITextFieldDelegate {
@@ -326,28 +325,25 @@ extension HomeSceneViewController: UITextFieldDelegate {
 
 extension HomeSceneViewController: CLLocationManagerDelegate {
     
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
-        switch CLLocationManager.authorizationStatus() {
-        case .authorizedAlways, .authorizedWhenInUse:
-            checkLocationServices()
+        #warning("print delete")
+        print("step 3 - LocationStatusChanged")
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.startUpdatingLocation()
             break
         default:
-            showAPIFailedAlert(for: "Enable location to get weather information for your location or search for your place manually.")
+            manager.requestWhenInUseAuthorization()
             break
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        switch status {
-        case .authorizedWhenInUse:
-            viewModel.getNewScreenData.send()
-            break
-        case .notDetermined:
-            manager.requestWhenInUseAuthorization()
-        default:
-            break
+        if let coordinate = locationManager.location?.coordinate {
+            
+            viewModel.getCityIdForLocation.send(coordinate)
         }
     }
 }

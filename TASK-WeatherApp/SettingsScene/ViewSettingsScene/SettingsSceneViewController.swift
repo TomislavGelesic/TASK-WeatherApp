@@ -112,7 +112,8 @@ class SettingsSceneViewController: UIViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: false)
-        viewModel.refreshUISubject.send(true)
+        
+//        viewModel.refreshUISubject.send(true) // it requests subscription data once because its currentSubject - do i need this request?
 
     }
     
@@ -166,11 +167,6 @@ extension SettingsSceneViewController {
         navigationController?.navigationBar.isTranslucent = true
     }
     
-    @objc func backButtonPressed() {
-        
-        coordinator.returnToHomeScene()
-    }
-    
     func setSubviews() {
         view.addSubviews([
             locationsLabelDescription,
@@ -190,6 +186,11 @@ extension SettingsSceneViewController {
         applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
     }
     
+    @objc func backButtonPressed() {
+        
+        coordinator.returnToHomeScene()
+    }
+    
     @objc func applyButtonTapped() {
         
         viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(), wantedCity: nil, conditions: conditionsCheckBox.getSelectedConditions())
@@ -203,6 +204,9 @@ extension SettingsSceneViewController {
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (_) in
+                
+                #warning("delete print")
+                print("step 4")
                 
                 self.locationsCollectionView.reloadData()
                 

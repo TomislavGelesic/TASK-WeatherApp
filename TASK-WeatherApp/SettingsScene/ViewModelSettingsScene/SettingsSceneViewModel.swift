@@ -28,6 +28,7 @@ class SettingsSceneViewModel {
     
     deinit {
         print("SettingsSceneViewModel deinit")
+
     }
 }
 
@@ -43,7 +44,6 @@ extension SettingsSceneViewModel {
     }
     
     func saveUserSettings(measurmentUnit: MeasurementUnits?, wantedCity position: Int?, conditions: [ConditionTypes]?) {
-        
         if let unitToSave = measurmentUnit {
             
             switch unitToSave {
@@ -56,8 +56,8 @@ extension SettingsSceneViewModel {
             }
         }
         
-        if let position = position {
-            userSettings.lastCityId = savedLocations[position].id
+        if let index = position {
+            userSettings.lastCityId = savedLocations[index].id
         }
                 
         if let conditionsToSave = conditions {

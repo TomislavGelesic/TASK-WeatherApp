@@ -8,12 +8,12 @@ class HomeSceneRepositoryImpl {
 
 extension HomeSceneRepositoryImpl: WeatherRepository {
     
-    func fetchNewData() -> AnyPublisher<WeatherResponse, NetworkError> {
+    func fetchWeatherData(id: String) -> AnyPublisher<WeatherResponse, NetworkError> {
         
         var path = String()
         path.append(Constants.OpenWeatherMapORG.BASE)
         path.append(Constants.OpenWeatherMapORG.GET_CITY_BY_ID)
-        path.append(UserDefaultsService.fetchUpdated().lastCityId)
+        path.append("\(id)")
         path.append(Constants.OpenWeatherMapORG.KEY)
         
         switch UserDefaultsService.fetchUpdated().measurmentUnit {

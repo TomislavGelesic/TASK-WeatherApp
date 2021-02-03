@@ -42,10 +42,11 @@ extension UIViewController {
     func setBackgroundImage(with image: UIImage?) {
         let imageView = UIImageView(image: image)
         
-        view.addSubview(imageView)
-        
+        view.insertSubview(imageView, at: 0)
         imageView.snp.makeConstraints { (make) in
             make.edges.equalTo(view)
         }
+        
+        view.layoutIfNeeded()
     }
 }

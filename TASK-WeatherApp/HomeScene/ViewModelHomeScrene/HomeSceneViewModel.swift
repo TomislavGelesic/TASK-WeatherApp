@@ -21,7 +21,7 @@ class HomeSceneViewModel {
     
     var getNewScreenData = PassthroughSubject<Void, Never>()
     
-    var getCityIdForLocation = CurrentValueSubject<CLLocationCoordinate2D?, Never>(nil)
+    var getCityIdForLocation = PassthroughSubject<CLLocationCoordinate2D?, Never>()
     
     var screenData = WeatherInfo()
     
@@ -42,7 +42,7 @@ extension HomeSceneViewModel {
         return subject
             .flatMap {[unowned self] (_) -> AnyPublisher<WeatherResponse, NetworkError> in
                 self.spinnerSubject.send(true)
-                return self.homeSceneRepositoryImpl.fetchNewData()
+                return self.homeSceneRepositoryImpl.fetchWeatherData(id: UserDefaultsService.fetchUpdated().lastCityId)
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
@@ -69,29 +69,18 @@ extension HomeSceneViewModel {
         return subject
             .flatMap({ [unowned self] (coordinate) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 
+                var search = ""
+                
                 if let safeCoordinate = coordinate {
-                    let search = "lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)"
-                    print("lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)")
-                    self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
-                        .receive(on: RunLoop.main)
-                        .subscribe(on: RunLoop.main)
-                        .sink { (completion) in
-                        } receiveValue: { (response) in
-                            
-                            if let id = response.geonames.first?.geonameId {
-                                
-                                UserDefaultsService.updateUserSettings(measurmentUnit: nil,
-                                                                       lastCityId: String(id),
-                                                                       shouldShowWindSpeed: nil,
-                                                                       shouldShowPressure: nil,
-                                                                       shouldShowHumidity: nil)
-                            }
-                        }.cancel()
-
+                    
+                    search = "lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)"
+                    return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
                 }
-                let search = "lat=48.210033&lng=16.363449)"
-                return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
-            
+                else {
+                    
+                    search = Constants.DEFAULT_VIENNA_LATITUDE_LONGITUDE
+                    return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
+                }
             })
             .receive(on: RunLoop.main)
             .subscribe(on: DispatchQueue.global(qos: .background))
@@ -101,18 +90,18 @@ extension HomeSceneViewModel {
                 case .finished:
                     break
                 case .failure(_):
-                    
                     break
                 }
             } receiveValue: { [unowned self] (response) in
                 
-                if let id = response.geonames.first?.geonameId {
-                    
+                if let item = response.geonames.first {
+                    #warning("im here for background error 53 - software erminates background fetch.\n- because i detected error on core data update")
                     UserDefaultsService.updateUserSettings(measurmentUnit: nil,
-                                                           lastCityId: String(id),
+                                                           lastCityId: String(item.geonameId),
                                                            shouldShowWindSpeed: nil,
                                                            shouldShowPressure: nil,
                                                            shouldShowHumidity: nil)
+                    CoreDataService.sharedInstance.save(item)
                     self.getNewScreenData.send()
                 }
             }

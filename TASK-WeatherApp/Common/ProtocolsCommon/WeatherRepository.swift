@@ -4,6 +4,6 @@ import Combine
 
 protocol WeatherRepository {
     
-    func fetchNewData() -> AnyPublisher<WeatherResponse, NetworkError> 
+    func fetchWeatherData(id: String) -> AnyPublisher<WeatherResponse, NetworkError>
     
 }

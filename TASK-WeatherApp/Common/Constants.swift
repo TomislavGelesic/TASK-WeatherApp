@@ -11,10 +11,11 @@ import Foundation
 struct Constants{
     
     static let DEFAULT_CITY_ID = "2761369"
+    static let DEFAULT_VIENNA_LATITUDE_LONGITUDE = "lat=48.20849&lng=16.37208"
     
     struct GeoNamesORG  {
         
-        static let BASE_HomeScene = "https://secure.geonames.org/findNearbyPlaceName?"
+        static let BASE_HomeScene = "https://secure.geonames.org/findNearbyPlaceNameJSON?"
         
         static let BASE_SearchScene = "https://secure.geonames.org/searchJSON?"
         

@@ -53,6 +53,8 @@ extension AppCoordinator {
         userDefaults.setValue(settings.shouldShowHumidity, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
         userDefaults.setValue(settings.shouldShowPressure, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
         userDefaults.setValue(settings.shouldShowWindSpeed, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
+        userDefaults.setValue(settings.weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
+        userDefaults.setValue(settings.dayTime, forKey: Constants.UserDefaults.IS_DAY_TIME)
     }
     
     func childDidFinish(_ coordinator: Coordinator, goTo nextScene: SceneOption) {
@@ -68,10 +70,7 @@ extension AppCoordinator {
             }
         }
         
-        if indexToRemove >= 0 {
-            childCoordinators.remove(at: indexToRemove)
-
-        }
+        childCoordinators.removeAll()
         
         switch nextScene {
         case .homeScene:
@@ -81,6 +80,9 @@ extension AppCoordinator {
             goToSearchScene()
             break
         case .settingsScene:
+            
+                #warning("delete print")
+                print("step 2")
             goToSettingsScene()
             break
         }

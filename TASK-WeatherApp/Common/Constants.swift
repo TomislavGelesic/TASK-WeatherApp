@@ -56,6 +56,7 @@ struct Constants{
         static let MEASURMENT_UNIT = "measurmentunit"
         static let WEATHER_TYPE = "weathertype"
         static let IS_DAY_TIME = "daytime"
+        static let SHOULD_SHOW_USER_LOCATION_WEATHER = "shouldShowUserLocationWeather"
     }
 }
 

@@ -24,8 +24,8 @@ extension HomeSceneRepositoryImpl: WeatherRepository {
             path.append(Constants.OpenWeatherMapORG.WITH_IMPERIAL_UNITS)
             break
         }
-        guard let urlPath = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR WEATHER") }
         
+        guard let urlPath = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR WEATHER") }
         
         return NetworkService().fetchData(for: urlPath)
     }

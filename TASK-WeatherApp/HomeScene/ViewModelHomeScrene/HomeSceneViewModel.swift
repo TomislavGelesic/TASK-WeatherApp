@@ -55,7 +55,7 @@ extension HomeSceneViewModel {
                     break
                 case .failure(let error):
                     print(error)
-                    self.alertSubject.send("Error connecting to 'openweather.org' service.")
+                    self.alertSubject.send("Unable to connect to 'openweather.org' service.")
                 }
             }, receiveValue: {[unowned self] data in
                 self.screenData = data
@@ -71,7 +71,8 @@ extension HomeSceneViewModel {
                 
                 var search = ""
                 
-                if let safeCoordinate = coordinate {
+                if let safeCoordinate = coordinate,
+                   UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
                     
                     search = "lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)"
                     return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)

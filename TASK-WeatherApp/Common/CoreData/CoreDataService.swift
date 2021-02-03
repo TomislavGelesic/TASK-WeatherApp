@@ -112,20 +112,15 @@ extension CoreDataService {
         
         let managedContext = persistentContainer.viewContext
         
-        if let _ = get(id: Int64(item.geonameId))?.first {
-            #warning("print delete")
-            print("\(item.name) already saved.")
-            return
-            
-        }
-        else {
-            let city = CityWeather(context: managedContext)
-            
-            city.setValue(Int64(item.geonameId), forKey: "id")
-            city.setValue(item.name, forKey: "name")
-            
-            saveContext()
-        }
+        guard let _ = get(id: Int64(item.geonameId))?.first else { return }
+        
+        let city = CityWeather(context: managedContext)
+        
+        city.setValue(Int64(item.geonameId), forKey: "id")
+        city.setValue(item.name, forKey: "name")
+        
+        saveContext()
+        
     }
     
     func delete(_ id: Int64) {

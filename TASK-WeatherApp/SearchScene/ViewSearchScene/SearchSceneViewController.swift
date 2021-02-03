@@ -124,10 +124,12 @@ extension SearchSceneViewController {
         
         if let validText = inputField.text {
             if validText.isEmpty {
+                
                 viewModel.screenData.removeAll()
                 viewModel.refreshUISubject.send()
             } else {
-                viewModel.inputSubject.send(validText)
+                
+                viewModel.fetchCitySubject.send(validText)
             }
         }
         
@@ -199,16 +201,14 @@ extension SearchSceneViewController {
         viewModel.initializeFetchSubject(subject: viewModel.fetchCitySubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
-        viewModel.initializeInputSubject(subject: viewModel.inputSubject.eraseToAnyPublisher())
-            .store(in: &disposeBag)
-        
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (_) in
-
+                
                 if let text = inputField.text,
                    text.isEmpty {
+                    
                     viewModel.screenData.removeAll()
                 }
                 self.tableView.reloadData()
@@ -246,7 +246,9 @@ extension SearchSceneViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         viewModel.saveCity(at: indexPath.row)
-        
+        inputField.text = ""
+        inputField.resignFirstResponder()
+        UserDefaultsService.setShouldShowUserLocationWeather(false)
         coordinator.goToHomeScene()
     }
 }

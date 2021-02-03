@@ -10,8 +10,6 @@ import SnapKit
 
 class ConditionsCheckBox: UIView {
     
-    weak var delegate: ConditionsRadioButtonDelegate?
-    
     let humidityCheckBoxWithImage: CheckBox = {
         let image = UIImage(named: "humidity_icon")?.withRenderingMode(.alwaysTemplate)
         let box = CheckBox(with: image, active: false)
@@ -74,19 +72,16 @@ extension ConditionsCheckBox {
     @objc func humidityRadioButtonTapped() {
         
         humidityCheckBoxWithImage.radioButton.isSelected = !humidityCheckBoxWithImage.radioButton.isSelected
-        delegate?.radioButtonTapped(type: .humidity)
     }
     
     @objc func windRadioButtonTapped() {
         
         windCheckBoxWithImage.radioButton.isSelected = !windCheckBoxWithImage.radioButton.isSelected
-        delegate?.radioButtonTapped(type: .wind)
     }
     
     @objc func pressureRadioButtonTapped() {
         
         pressureCheckBoxWithImage.radioButton.isSelected = !pressureCheckBoxWithImage.radioButton.isSelected
-        delegate?.radioButtonTapped(type: .pressure)
     }
     
     func getSelectedConditions() -> [ConditionTypes] {

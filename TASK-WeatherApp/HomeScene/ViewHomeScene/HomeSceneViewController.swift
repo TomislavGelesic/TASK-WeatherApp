@@ -160,13 +160,6 @@ class HomeSceneViewController: UIViewController {
         setSubscribers()
         setLocationManager()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
-    }
-    
 }
 
 extension HomeSceneViewController {
@@ -215,8 +208,6 @@ extension HomeSceneViewController {
     }
     
     @objc func settingsButtonTapped() {
-        #warning("delete print")
-        print("step 1")
         coordinator.goToSettingsScene()
     }
     
@@ -306,9 +297,6 @@ extension HomeSceneViewController {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
-        
-        #warning("print delete")
-        print("step 2 - LocationManager init")
     }
     
 }
@@ -327,11 +315,12 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
-        #warning("print delete")
-        print("step 3 - LocationStatusChanged")
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
+            break
+        case .denied:
+            viewModel.getNewScreenData.send()
             break
         default:
             manager.requestWhenInUseAuthorization()
@@ -341,9 +330,12 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        if let coordinate = locationManager.location?.coordinate {
+        if let coordinate = locationManager.location?.coordinate,
+           UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
             
             viewModel.getCityIdForLocation.send(coordinate)
+        } else {
+            viewModel.getNewScreenData.send()
         }
     }
 }
@@ -386,7 +378,7 @@ extension HomeSceneViewController {
     func setConstraintsOnCityNameLabel() {
         cityNameLabel.snp.makeConstraints { (make) in
             make.top.equalTo(weatherDescriptionLabel.snp.bottom).offset(30)
-            make.width.equalTo(view.frame.width / 2)
+            make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.centerX.equalTo(view.snp.centerX)
             make.height.equalTo(30)
         }

@@ -20,8 +20,6 @@ class SearchSceneViewModel {
     
     var refreshUISubject = PassthroughSubject<Void, Never>()
     
-    var inputSubject = CurrentValueSubject<String, Never>("")
-    
     let fetchCitySubject = PassthroughSubject<String, Never>()
     
     init(searchRepository: GeoNamesRepository) {
@@ -36,22 +34,11 @@ class SearchSceneViewModel {
 
 extension SearchSceneViewModel {
     
-    func initializeInputSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
+    func initializeFetchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
         
         return subject
             .throttle(for: 0.5, scheduler: DispatchQueue.global(), latest: true)
             .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { (completion) in
-                
-            } receiveValue: { [unowned self] (searchText) in
-                self.fetchCitySubject.send(searchText)
-            }
-    }
-    
-    func initializeFetchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
-        
-        return subject
             .flatMap { [unowned self] (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 
                 return self.searchRepository.fetchSearchResult(for: searchText)
@@ -75,7 +62,6 @@ extension SearchSceneViewModel {
     func saveCity(at position: Int) {
         
         let item = screenData[position]
-        
         UserDefaultsService.updateUserSettings(measurmentUnit: nil,
                                                lastCityId: String(item.geonameId),
                                                shouldShowWindSpeed: nil,

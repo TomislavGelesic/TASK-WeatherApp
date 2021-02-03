@@ -17,8 +17,9 @@ class UserDefaultsService {
     var shouldShowHumidity: Bool = false
     var weatherType: Int = 800
     var dayTime: Bool = true
+    var shouldShowUserLocationWeather: Bool = true
     
-    init(measurmentUnit: MeasurementUnits = .metric, lastCityId: String = "2761369", shouldShowWindSpeed: Bool = false, shouldShowPressure: Bool = false, shouldShowHumidity: Bool = false, weatherType: Int = 800, dayTime: Bool = true) {
+    init(measurmentUnit: MeasurementUnits = .metric, lastCityId: String = "2761369", shouldShowWindSpeed: Bool = false, shouldShowPressure: Bool = false, shouldShowHumidity: Bool = false, weatherType: Int = 800, dayTime: Bool = true, shouldShowUserLocationWeather: Bool = true) {
         self.measurmentUnit = measurmentUnit
         self.lastCityId = lastCityId
         self.shouldShowWindSpeed = shouldShowWindSpeed
@@ -26,6 +27,7 @@ class UserDefaultsService {
         self.shouldShowHumidity = shouldShowHumidity
         self.weatherType = weatherType
         self.dayTime = dayTime
+        self.shouldShowUserLocationWeather = shouldShowUserLocationWeather
     }
 }
 
@@ -69,6 +71,10 @@ extension UserDefaultsService {
             userSettings.dayTime = dayTime
         }
         
+        if let status = userDefaults.value(forKey: Constants.UserDefaults.SHOULD_SHOW_USER_LOCATION_WEATHER) as? Bool {
+            userSettings.shouldShowUserLocationWeather = status
+        }
+        
         return userSettings
     }
     
@@ -87,26 +93,18 @@ extension UserDefaultsService {
         
         if let value = lastCityId {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.CITY_ID)
-            #warning("print delete")
-            print("saving lastCityID as \(value)")
         }
         
         if let value = shouldShowPressure {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
-            #warning("print delete")
-            print("saving pressure as \(value)")
         }
         
         if let value = shouldShowHumidity {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
-            #warning("print delete")
-            print("saving humidity as \(value)")
         }
         
         if let value = shouldShowWindSpeed {
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
-            #warning("print delete")
-            print("saving windSpeed as \(value)")
         }
     }
     
@@ -159,5 +157,10 @@ extension UserDefaultsService {
             }
             return UIImage(named: "body_image-clear-night")
         }
+    }
+    
+    static func setShouldShowUserLocationWeather (_ value: Bool) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_USER_LOCATION_WEATHER)
     }
 }

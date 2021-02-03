@@ -58,8 +58,13 @@ extension SettingsSceneViewModel {
         
         if let index = position {
             userSettings.lastCityId = savedLocations[index].id
+            UserDefaultsService.setShouldShowUserLocationWeather(false)
         }
-                
+        
+        userSettings.shouldShowHumidity = false
+        userSettings.shouldShowPressure = false
+        userSettings.shouldShowWindSpeed = false
+        
         if let conditionsToSave = conditions {
             for condition in conditionsToSave {
                 switch condition {
@@ -84,6 +89,7 @@ extension SettingsSceneViewModel {
                                                shouldShowHumidity: userSettings.shouldShowHumidity)
         
         userSettings = UserDefaultsService.fetchUpdated()
+        
         refreshUISubject.send(true)
     }
 }

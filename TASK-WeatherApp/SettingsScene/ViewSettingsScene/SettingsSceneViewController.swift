@@ -112,9 +112,6 @@ class SettingsSceneViewController: UIViewController {
         super.viewWillAppear(animated)
         
         navigationController?.setNavigationBarHidden(false, animated: false)
-        
-//        viewModel.refreshUISubject.send(true) // it requests subscription data once because its currentSubject - do i need this request?
-
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -205,9 +202,6 @@ extension SettingsSceneViewController {
             .receive(on: RunLoop.main)
             .sink { [unowned self] (_) in
                 
-                #warning("delete print")
-                print("step 4")
-                
                 self.locationsCollectionView.reloadData()
                 
                 self.unitsCheckBox.setActiveRadioButton(for: UserDefaultsService.fetchUpdated().measurmentUnit)
@@ -240,17 +234,11 @@ extension SettingsSceneViewController: UICollectionViewDataSource {
         
         let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.configure(with: viewModel.savedLocations[indexPath.row])
-
         cell.removeButtonAction = { [unowned self] in
-            
             self.viewModel.remove(at: indexPath.row)
         }
-        
         return cell
     }
-    
-    
-    
 }
 
 extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
@@ -260,14 +248,15 @@ extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
         let cellHeight = CGFloat(30.0)
         return CGSize(width: cellWidth, height: cellHeight)
     }
-    
 }
 
 extension SettingsSceneViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        viewModel.saveUserSettings(measurmentUnit: nil, wantedCity: indexPath.row, conditions: nil)
+        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(),
+                                   wantedCity: indexPath.row,
+                                   conditions: conditionsCheckBox.getSelectedConditions())
         coordinator.returnToHomeScene()
     }
 }

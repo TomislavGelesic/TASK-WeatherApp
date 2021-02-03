@@ -61,11 +61,8 @@ extension AppCoordinator {
         
         navigationController.viewControllers.removeAll()
         
-        var indexToRemove = 0
-        
         for (index, childCoordinator) in childCoordinators.enumerated() {
             if childCoordinator === coordinator {
-                indexToRemove = index
                 print("Child (\(childCoordinator.self)) with index \(index) did finish. ")
             }
         }
@@ -80,9 +77,6 @@ extension AppCoordinator {
             goToSearchScene()
             break
         case .settingsScene:
-            
-                #warning("delete print")
-                print("step 2")
             goToSettingsScene()
             break
         }

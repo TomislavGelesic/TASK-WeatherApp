@@ -21,8 +21,7 @@ extension UIViewController {
     }
     
     func showAPIFailedAlert(for errorMessage: String) {
-        #warning("return here")
-//        "No weather data for this city, yet!"
+        
         let alert: UIAlertController = {
             let alert = UIAlertController(title: "Sorry", message: errorMessage, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .cancel))
@@ -40,13 +39,10 @@ extension UIViewController {
     }
     
     func setBackgroundImage(with image: UIImage?) {
-        let imageView = UIImageView(image: image)
-        
+        let imageView = UIImageView(frame: view.frame)
+        imageView.image = image
+        imageView.setNeedsLayout()
         view.insertSubview(imageView, at: 0)
-        imageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
-        
         view.layoutIfNeeded()
     }
 }

@@ -7,73 +7,126 @@
 
 import UIKit
 import Combine
+import MapKit
 
 class HomeSceneViewModel {
     
-    var cityWeatherRepository: NetworkRepository
+    var homeSceneRepositoryImpl: HomeSceneRepositoryImpl
     
-    var userSettings = UserDefaultsService.fetchUpdated()
+    var spinnerSubject = PassthroughSubject<Bool, Never>()
     
-    var refreshUISubject = PassthroughSubject<WeatherInfo, Never>()
+    var alertSubject = PassthroughSubject<String, Never>()
     
-    var fetchWeatherSubject = CurrentValueSubject<Bool, Never>(true)
+    var refreshUISubject = PassthroughSubject<Void, Never>()
     
-    init(repository: NetworkRepository) {
-        cityWeatherRepository = repository
+    var getNewScreenData = PassthroughSubject<Void, Never>()
+    
+    var getCityIdForLocation = PassthroughSubject<CLLocationCoordinate2D?, Never>()
+    
+    var screenData = WeatherInfo()
+    
+    init(repository: HomeSceneRepositoryImpl) {
+        
+        homeSceneRepositoryImpl = repository
+    }
+    
+    deinit {
+        print("HomeSceneViewModel deinit")
     }
 }
 
 extension HomeSceneViewModel {
     
-    func initializeFetchWeatherSubject(subject: AnyPublisher<Bool, Never>) -> AnyCancellable {
+    func initializeScreenData(for subject: AnyPublisher<Void, Never>) -> AnyCancellable {
         
         return subject
-            .flatMap { [unowned self] (_) -> AnyPublisher<CityWeatherResponse, NetworkError> in
-                
-                var path = String()
-                
-                path.append(Constants.OpenWeatherMapORG.BASE)
-                path.append(Constants.OpenWeatherMapORG.GET_CITY_BY_ID)
-                path.append(userSettings.lastCityId)
-                path.append(Constants.OpenWeatherMapORG.KEY)
-                
-                
-                switch userSettings.measurmentUnit {
-                case .metric:
-                    path.append(Constants.OpenWeatherMapORG.WITH_METRIC_UNITS)
-                    break
-                case .imperial:
-                    path.append(Constants.OpenWeatherMapORG.WITH_IMPERIAL_UNITS)
-                    break
-                }
-                guard let urlPath = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR WEATHER") }
-                
-                return self.cityWeatherRepository.getNetworkSubject(ofType: CityWeatherResponse.self, for: urlPath)
+            .flatMap {[unowned self] (_) -> AnyPublisher<WeatherResponse, NetworkError> in
+                self.spinnerSubject.send(true)
+                return self.homeSceneRepositoryImpl.fetchWeatherData(id: UserDefaultsService.fetchUpdated().lastCityId)
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { (completion) in
-                
+            .map({ [unowned self] (weatherResponse) -> WeatherInfo in
+                return self.createCityWeatherItem(from: weatherResponse)
+            })
+            .sink(receiveCompletion: { [unowned self] completion in
                 switch completion {
                 case .finished:
                     break
                 case .failure(let error):
                     print(error)
+                    self.alertSubject.send("Unable to connect to 'openweather.org' service.")
+                }
+            }, receiveValue: {[unowned self] data in
+                self.screenData = data
+                self.refreshUISubject.send()
+                self.spinnerSubject.send(false)
+            })
+    }
+    
+    func initializeLocationSubject(subject: AnyPublisher<CLLocationCoordinate2D?, Never>) -> AnyCancellable {
+        
+        return subject
+            .flatMap({ [unowned self] (coordinate) -> AnyPublisher<GeoNameResponse, NetworkError> in
+                
+                var search = ""
+                
+                if let safeCoordinate = coordinate,
+                   UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
+                    
+                    search = "lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)"
+                    return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
+                }
+                else {
+                    
+                    search = Constants.DEFAULT_VIENNA_LATITUDE_LONGITUDE
+                    return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
+                }
+            })
+            .receive(on: RunLoop.main)
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .sink { (completion) in
+                
+                switch completion {
+                case .finished:
+                    break
+                case .failure(_):
                     break
                 }
             } receiveValue: { [unowned self] (response) in
                 
-                let weatherInfo = self.createCityWeatherItem(from: response)
-                CoreDataService.sharedInstance.save(weatherInfo)
-                self.refreshUISubject.send(weatherInfo)
+                if let item = response.geonames.first {
+                    #warning("im here for background error 53 - software erminates background fetch.\n- because i detected error on core data update")
+                    UserDefaultsService.updateUserSettings(measurmentUnit: nil,
+                                                           lastCityId: String(item.geonameId),
+                                                           shouldShowWindSpeed: nil,
+                                                           shouldShowPressure: nil,
+                                                           shouldShowHumidity: nil)
+                    CoreDataService.sharedInstance.save(item)
+                    self.getNewScreenData.send()
+                }
             }
-
-            
     }
     
-    func getConditions() -> [ConditionTypes] {
+    func createCityWeatherItem(from response: WeatherResponse) -> WeatherInfo {
         
-        userSettings = UserDefaultsService.fetchUpdated()
+        return WeatherInfo(id:                      String(response.id),
+                           cityName:                String(response.name),
+                           weatherDescription:      String(response.weather.description),
+                           pressure:                String(response.main.pressure),
+                           windSpeed:               String(response.wind.speed),
+                           humidity:                String(response.main.humidity),
+                           min_Temperature:         String(response.main.temp_min),
+                           current_Temperature:     String(response.main.temp),
+                           max_Temperature:         String(response.main.temp_max),
+                           weatherType:             String(response.weather.id),
+                           daytime:                 response.weather.icon.suffix(1) == "d" ? true : false
+        )
+    }
+    
+    func getConditionsToShow() -> [ConditionTypes] {
+        
+        let userSettings = UserDefaultsService.fetchUpdated()
         
         var conditions = [ConditionTypes]()
         
@@ -92,18 +145,11 @@ extension HomeSceneViewModel {
         return conditions
     }
     
-    func createCityWeatherItem(from response: CityWeatherResponse) -> WeatherInfo {
-
-        return WeatherInfo(id: String(response.id),
-                               cityName: String(response.name),
-                               weatherDescription: String(response.weather.description),
-                               pressure: String(response.main.pressure),
-                               windSpeed: String(response.wind.speed),
-                               humidity: String(response.main.humidity),
-                               min_Temperature: String(response.main.temp_min),
-                               current_Temperature: String(response.main.temp),
-                               max_Temperature: String(response.main.temp_max),
-                               weatherType: String(response.weather.id)
-        )
+    func getUserSettings() -> UserDefaultsService {
+        
+        return UserDefaultsService.fetchUpdated()
     }
+    
+    
+    
 }

@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import SnapKit
+
 extension UIViewController {
     
     func showSpinner() {
@@ -18,10 +20,10 @@ extension UIViewController {
         SpinnerViewManager.removeSpinnerView()
     }
     
-    func showAPIFailedAlert(for errorMessage: String, completion: (() -> ())?) {
+    func showAPIFailedAlert(for errorMessage: String) {
         
         let alert: UIAlertController = {
-            let alert = UIAlertController(title: "Error", message: "Ups, error occured!\n\(errorMessage)", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Sorry", message: errorMessage, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .cancel))
             return alert
         }()
@@ -34,5 +36,13 @@ extension UIViewController {
     func getTopBarHeight() -> CGFloat {
         
         return UIApplication.shared.statusBarFrame.size.height + (navigationController?.navigationBar.frame.height ?? 0.0)
+    }
+    
+    func setBackgroundImage(with image: UIImage?) {
+        let imageView = UIImageView(frame: view.frame)
+        imageView.image = image
+        imageView.setNeedsLayout()
+        view.insertSubview(imageView, at: 0)
+        view.layoutIfNeeded()
     }
 }

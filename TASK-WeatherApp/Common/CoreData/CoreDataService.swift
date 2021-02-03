@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import Combine
 
 class CoreDataService {
     
@@ -42,7 +43,7 @@ extension CoreDataService {
         }
     }
     
-    func get(_ option: SavedCitiesOptions) -> [CityWeather]? {
+    func get(_ option: SavedCitiesOptions) -> [WeatherInfo]? {
         
         let managedContext = persistentContainer.viewContext
         
@@ -56,6 +57,32 @@ extension CoreDataService {
             request.predicate = NSPredicate(format: "id == \(id)")
             break
         }
+        
+        do {
+            let savedCities = try managedContext.fetch(request)
+            
+            var weatherInfo = [WeatherInfo]()
+            
+            for city in savedCities {
+                
+                weatherInfo.append(WeatherInfo(city))
+            }
+            return weatherInfo
+            
+        } catch  {
+            print(error)
+        }
+        
+        return nil
+    }
+    
+    private func get(id: Int64) -> [CityWeather]? {
+        
+        let managedContext = persistentContainer.viewContext
+        
+        let request = CityWeather.fetchRequest() as NSFetchRequest<CityWeather>
+        
+        request.predicate = NSPredicate(format: "id == \(id)")
         
         do {
             let savedCities = try managedContext.fetch(request)
@@ -85,17 +112,20 @@ extension CoreDataService {
         
         let managedContext = persistentContainer.viewContext
         
+        guard let _ = get(id: Int64(item.geonameId))?.first else { return }
+        
         let city = CityWeather(context: managedContext)
         
         city.setValue(Int64(item.geonameId), forKey: "id")
         city.setValue(item.name, forKey: "name")
         
         saveContext()
+        
     }
     
     func delete(_ id: Int64) {
         
-        if let savedMovie = get(.byId(id: id))?.first {
+        if let savedMovie = get(id: id)?.first {
             
             let managedContext = persistentContainer.viewContext
             
@@ -105,13 +135,14 @@ extension CoreDataService {
         }
     }
     
-    
     func deleteAll() {
         
         if let toDelete = get(.all) {
             
             for city in toDelete {
-                delete(Int64(city.id))
+                if let id = Int64(city.id) {
+                    delete(id)
+                }
             }
         }
     }

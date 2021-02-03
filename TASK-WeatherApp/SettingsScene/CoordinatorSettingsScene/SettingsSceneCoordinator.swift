@@ -19,6 +19,10 @@ class SettingsSceneCoordinator: Coordinator {
         self.parentCoordinator = parentCoordinator
         self.navigationController = navigationController
     }
+    
+    deinit {
+        print("SettingsSceneCoordinator deinit")
+    }
 }
 
 extension SettingsSceneCoordinator {
@@ -32,6 +36,6 @@ extension SettingsSceneCoordinator {
     
     func returnToHomeScene() {
         
-        parentCoordinator.goToHomeScene()
+        parentCoordinator.childDidFinish(self, goTo: .homeScene)
     }
 }

@@ -11,10 +11,13 @@ import Foundation
 struct Constants{
     
     static let DEFAULT_CITY_ID = "2761369"
+    static let DEFAULT_VIENNA_LATITUDE_LONGITUDE = "lat=48.20849&lng=16.37208"
     
     struct GeoNamesORG  {
         
-        static let BASE = "https://secure.geonames.org/searchJSON?"
+        static let BASE_HomeScene = "https://secure.geonames.org/findNearbyPlaceNameJSON?"
+        
+        static let BASE_SearchScene = "https://secure.geonames.org/searchJSON?"
         
         static let GET_CITY_BY_NAME = "name_startsWith="
         
@@ -51,6 +54,9 @@ struct Constants{
         static let SHOULD_SHOW_PRESSURE = "pressure"
         static let SHOULD_SHOW_WIND_SPEED = "windspeed"
         static let MEASURMENT_UNIT = "measurmentunit"
+        static let WEATHER_TYPE = "weathertype"
+        static let IS_DAY_TIME = "daytime"
+        static let SHOULD_SHOW_USER_LOCATION_WEATHER = "shouldShowUserLocationWeather"
     }
 }
 

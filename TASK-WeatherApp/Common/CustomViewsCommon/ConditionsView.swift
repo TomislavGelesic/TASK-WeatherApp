@@ -13,21 +13,25 @@ class ConditionView: UIView {
     let conditionImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 20
-        imageView.layer.masksToBounds = true
+        imageView.image = UIImage(systemName: "photo")?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .black
         return imageView
     }()
     
     let conditionValueLabel: UILabel = {
         let label = UILabel()
         label.text = "Value"
+        label.font = label.font.withSize(12)
+        label.textAlignment = .center
         label.backgroundColor = .clear
         return label
     }()
     
-    init() {
+    init(image: UIImage?) {
         super.init(frame: .zero)
+        backgroundColor = .red
         
+        conditionImageView.image = image
         setupViews()
     }
     
@@ -50,16 +54,26 @@ extension ConditionView {
     private func conditionImageViewConstraints() {
         
         conditionImageView.snp.makeConstraints { (make) in
-            make.top.leading.trailing.equalTo(self)
-            make.height.equalTo(self.frame.height/2)
+            make.top.equalTo(self).offset(5)
+            make.centerX.equalTo(self)
+            
+            /*
+             .priority = 999;
+             
+             enables 'isHidden' property auto-animation (on stackView arranged subview) to
+             take over process of setting frame to CGRect.zero and hide it
+            */
+            make.width.equalTo(60).priority(999)
+            make.height.equalTo(conditionImageView.snp.width)
         }
     }
     
     private func conditionValueLabelConstraints() {
         
         conditionValueLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(conditionImageView.snp.bottom).offset(10)
-            make.leading.trailing.bottom.equalTo(self).inset(UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10))
+            make.height.equalTo(20)
+            make.bottom.equalTo(self.snp.bottom)
+            make.leading.trailing.equalTo(self).inset(UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10))
         }
     }
 }

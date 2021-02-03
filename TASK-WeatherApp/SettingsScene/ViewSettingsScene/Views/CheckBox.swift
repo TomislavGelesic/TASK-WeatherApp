@@ -48,11 +48,11 @@ extension CheckBox {
         
         addSubviews([radioButton, radioButtonImage])
         
-        setConstraints_button()
-        setConstraints_descriptionImage()
+        setConstraintsOnButton()
+        setConstraintsOnDescriptionImage()
     }
     
-    func setConstraints_button() {
+    func setConstraintsOnButton() {
         radioButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
             make.centerX.equalTo(self)
@@ -60,7 +60,7 @@ extension CheckBox {
         }
     }
     
-    func setConstraints_descriptionImage() {
+    func setConstraintsOnDescriptionImage() {
         
         radioButtonImage.snp.makeConstraints { (make) in
             make.top.equalTo(radioButton.snp.bottom).offset(5)

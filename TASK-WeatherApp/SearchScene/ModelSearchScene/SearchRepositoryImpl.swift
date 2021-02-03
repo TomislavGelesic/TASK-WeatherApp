@@ -8,10 +8,22 @@
 import Foundation
 import Combine
 
-class SearchRepositoryImpl: NetworkRepository {
+class SearchRepositoryImpl: GeoNamesRepository {
     
-    func getNetworkSubject<DATA_TYPE: Codable>(ofType type: DATA_TYPE.Type, for url: URL) -> AnyPublisher<DATA_TYPE, NetworkError> {
+    
+    func fetchSearchResult(for searchText: String) -> AnyPublisher<GeoNameResponse, NetworkError> {
         
-        return GeoNamesNetworkService<DATA_TYPE>().fetch(url: url, as: type)
+        var path = String()
+        path.append(Constants.GeoNamesORG.BASE_SearchScene)
+        path.append(Constants.GeoNamesORG.GET_CITY_BY_NAME)
+        path.append(searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
+        path.append(Constants.GeoNamesORG.MAX_ROWS)
+        path.append("10")
+        path.append(Constants.GeoNamesORG.KEY)
+        
+        guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
+        
+        return NetworkService().fetchData(for: url).eraseToAnyPublisher()
     }
+    
 }

@@ -10,6 +10,8 @@ import UIKit
 
 class AppCoordinator: Coordinator {
     
+    var window: UIWindow?
+    
     var parentCoordinator: Coordinator? = nil
     
     var childCoordinators: [Coordinator] = []
@@ -21,7 +23,16 @@ class AppCoordinator: Coordinator {
         goToHomeScene()
     }
     
-    init(navigationController: UINavigationController) {
+    init() {
+        
+        window = UIWindow()
+        window?.backgroundColor = .white
+        
+        let navigationController = UINavigationController()
+        navigationController.setNavigationBarHidden(true, animated: false)
+        
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
         
         self.navigationController = navigationController
         
@@ -42,11 +53,38 @@ extension AppCoordinator {
         userDefaults.setValue(settings.shouldShowHumidity, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
         userDefaults.setValue(settings.shouldShowPressure, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
         userDefaults.setValue(settings.shouldShowWindSpeed, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
+        userDefaults.setValue(settings.weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
+        userDefaults.setValue(settings.dayTime, forKey: Constants.UserDefaults.IS_DAY_TIME)
+    }
+    
+    func childDidFinish(_ coordinator: Coordinator, goTo nextScene: SceneOption) {
+        
+        navigationController.viewControllers.removeAll()
+        
+        for (index, childCoordinator) in childCoordinators.enumerated() {
+            if childCoordinator === coordinator {
+                print("Child (\(childCoordinator.self)) with index \(index) did finish. ")
+            }
+        }
+        
+        childCoordinators.removeAll()
+        
+        switch nextScene {
+        case .homeScene:
+            goToHomeScene()
+            break
+        case .searchScene:
+            goToSearchScene()
+            break
+        case .settingsScene:
+            goToSettingsScene()
+            break
+        }
+        
+        
     }
     
     func goToHomeScene(){
-
-        childCoordinators.removeAll()
         
         let child = HomeSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
         
@@ -58,8 +96,6 @@ extension AppCoordinator {
     
     func goToSearchScene() {
         
-        childCoordinators.removeAll()
-        
         let child = SearchSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
         
         childCoordinators.append(child)
@@ -68,8 +104,6 @@ extension AppCoordinator {
     }
     
     func goToSettingsScene() {
-        
-        childCoordinators.removeAll()
         
         let child = SettingsSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
         

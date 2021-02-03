@@ -9,7 +9,7 @@ import UIKit
 
 class HomeSceneCoordinator: Coordinator {
     
-    var parentCoordinator: AppCoordinator
+    weak var parentCoordinator: AppCoordinator?
     
     var childCoordinators: [Coordinator] = [Coordinator]()
     
@@ -17,7 +17,7 @@ class HomeSceneCoordinator: Coordinator {
     
     func start() {
         
-        let viewModel = HomeSceneViewModel(repository: CityWeatherRepositoryImpl())
+        let viewModel = HomeSceneViewModel(repository: HomeSceneRepositoryImpl())
         
         let viewController = HomeSceneViewController(coordinator: self, viewModel: viewModel)
         
@@ -30,13 +30,17 @@ class HomeSceneCoordinator: Coordinator {
         self.navigationController = navigationController
     }
 
+    deinit {
+        print("HomeSceneCoordinator deinit")
+    }
+    
     func goToSearchScene() {
         
-        parentCoordinator.goToSearchScene()
+        parentCoordinator?.childDidFinish(self, goTo: .searchScene)
     }
     
     func goToSettingsScene() {
         
-        parentCoordinator.goToSettingsScene()
+        parentCoordinator?.childDidFinish(self, goTo: .settingsScene)
     }
 }

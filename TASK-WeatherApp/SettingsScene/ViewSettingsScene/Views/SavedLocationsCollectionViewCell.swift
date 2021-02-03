@@ -45,13 +45,13 @@ extension SavedLocationsCollectionViewCell {
         
         contentView.addSubviews([removeButton, cityNameLabel])
         
-        setConstraints_removeButton()
-        setConstraints_cityNameLabel()
+        setConstraintsOnRemoveButton()
+        setConstraintsOnCityNameLabel()
         
         removeButton.addTarget(self, action: #selector(removeButtonTapped), for: .touchUpInside)
     }
     
-    func setConstraints_removeButton() {
+    func setConstraintsOnRemoveButton() {
         
         removeButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
@@ -59,7 +59,7 @@ extension SavedLocationsCollectionViewCell {
         }
     }
     
-    func setConstraints_cityNameLabel() {
+    func setConstraintsOnCityNameLabel() {
         
         cityNameLabel.snp.makeConstraints { (make) in
             make.leading.equalTo(removeButton.snp.trailing)
@@ -68,9 +68,9 @@ extension SavedLocationsCollectionViewCell {
         }
     }
     
-    func configure(with city: CityWeather) {
+    func configure(with info: WeatherInfo) {
         
-        cityNameLabel.text = (city.name ?? "").uppercased()
+        cityNameLabel.text = info.cityName.uppercased()
     }
     
     @objc func removeButtonTapped() {

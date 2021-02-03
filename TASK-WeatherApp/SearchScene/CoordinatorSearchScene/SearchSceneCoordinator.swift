@@ -34,10 +34,14 @@ class SearchSceneCoordinator: Coordinator {
         self.navigationController = navigationController
     }
     
+    deinit {
+        print("SearchSceneCoordinator deinit")
+    }
+    
     func goToHomeScene() {
         
         navigationController.dismiss(animated: true, completion: nil)
         
-        parentCoordinator.goToHomeScene()
+        parentCoordinator.childDidFinish(self, goTo: .homeScene)
     }
 }

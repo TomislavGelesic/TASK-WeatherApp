@@ -15,12 +15,6 @@ class SearchSceneViewController: UIViewController {
     var viewModel: SearchSceneViewModel
     
     var coordinator: SearchSceneCoordinator
-   
-    let backgroundImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "body_image-clear-day")
-        return imageView
-    }()
     
     let cancelButton: UIButton = {
         let button = UIButton()
@@ -61,7 +55,8 @@ class SearchSceneViewController: UIViewController {
 
     
     deinit {
-        
+        print("SearchSceneViewController deinit")
+        print("SearchSceneViewController NotificationCenter observers removed")
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -78,9 +73,11 @@ class SearchSceneViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
         setupViews()
         setupKeyboardNotifications()
         setConstraints()
@@ -106,7 +103,7 @@ extension SearchSceneViewController {
     
     func setupViews() {
         
-        view.addSubviews([backgroundImageView, cancelButton, tableView, inputField])
+        view.addSubviews([cancelButton, tableView, inputField])
         
         searchIconContainer.addSubview(searchIcon)
         
@@ -126,12 +123,13 @@ extension SearchSceneViewController {
     @objc func inputFieldDidChange() {
         
         if let validText = inputField.text {
-            
             if validText.isEmpty {
-                viewModel.viewModelData.removeAll()
+                
+                viewModel.screenData.removeAll()
                 viewModel.refreshUISubject.send()
             } else {
-                viewModel.inputSubject.send(validText)
+                
+                viewModel.fetchCitySubject.send(validText)
             }
         }
         
@@ -168,7 +166,7 @@ extension SearchSceneViewController {
             options: animationCurve,
             animations: { [unowned self] in
                 
-                self.setConstraints_inputField(for: newBottomOffset_inputField)
+                self.setConstraintsOnInputField(for: newBottomOffset_inputField)
                 self.inputField.layoutIfNeeded()
             },
             completion: nil
@@ -191,14 +189,11 @@ extension SearchSceneViewController {
             options: animationCurve,
             animations: { [unowned self] in
                 
-                self.setConstraints_inputField(for: newBottomOffset)
+                self.setConstraintsOnInputField(for: newBottomOffset)
                 self.inputField.layoutIfNeeded()
             },
             completion: nil
         )
-        
-        coordinator.goToHomeScene()
-        
     }
     
     func setSubscribers() {
@@ -206,14 +201,16 @@ extension SearchSceneViewController {
         viewModel.initializeFetchSubject(subject: viewModel.fetchCitySubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
-        viewModel.initializeInputSubject(subject: viewModel.inputSubject.eraseToAnyPublisher())
-            .store(in: &disposeBag)
-        
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (_) in
-    
+                
+                if let text = inputField.text,
+                   text.isEmpty {
+                    
+                    viewModel.screenData.removeAll()
+                }
                 self.tableView.reloadData()
             }
             .store(in: &disposeBag)
@@ -225,6 +222,7 @@ extension SearchSceneViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         inputField.resignFirstResponder()
+        coordinator.goToHomeScene()
         return true
     }
 }
@@ -232,7 +230,7 @@ extension SearchSceneViewController: UITextFieldDelegate {
 extension SearchSceneViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.viewModelData.count
+        return viewModel.screenData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -248,7 +246,9 @@ extension SearchSceneViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         viewModel.saveCity(at: indexPath.row)
-        
+        inputField.text = ""
+        inputField.resignFirstResponder()
+        UserDefaultsService.setShouldShowUserLocationWeather(false)
         coordinator.goToHomeScene()
     }
 }
@@ -260,29 +260,21 @@ extension SearchSceneViewController {
     
     func setConstraints() {
         
-        setConstraints_backgroundImageView()
-        setConstraints_cancelButton()
-        setConstraints_availableCitiesTableView()
-        setConstraints_searchIcon()
-        setConstraints_searchIconContainer()
-        setConstraints_inputField(for: 100)
+        setConstraintsOnCancelButton()
+        setConstraintsOnAvailableCitiesTableView()
+        setConstraintsOnSearchIcon()
+        setConstraintsOnSearchIconContainer()
+        setConstraintsOnInputField(for: 100)
     }
     
-    func setConstraints_backgroundImageView() {
-        
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
-    }
-    
-    func setConstraints_cancelButton() {
+    func setConstraintsOnCancelButton() {
         cancelButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
             make.top.trailing.equalTo(view).inset(UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 5))
         }
     }
     
-    func setConstraints_availableCitiesTableView() {
+    func setConstraintsOnAvailableCitiesTableView() {
         
         tableView.snp.makeConstraints { (make) in
             make.top.equalTo(cancelButton.snp.bottom).offset(10)
@@ -291,7 +283,7 @@ extension SearchSceneViewController {
         }
     }
     
-    func setConstraints_searchIcon() {
+    func setConstraintsOnSearchIcon() {
         
         searchIcon.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
@@ -299,14 +291,14 @@ extension SearchSceneViewController {
         }
     }
     
-    func setConstraints_searchIconContainer() {
+    func setConstraintsOnSearchIconContainer() {
         searchIconContainer.snp.makeConstraints { (make) in
             make.width.equalTo(40)
             make.height.equalTo(20)
         }
     }
     
-    func setConstraints_inputField(for bottomOffset: CGFloat) {
+    func setConstraintsOnInputField(for bottomOffset: CGFloat) {
         
         inputField.snp.remakeConstraints { (make) in
             make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))

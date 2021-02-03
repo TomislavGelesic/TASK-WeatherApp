@@ -1,17 +1,18 @@
 //
-//  OpenWeatherMapNetworkService.swift
+//  NetworkService.swift
 //  TASK-WeatherApp
 //
-//  Created by Tomislav Gelesic on 17.01.2021..
+//  Created by Tomislav Gelesic on 29.01.2021..
 //
 
-import Foundation
+import UIKit
 import Combine
 import Alamofire
 
-class OpenWeatherMapNetworkService {
+class NetworkService {
     
-    func fetch<T: Codable>(url: URL, as: T.Type) -> AnyPublisher<T, NetworkError> {
+    func fetchData<T>(for url: URL) -> AnyPublisher<T, NetworkError> where T : Decodable, T : Encodable {
+        
         return Future<T, NetworkError> { promise in
             AF
                 .request(url)
@@ -20,6 +21,8 @@ class OpenWeatherMapNetworkService {
                     
                     if let data = response.data {
                         do {
+//                            let decodedData = try JSONSerialization.jsonObject(with: data, options: [])
+//                            print(decodedData)
                             let decoder = JSONDecoder()
                             let decodedData: T = try decoder.decode(T.self, from: data)
                             promise(.success(decodedData))
@@ -35,4 +38,5 @@ class OpenWeatherMapNetworkService {
                 }
         }.eraseToAnyPublisher()
     }
+    
 }

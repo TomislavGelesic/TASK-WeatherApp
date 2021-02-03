@@ -17,12 +17,6 @@ class SettingsSceneViewController: UIViewController {
     
     var coordinator: SettingsSceneCoordinator
     
-    let backgroundImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "body_image-clear-day")
-        return imageView
-    }()
-    
     let locationsLabelDescription: UILabel = {
         let label = UILabel()
         label.text = "Locations"
@@ -95,25 +89,29 @@ class SettingsSceneViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    deinit {
+        print("SettingsSceneViewController deinit")
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
         setNavigationBar()
         setSubviews()
         setConstraints()
         setSubscribers()
         
-        viewModel.refreshUISubject.send(viewModel.userSettings)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         navigationController?.setNavigationBarHidden(false, animated: false)
-
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -144,7 +142,7 @@ extension SettingsSceneViewController {
             let button = UIBarButtonItem(image: UIImage(systemName: "text.justify"),
                                          style: .plain,
                                          target: self,
-                                         action: #selector(backButtonPressed))
+                                         action: nil)
             button.tintColor = .black
             return button
         }()
@@ -153,7 +151,7 @@ extension SettingsSceneViewController {
         
         let titleLabel: UILabel = {
             let label = UILabel()
-            label.text = "settings".uppercased()
+            label.text = "SETTINGS"
             return label
         }()
         
@@ -166,14 +164,8 @@ extension SettingsSceneViewController {
         navigationController?.navigationBar.isTranslucent = true
     }
     
-    @objc func backButtonPressed() {
-        
-        coordinator.returnToHomeScene()
-    }
-    
     func setSubviews() {
         view.addSubviews([
-            backgroundImageView,
             locationsLabelDescription,
             locationsCollectionView,
             unitsLabelDescription,
@@ -191,9 +183,14 @@ extension SettingsSceneViewController {
         applyButton.addTarget(self, action: #selector(applyButtonTapped), for: .touchUpInside)
     }
     
+    @objc func backButtonPressed() {
+        
+        coordinator.returnToHomeScene()
+    }
+    
     @objc func applyButtonTapped() {
         
-        viewModel.saveUserSettings()
+        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(), wantedCity: nil, conditions: conditionsCheckBox.getSelectedConditions())
         
         coordinator.returnToHomeScene()
     }
@@ -203,20 +200,21 @@ extension SettingsSceneViewController {
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (settings) in
+            .sink { [unowned self] (_) in
                 
                 self.locationsCollectionView.reloadData()
-                self.unitsCheckBox.setActiveRadioButton(for: settings.measurmentUnit)
                 
-                if settings.shouldShowHumidity {
+                self.unitsCheckBox.setActiveRadioButton(for: UserDefaultsService.fetchUpdated().measurmentUnit)
+                
+                if UserDefaultsService.fetchUpdated().shouldShowHumidity {
                     self.conditionsCheckBox.setActive(for: .humidity)
                 }
                 
-                if settings.shouldShowPressure {
+                if UserDefaultsService.fetchUpdated().shouldShowPressure {
                     self.conditionsCheckBox.setActive(for: .pressure)
                 }
                 
-                if settings.shouldShowWindSpeed {
+                if UserDefaultsService.fetchUpdated().shouldShowWindSpeed {
                     self.conditionsCheckBox.setActive(for: .windSpeed)
                 }
                 
@@ -236,17 +234,11 @@ extension SettingsSceneViewController: UICollectionViewDataSource {
         
         let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.configure(with: viewModel.savedLocations[indexPath.row])
-
         cell.removeButtonAction = { [unowned self] in
-            
             self.viewModel.remove(at: indexPath.row)
         }
-        
         return cell
     }
-    
-    
-    
 }
 
 extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
@@ -256,10 +248,18 @@ extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
         let cellHeight = CGFloat(30.0)
         return CGSize(width: cellWidth, height: cellHeight)
     }
-    
 }
 
-extension SettingsSceneViewController: UICollectionViewDelegate { }
+extension SettingsSceneViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(),
+                                   wantedCity: indexPath.row,
+                                   conditions: conditionsCheckBox.getSelectedConditions())
+        coordinator.returnToHomeScene()
+    }
+}
 
 
 
@@ -269,24 +269,16 @@ extension SettingsSceneViewController {
     
     func setConstraints() {
         
-        setConstraints_backgroundImageView()
-        setConstraints_locationsLabelDescription()
-        setConstraints_locationsCollectionView()
-        setConstraints_unitsLabelDescription()
-        setConstraints_unitsCheckBox()
-        setConstraints_conditionsLabelDescription()
-        setConstraints_conditionsCheckBox()
-        setConstraints_applyButton()
+        setConstraintsOnLocationsLabelDescription()
+        setConstraintsOnLocationsCollectionView()
+        setConstraintsOnUnitsLabelDescription()
+        setConstraintsOnUnitsCheckBox()
+        setConstraintsOnConditionsLabelDescription()
+        setConstraintsOnConditionsCheckBox()
+        setConstraintsOnApplyButton()
     }
     
-    func setConstraints_backgroundImageView() {
-        
-        backgroundImageView.snp.makeConstraints { (make) in
-            make.edges.equalTo(view)
-        }
-    }
-    
-    func setConstraints_locationsLabelDescription() {
+    func setConstraintsOnLocationsLabelDescription() {
         
         locationsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 5, bottom: 0, right: 5))
@@ -296,7 +288,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_locationsCollectionView() {
+    func setConstraintsOnLocationsCollectionView() {
         
         locationsCollectionView.snp.makeConstraints { (make) in
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -305,7 +297,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_unitsLabelDescription() {
+    func setConstraintsOnUnitsLabelDescription() {
         
         unitsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(locationsCollectionView.snp.bottom).offset(10)
@@ -314,7 +306,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_unitsCheckBox() {
+    func setConstraintsOnUnitsCheckBox() {
         
         unitsCheckBox.snp.makeConstraints { (make) in
             make.top.equalTo(unitsLabelDescription.snp.bottom).offset(5)
@@ -323,7 +315,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_conditionsLabelDescription() {
+    func setConstraintsOnConditionsLabelDescription() {
         
         conditionsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(unitsCheckBox.snp.bottom).offset(5)
@@ -332,7 +324,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_conditionsCheckBox() {
+    func setConstraintsOnConditionsCheckBox() {
         
         conditionsCheckBox.snp.makeConstraints { (make) in
             make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(5)
@@ -340,7 +332,7 @@ extension SettingsSceneViewController {
         }
     }
     
-    func setConstraints_applyButton() {
+    func setConstraintsOnApplyButton() {
         
         applyButton.snp.makeConstraints { (make) in
             make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)

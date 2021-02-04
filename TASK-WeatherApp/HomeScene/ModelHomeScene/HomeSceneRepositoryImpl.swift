@@ -61,7 +61,7 @@ extension HomeSceneRepositoryImpl: GeoNamesRepository {
         path.append(searchText)
         path.append(Constants.GeoNamesORG.KEY)
         
-        guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
+        guard let url = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR SEARCH TEXT") }
         
         return NetworkService().fetchData(for: url).eraseToAnyPublisher()
     }

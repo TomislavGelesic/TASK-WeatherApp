@@ -54,8 +54,12 @@ extension HomeSceneViewModel {
                 case .finished:
                     break
                 case .failure(let error):
-                    print(error)
-                    self.alertSubject.send("Unable to connect to 'openweather.org' service.")
+                    switch error {
+                    case .noDataError:
+                        self.alertSubject.send("There is no weather data for this city, yet!\nTry another one.")
+                    default:
+                        self.alertSubject.send("Error occured requesting weather data for this city!\nSearch for another one.")
+                    }
                 }
             }, receiveValue: {[unowned self] data in
                 self.screenData = data
@@ -91,12 +95,13 @@ extension HomeSceneViewModel {
                 case .finished:
                     break
                 case .failure(_):
+                    print("im here")
                     break
                 }
             } receiveValue: { [unowned self] (response) in
                 
                 if let item = response.geonames.first {
-                    #warning("im here for background error 53 - software erminates background fetch.\n- because i detected error on core data update")
+                    
                     UserDefaultsService.updateUserSettings(measurmentUnit: nil,
                                                            lastCityId: String(item.geonameId),
                                                            shouldShowWindSpeed: nil,

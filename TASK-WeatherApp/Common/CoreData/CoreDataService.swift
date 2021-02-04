@@ -112,14 +112,19 @@ extension CoreDataService {
         
         let managedContext = persistentContainer.viewContext
         
-        guard let _ = get(id: Int64(item.geonameId))?.first else { return }
-        
-        let city = CityWeather(context: managedContext)
-        
-        city.setValue(Int64(item.geonameId), forKey: "id")
-        city.setValue(item.name, forKey: "name")
-        
-        saveContext()
+        if let _ = get(id: Int64(item.geonameId))?.first {
+            
+            return
+        }
+        else {
+            
+            let city = CityWeather(context: managedContext)
+            
+            city.setValue(Int64(item.geonameId), forKey: "id")
+            city.setValue(item.name, forKey: "name")
+            
+            saveContext()
+        }
         
     }
     

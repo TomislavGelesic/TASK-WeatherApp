@@ -8,10 +8,10 @@
 import Foundation
 
 
-struct Constants{
+struct Constants {
     
-    static let DEFAULT_CITY_ID = "2761369"
-    static let DEFAULT_VIENNA_LATITUDE_LONGITUDE = "lat=48.20849&lng=16.37208"
+    static let DEFAULT_CITY_ID = "2761369" // Vienna
+    static let DEFAULT_LATITUDE_LONGITUDE = "lat=48.20849&lng=16.37208" //Vienna
     
     struct GeoNamesORG  {
         
@@ -43,7 +43,7 @@ struct Constants{
         static let WITH_IMPERIAL_UNITS = "&units=imperial"
     }
     
-//    examples:
+//    examples Vienna = 2761369:
 //    https://api.openweathermap.org/data/2.5/weather?q=Vienna,WV&appid=c89f972e8095d59db84f5e88b5ad621e&units=metric
     
 //    https://api.openweathermap.org/data/2.5/weather?id=2761369&appid=c89f972e8095d59db84f5e88b5ad621e&units=metric
@@ -58,6 +58,20 @@ struct Constants{
         static let IS_DAY_TIME = "daytime"
         static let SHOULD_SHOW_USER_LOCATION_WEATHER = "shouldShowUserLocationWeather"
     }
+    
+    static func getPath(for searchText: String) -> String {
+        
+        var path = ""
+        path.append(Constants.GeoNamesORG.BASE_SearchScene)
+        path.append(Constants.GeoNamesORG.GET_CITY_BY_NAME)
+        path.append(searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")
+        path.append(Constants.GeoNamesORG.MAX_ROWS)
+        path.append("10")
+        path.append(Constants.GeoNamesORG.KEY)
+        
+        return path
+    }
 }
+
 
 

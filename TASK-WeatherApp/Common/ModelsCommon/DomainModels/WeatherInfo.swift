@@ -52,4 +52,20 @@ class WeatherInfo {
         self.cityName = coreDataItem.name ?? ""
     }
     
+    init (_ response: WeatherResponse) {
+        
+        id                      = String(response.id)
+        cityName                = String(response.name)
+        weatherDescription      = String(response.weather.description)
+        pressure                = String(response.main.pressure)
+        windSpeed               = String(response.wind.speed)
+        humidity                = String(response.main.humidity)
+        min_Temperature         = String(response.main.temp_min)
+        current_Temperature     = String(response.main.temp)
+        max_Temperature         = String(response.main.temp_max)
+        weatherType             = String(response.weather.id)
+        daytime                 = response.weather.icon.suffix(1) == "d" ? true : false
+        
+    }
+    
 }

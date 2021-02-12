@@ -21,9 +21,8 @@ class SearchRepositoryImpl: GeoNamesRepository {
         path.append("10")
         path.append(Constants.GeoNamesORG.KEY)
         
-        guard let url = URL(string: path) else { fatalError("Creation of URL for searchText failed.") }
         
-        return NetworkService().fetchData(for: url).eraseToAnyPublisher()
+        return RestManager.requestObservable(url: path)
     }
     
 }

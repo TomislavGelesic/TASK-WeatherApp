@@ -2,11 +2,7 @@
 import UIKit
 import Combine
 
-class HomeSceneRepositoryImpl {
-    
-}
-
-extension HomeSceneRepositoryImpl: WeatherRepository {
+class HomeSceneRepositoryImpl : WeatherRepository, GeoNamesRepository {
     
     func fetchWeatherData(id: String) -> AnyPublisher<WeatherResponse, NetworkError> {
         
@@ -25,9 +21,7 @@ extension HomeSceneRepositoryImpl: WeatherRepository {
             break
         }
         
-        guard let urlPath = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR WEATHER") }
-        
-        return NetworkService().fetchData(for: urlPath)
+        return RestManager.requestObservable(url: path)
     }
     
     func getConditions() -> [ConditionTypes] {
@@ -50,9 +44,6 @@ extension HomeSceneRepositoryImpl: WeatherRepository {
         
         return conditions
     }
-}
-
-extension HomeSceneRepositoryImpl: GeoNamesRepository {
     
     func fetchSearchResult(for searchText: String) -> AnyPublisher<GeoNameResponse, NetworkError> {
         
@@ -61,8 +52,6 @@ extension HomeSceneRepositoryImpl: GeoNamesRepository {
         path.append(searchText)
         path.append(Constants.GeoNamesORG.KEY)
         
-        guard let url = URL(string: path) else { fatalError("FAILED TO CREATE URL FOR SEARCH TEXT") }
-        
-        return NetworkService().fetchData(for: url).eraseToAnyPublisher()
+        return RestManager.requestObservable(url: path)
     }
 }

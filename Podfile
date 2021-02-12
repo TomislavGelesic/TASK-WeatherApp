@@ -2,13 +2,20 @@
 # platform :ios, '9.0'
 
 target 'TASK-WeatherApp' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
 
-  # Pods for TASK-WeatherApp
+  use_frameworks!
   
   pod 'SnapKit'
   pod 'Kingfisher'
   pod 'Alamofire'
 
+end
+
+target 'TASK-WeatherAppTests' do
+  
+	use_frameworks!
+	
+	pod 'Cuckoo'
+	pod 'Quick'
+	pod 'Nimble'
 end

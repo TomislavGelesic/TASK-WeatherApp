@@ -33,9 +33,6 @@ class HomeSceneViewModel {
     deinit {
         print("HomeSceneViewModel deinit")
     }
-}
-
-extension HomeSceneViewModel {
     
     func initializeScreenData(for subject: AnyPublisher<Void, Never>) -> AnyCancellable {
         
@@ -46,9 +43,7 @@ extension HomeSceneViewModel {
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .map({ [unowned self] (weatherResponse) -> WeatherInfo in
-                return self.createCityWeatherItem(from: weatherResponse)
-            })
+            .map({ WeatherInfo($0) })
             .sink(receiveCompletion: { [unowned self] completion in
                 switch completion {
                 case .finished:
@@ -79,12 +74,11 @@ extension HomeSceneViewModel {
                    UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
                     
                     search = "lat=\(safeCoordinate.latitude)&lng=\(safeCoordinate.longitude)"
-                    return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
+                    return homeSceneRepositoryImpl.fetchSearchResult(for: Constants.getPath(for: search))
                 }
                 else {
-                    
-                    search = Constants.DEFAULT_VIENNA_LATITUDE_LONGITUDE
-                    return self.homeSceneRepositoryImpl.fetchSearchResult(for: search)
+                    search = Constants.DEFAULT_LATITUDE_LONGITUDE
+                    return homeSceneRepositoryImpl.fetchSearchResult(for: search)
                 }
             })
             .receive(on: RunLoop.main)
@@ -111,22 +105,6 @@ extension HomeSceneViewModel {
                     self.getNewScreenData.send()
                 }
             }
-    }
-    
-    func createCityWeatherItem(from response: WeatherResponse) -> WeatherInfo {
-        
-        return WeatherInfo(id:                      String(response.id),
-                           cityName:                String(response.name),
-                           weatherDescription:      String(response.weather.description),
-                           pressure:                String(response.main.pressure),
-                           windSpeed:               String(response.wind.speed),
-                           humidity:                String(response.main.humidity),
-                           min_Temperature:         String(response.main.temp_min),
-                           current_Temperature:     String(response.main.temp),
-                           max_Temperature:         String(response.main.temp_max),
-                           weatherType:             String(response.weather.id),
-                           daytime:                 response.weather.icon.suffix(1) == "d" ? true : false
-        )
     }
     
     func getConditionsToShow() -> [ConditionTypes] {

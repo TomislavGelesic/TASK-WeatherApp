@@ -1,0 +1,46 @@
+{
+   "coord":{
+      "lon":16.3721,
+      "lat":48.2085
+   },
+   "weather":[
+      {
+         "id":600,
+         "main":"Snow",
+         "description":"light snow",
+         "icon":"13n"
+      }
+   ],
+   "base":"stations",
+   "main":{
+      "temp":0.43,
+      "feels_like":-3.44,
+      "temp_min":-1,
+      "temp_max":1.67,
+      "pressure":997,
+      "humidity":93
+   },
+   "visibility":4200,
+   "wind":{
+      "speed":2.57,
+      "deg":20
+   },
+   "snow":{
+      "1h":0.24
+   },
+   "clouds":{
+      "all":75
+   },
+   "dt":1612801518,
+   "sys":{
+      "type":1,
+      "id":6878,
+      "country":"AT",
+      "sunrise":1612764770,
+      "sunset":1612800279
+   },
+   "timezone":3600,
+   "id":2761369,
+   "name":"Vienna",
+   "cod":200
+}

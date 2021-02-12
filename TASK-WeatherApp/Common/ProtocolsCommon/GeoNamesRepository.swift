@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-protocol GeoNamesRepository {
+protocol GeoNamesRepository: class {
     
     func fetchSearchResult(for searchText: String) -> AnyPublisher<GeoNameResponse, NetworkError>
 }

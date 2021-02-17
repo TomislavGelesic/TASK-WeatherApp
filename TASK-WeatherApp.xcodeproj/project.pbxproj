@@ -28,6 +28,9 @@
 		605BB03325DD1AB70014536E /* WeatherInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605BB03225DD1AB70014536E /* WeatherInfo.swift */; };
 		605BB03F25DD1AE30014536E /* GeoNamesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605BB03E25DD1AE30014536E /* GeoNamesRepository.swift */; };
 		605BB04525DD1B080014536E /* HomeSceneRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 605BB04425DD1B080014536E /* HomeSceneRepositoryImpl.swift */; };
+		605BB05B25DD26E40014536E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 605BB05A25DD26E30014536E /* LaunchScreen.storyboard */; };
+		605BB06D25DD2C830014536E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 605BB06C25DD2C830014536E /* Assets.xcassets */; };
+		605BB07125DD2CE30014536E /* LaunchScreenImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 605BB07025DD2CE30014536E /* LaunchScreenImage.png */; };
 		6060B43C25B02C7000860602 /* SettingsSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B43B25B02C7000860602 /* SettingsSceneViewController.swift */; };
 		6060B44025B02E0800860602 /* SavedLocationsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B43F25B02E0800860602 /* SavedLocationsCollectionViewCell.swift */; };
 		6060B44525B033B700860602 /* UnitsCheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6060B44425B033B700860602 /* UnitsCheckBox.swift */; };
@@ -57,7 +60,6 @@
 		60BE223425C4938A0023C97E /* RepositoryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BE223325C4938A0023C97E /* RepositoryError.swift */; };
 		60D87ED825AF60360033CB7A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87ED725AF60360033CB7A /* AppDelegate.swift */; };
 		60D87EE225AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EE025AF60360033CB7A /* TASK_WeatherApp.xcdatamodeld */; };
-		60D87EE425AF60370033CB7A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60D87EE325AF60370033CB7A /* Assets.xcassets */; };
 		60D87EFA25AF62990033CB7A /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EF925AF62990033CB7A /* UIView+Extensions.swift */; };
 		60D87EFD25AF62C10033CB7A /* UITableView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EFC25AF62C10033CB7A /* UITableView+Extensions.swift */; };
 		60D87F0025AF62EF0033CB7A /* UITableViewCell+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87EFF25AF62EF0033CB7A /* UITableViewCell+Extensions.swift */; };
@@ -110,6 +112,9 @@
 		605BB03225DD1AB70014536E /* WeatherInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherInfo.swift; sourceTree = "<group>"; };
 		605BB03E25DD1AE30014536E /* GeoNamesRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeoNamesRepository.swift; sourceTree = "<group>"; };
 		605BB04425DD1B080014536E /* HomeSceneRepositoryImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeSceneRepositoryImpl.swift; sourceTree = "<group>"; };
+		605BB05A25DD26E30014536E /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		605BB06C25DD2C830014536E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		605BB07025DD2CE30014536E /* LaunchScreenImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LaunchScreenImage.png; sourceTree = "<group>"; };
 		6060B43B25B02C7000860602 /* SettingsSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneViewController.swift; sourceTree = "<group>"; };
 		6060B43F25B02E0800860602 /* SavedLocationsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocationsCollectionViewCell.swift; sourceTree = "<group>"; };
 		6060B44425B033B700860602 /* UnitsCheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitsCheckBox.swift; sourceTree = "<group>"; };
@@ -141,7 +146,6 @@
 		60D87ED425AF60360033CB7A /* TASK-WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TASK-WeatherApp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60D87ED725AF60360033CB7A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60D87EE125AF60360033CB7A /* TASK_WeatherApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TASK_WeatherApp.xcdatamodel; sourceTree = "<group>"; };
-		60D87EE325AF60370033CB7A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		60D87EE825AF60370033CB7A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "TASK-WeatherApp/Support/Info.plist"; sourceTree = SOURCE_ROOT; };
 		60D87EF925AF62990033CB7A /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		60D87EFC25AF62C10033CB7A /* UITableView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Extensions.swift"; sourceTree = "<group>"; };
@@ -429,11 +433,13 @@
 		60D87EF325AF616F0033CB7A /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				605BB07025DD2CE30014536E /* LaunchScreenImage.png */,
+				605BB06C25DD2C830014536E /* Assets.xcassets */,
 				60B8AA1B25CA934B00124113 /* SimulationLocation */,
 				60796F6925B1E4E900988BC1 /* AppCoordinator.swift */,
 				60D87ED725AF60360033CB7A /* AppDelegate.swift */,
-				60D87EE325AF60370033CB7A /* Assets.xcassets */,
 				60D87EE825AF60370033CB7A /* Info.plist */,
+				605BB05A25DD26E30014536E /* LaunchScreen.storyboard */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -658,7 +664,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60D87EE425AF60370033CB7A /* Assets.xcassets in Resources */,
+				605BB06D25DD2C830014536E /* Assets.xcassets in Resources */,
+				605BB07125DD2CE30014536E /* LaunchScreenImage.png in Resources */,
+				605BB05B25DD26E40014536E /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

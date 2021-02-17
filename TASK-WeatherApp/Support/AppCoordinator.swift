@@ -61,13 +61,14 @@ extension AppCoordinator {
         
         navigationController.viewControllers.removeAll()
         
-        
-        for (index, childCoordinator) in childCoordinators.enumerated() {
-            if childCoordinator === coordinator {
-                print("Child (\(childCoordinator.self)) with index \(index) did finish. ")
+        childCoordinators = childCoordinators.filter({ (coord) -> Bool in
+            if coord === coordinator {
+                print("Child (\(coord.self)) did finish. ")
+                return false
+            } else {
+                return true
             }
-        }
-        childCoordinators = childCoordinators.filter({ $0 === coordinator ? false : true })
+        })
         
         switch nextScene {
         case .homeScene:

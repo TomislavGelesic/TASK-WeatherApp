@@ -63,7 +63,8 @@ extension ConditionView {
              enables 'isHidden' property auto-animation (on stackView arranged subview) to
              take over process of setting frame to CGRect.zero and hide it
             */
-            make.width.equalTo(60).priority(999)
+            make.width.equalTo(70).priority(999)
+            
             make.height.equalTo(conditionImageView.snp.width)
         }
     }
@@ -71,7 +72,8 @@ extension ConditionView {
     private func conditionValueLabelConstraints() {
         
         conditionValueLabel.snp.makeConstraints { (make) in
-            make.height.equalTo(20)
+            make.height.equalTo(40)
+            make.width.equalTo(70)
             make.bottom.equalTo(self.snp.bottom)
             make.leading.trailing.equalTo(self).inset(UIEdgeInsets.init(top: 0, left: 10, bottom: 0, right: 10))
         }

@@ -38,9 +38,47 @@ extension UIViewController {
         return UIApplication.shared.statusBarFrame.size.height + (navigationController?.navigationBar.frame.height ?? 0.0)
     }
     
-    func setBackgroundImage(with image: UIImage?) {
+    func updateBackgroundImage() {
+        
         let imageView = UIImageView(frame: view.frame)
-        imageView.image = image
+        let weatherType = Int(UserDefaultsService.fetchUpdated().weatherType)
+        let dayTime = UserDefaultsService.fetchUpdated().dayTime
+
+        switch weatherType {
+        // Thunderstorm
+        case 200..<300:
+            imageView.image = UIImage(named: "body_image-thunderstorm")
+        // Drizzle & Rain
+        case 300..<600:
+            imageView.image = UIImage(named: "body_image-rain")
+
+        // Snow
+        case 600..<700:
+            imageView.image = UIImage(named: "body_image-snow")
+
+        // Atmosphere
+        case 700..<800:
+            if weatherType == 741 {
+                imageView.image = UIImage(named: "body_image-fog")
+            }
+            if weatherType == 781 {
+                imageView.image = UIImage(named: "body_image-tornado")
+            }
+            imageView.image = UIImage(named: "body_image-fog")
+        // Clouds
+        case 801..<810:
+            if dayTime {
+                imageView.image = UIImage(named: "body_image-partly-cloudy-day")
+            }
+            imageView.image = UIImage(named: "body_image-partly-cloudy-night")
+
+        // Clear == 800, or others - currently don't exist on server
+        default:
+            if dayTime {
+                imageView.image = UIImage(named: "body_image-clear-day")
+            }
+            imageView.image = UIImage(named: "body_image-clear-night")
+        }
         imageView.setNeedsLayout()
         view.insertSubview(imageView, at: 0)
         view.layoutIfNeeded()

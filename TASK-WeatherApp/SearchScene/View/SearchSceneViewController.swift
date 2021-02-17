@@ -77,7 +77,6 @@ class SearchSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
         setupViews()
         setupKeyboardNotifications()
         setConstraints()
@@ -87,6 +86,7 @@ class SearchSceneViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        updateBackgroundImage()
         inputField.becomeFirstResponder()
         navigationController?.navigationBar.isHidden = true
     }

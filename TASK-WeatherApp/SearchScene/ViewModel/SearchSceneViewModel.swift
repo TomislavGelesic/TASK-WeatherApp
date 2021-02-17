@@ -37,7 +37,7 @@ extension SearchSceneViewModel {
     func initializeFetchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
         
         return subject
-            .throttle(for: 0.5, scheduler: DispatchQueue.global(), latest: true)
+            .debounce(for: 0.5, scheduler: DispatchQueue.global())
             .removeDuplicates()
             .flatMap { [unowned self] (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 

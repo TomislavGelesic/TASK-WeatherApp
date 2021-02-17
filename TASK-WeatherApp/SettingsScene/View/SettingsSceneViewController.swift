@@ -100,7 +100,7 @@ class SettingsSceneViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
+        updateBackgroundImage()
         setNavigationBar()
         setSubviews()
         setConstraints()
@@ -293,14 +293,14 @@ extension SettingsSceneViewController {
         locationsCollectionView.snp.makeConstraints { (make) in
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.top.equalTo(locationsLabelDescription.snp.bottom)
-            make.height.equalTo(view.frame.height/5)
+            make.height.equalTo(view.frame.height/4)
         }
     }
     
     func setConstraintsOnUnitsLabelDescription() {
         
         unitsLabelDescription.snp.makeConstraints { (make) in
-            make.top.equalTo(locationsCollectionView.snp.bottom).offset(10)
+            make.top.equalTo(locationsCollectionView.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.height.equalTo(20)
         }
@@ -309,7 +309,7 @@ extension SettingsSceneViewController {
     func setConstraintsOnUnitsCheckBox() {
         
         unitsCheckBox.snp.makeConstraints { (make) in
-            make.top.equalTo(unitsLabelDescription.snp.bottom).offset(5)
+            make.top.equalTo(unitsLabelDescription.snp.bottom).offset(20)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.height.equalTo(60)
         }
@@ -318,7 +318,7 @@ extension SettingsSceneViewController {
     func setConstraintsOnConditionsLabelDescription() {
         
         conditionsLabelDescription.snp.makeConstraints { (make) in
-            make.top.equalTo(unitsCheckBox.snp.bottom).offset(5)
+            make.top.equalTo(unitsCheckBox.snp.bottom).offset(20)
             make.centerX.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.height.equalTo(20)
         }
@@ -327,7 +327,7 @@ extension SettingsSceneViewController {
     func setConstraintsOnConditionsCheckBox() {
         
         conditionsCheckBox.snp.makeConstraints { (make) in
-            make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(5)
+            make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(20)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
         }
     }
@@ -335,10 +335,10 @@ extension SettingsSceneViewController {
     func setConstraintsOnApplyButton() {
         
         applyButton.snp.makeConstraints { (make) in
-            make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)
+//            make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)
             make.width.equalTo(88)
             make.height.equalTo(44)
-            make.bottom.trailing.equalTo(view).offset(-10)
+            make.bottom.trailing.equalTo(view).offset(-30)
         }
     }
 }

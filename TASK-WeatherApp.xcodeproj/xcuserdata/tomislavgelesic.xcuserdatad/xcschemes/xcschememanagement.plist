@@ -7,11 +7,21 @@
 		<key>TASK-WeatherApp.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>9</integer>
+		</dict>
+		<key>TASK-WeatherAppTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>600D41CC25CD9BF400CA2540</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>60D87ED325AF60360033CB7A</key>
 		<dict>
 			<key>primary</key>

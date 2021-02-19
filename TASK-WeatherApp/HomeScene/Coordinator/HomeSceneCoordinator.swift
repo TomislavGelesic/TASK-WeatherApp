@@ -31,7 +31,7 @@ class HomeSceneCoordinator: Coordinator {
     }
 
     deinit {
-        print("HomeSceneCoordinator deinit")
+//        print("HomeSceneCoordinator deinit")
     }
     
     func goToSearchScene() {

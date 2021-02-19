@@ -17,9 +17,9 @@ class SearchSceneCoordinator: Coordinator {
     
     func start() {
         
-        let viewModel = SearchSceneViewModel(searchRepository: SearchRepositoryImpl())
+        let viewModel = SearchSceneViewModel(coordinator: self, searchRepository: SearchRepositoryImpl())
         
-        let viewController = SearchSceneViewController(coordinator: self, viewModel: viewModel)
+        let viewController = SearchSceneViewController(viewModel: viewModel)
         
         let subNavigationController = UINavigationController(rootViewController: viewController)
         
@@ -35,7 +35,7 @@ class SearchSceneCoordinator: Coordinator {
     }
     
     deinit {
-        print("SearchSceneCoordinator deinit")
+//        print("SearchSceneCoordinator deinit")
     }
     
     func goToHomeScene() {

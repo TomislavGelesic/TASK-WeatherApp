@@ -14,8 +14,6 @@ class SearchSceneViewController: UIViewController {
     
     var viewModel: SearchSceneViewModel
     
-    var coordinator: SearchSceneCoordinator
-    
     let cancelButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "multiply.circle")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -55,24 +53,20 @@ class SearchSceneViewController: UIViewController {
 
     
     deinit {
-        print("SearchSceneViewController deinit")
-        print("SearchSceneViewController NotificationCenter observers removed")
+//        print("SearchSceneViewController deinit")
+//        print("SearchSceneViewController NotificationCenter observers removed")
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    init(coordinator: SearchSceneCoordinator, viewModel: SearchSceneViewModel) {
-        
-        self.coordinator = coordinator
+    init(viewModel: SearchSceneViewModel) {
         self.viewModel = viewModel
-        
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -117,7 +111,7 @@ extension SearchSceneViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
-        cancelButton.addTarget(self, action: #selector(cancellSearchTapped), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(cancelSearchTapped), for: .touchUpInside)
     }
     
     @objc func inputFieldDidChange() {
@@ -135,9 +129,8 @@ extension SearchSceneViewController {
         
     }
     
-    @objc func cancellSearchTapped() {
-        
-        coordinator.goToHomeScene()
+    @objc func cancelSearchTapped() {
+        viewModel.cancelTapped()
     }
     
     func setupKeyboardNotifications() {
@@ -148,13 +141,11 @@ extension SearchSceneViewController {
     }
     
     @objc func keyboardWillShow(notification: Notification) {
-        
-        
         guard let userInfo = notification.userInfo as? [String: Any],
               let keyboardEndFrame = userInfo["UIKeyboardFrameEndUserInfoKey"] as? CGRect
         else { return }
         
-        let newBottomOffset_inputField = view.frame.height - keyboardEndFrame.height - 45
+        let newBottomOffset_inputField = keyboardEndFrame.height + 10
         let duration:TimeInterval = (userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
@@ -188,7 +179,6 @@ extension SearchSceneViewController {
             delay: TimeInterval(0),
             options: animationCurve,
             animations: { [unowned self] in
-                
                 self.setConstraintsOnInputField(for: newBottomOffset)
                 self.inputField.layoutIfNeeded()
             },
@@ -222,7 +212,6 @@ extension SearchSceneViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         inputField.resignFirstResponder()
-        coordinator.goToHomeScene()
         return true
     }
 }
@@ -245,11 +234,9 @@ extension SearchSceneViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        viewModel.saveCity(at: indexPath.row)
+        viewModel.didSelectCity(at: indexPath.row)
         inputField.text = ""
         inputField.resignFirstResponder()
-        UserDefaultsService.setShouldShowUserLocationWeather(false)
-        coordinator.goToHomeScene()
     }
 }
 
@@ -279,7 +266,7 @@ extension SearchSceneViewController {
         tableView.snp.makeConstraints { (make) in
             make.top.equalTo(cancelButton.snp.bottom).offset(10)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.height.equalTo(200)
+            make.height.equalTo(360)
         }
     }
     

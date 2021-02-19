@@ -76,8 +76,9 @@ extension UIViewController {
         default:
             if dayTime {
                 imageView.image = UIImage(named: "body_image-clear-day")
+            } else {
+                imageView.image = UIImage(named: "body_image-clear-night")
             }
-            imageView.image = UIImage(named: "body_image-clear-night")
         }
         imageView.setNeedsLayout()
         view.insertSubview(imageView, at: 0)

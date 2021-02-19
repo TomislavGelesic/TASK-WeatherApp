@@ -15,8 +15,6 @@ class SettingsSceneViewController: UIViewController {
     
     var viewModel: SettingsSceneViewModel
     
-    var coordinator: SettingsSceneCoordinator
-    
     let locationsLabelDescription: UILabel = {
         let label = UILabel()
         label.text = "Locations"
@@ -81,16 +79,14 @@ class SettingsSceneViewController: UIViewController {
     
     
     
-    init(coordinator: SettingsSceneCoordinator, viewModel: SettingsSceneViewModel) {
-        
-        self.coordinator = coordinator
+    init(viewModel: SettingsSceneViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
     }
     
     deinit {
-        print("SettingsSceneViewController deinit")
+//        print("SettingsSceneViewController deinit")
     }
     
     required init?(coder: NSCoder) {
@@ -184,18 +180,23 @@ extension SettingsSceneViewController {
     }
     
     @objc func backButtonPressed() {
-        
-        coordinator.returnToHomeScene()
+        viewModel.backButtonTapped()
     }
     
     @objc func applyButtonTapped() {
-        
-        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(), wantedCity: nil, conditions: conditionsCheckBox.getSelectedConditions())
-        
-        coordinator.returnToHomeScene()
+        viewModel.applyTapped(unitsCheckBox.getSelectedUnit())
     }
     
     func setSubscribers() {
+        
+        conditionsCheckBox.didSelectCondition
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (type) in
+                print("\(type) updating")
+                self.viewModel.conditionTapped(type)
+            }
+            .store(in: &disposeBag)
         
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
@@ -254,10 +255,7 @@ extension SettingsSceneViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        viewModel.saveUserSettings(measurmentUnit: unitsCheckBox.getSelectedUnit(),
-                                   wantedCity: indexPath.row,
-                                   conditions: conditionsCheckBox.getSelectedConditions())
-        coordinator.returnToHomeScene()
+        viewModel.didSelectSavedCity(wantedCity: indexPath.row, unitsCheckBox.getSelectedUnit())
     }
 }
 
@@ -329,13 +327,13 @@ extension SettingsSceneViewController {
         conditionsCheckBox.snp.makeConstraints { (make) in
             make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(20)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
+            make.bottom.equalTo(applyButton.snp.top).offset(-10)
         }
     }
     
     func setConstraintsOnApplyButton() {
         
         applyButton.snp.makeConstraints { (make) in
-//            make.top.equalTo(conditionsCheckBox.snp.bottom).offset(5)
             make.width.equalTo(88)
             make.height.equalTo(44)
             make.bottom.trailing.equalTo(view).offset(-30)

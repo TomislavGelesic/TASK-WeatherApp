@@ -89,6 +89,7 @@ extension UserDefaultsService {
         let userDefaults = UserDefaults.standard
         
         if let value = measurmentUnit {
+//            print("updating measurement unit to: \(value)")
             switch value {
             case .imperial:
                 userDefaults.setValue("imperial", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
@@ -98,31 +99,38 @@ extension UserDefaultsService {
         }
         
         if let value = lastCityId {
+//            print("updating id to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.CITY_ID)
         }
         
         if let value = shouldShowPressure {
+//            print("updating pressure to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
         }
         
         if let value = shouldShowHumidity {
+//            print("updating humidity to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
         }
         
         if let value = shouldShowWindSpeed {
+//            print("updating wind to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
         }
         
         if let value = weatherType {
+//            print("updating weather type to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.WEATHER_TYPE)
         }
         
         if let value = dayTime {
+//            print("updating day time to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.IS_DAY_TIME)
         }
     }
     
     static func setShouldShowUserLocationWeather (_ value: Bool) {
+//        print("updating show location weather to: \(value)")
         let userDefaults = UserDefaults.standard
         userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_USER_LOCATION_WEATHER)
     }

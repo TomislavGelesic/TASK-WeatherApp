@@ -69,6 +69,10 @@ extension UnitsCheckBox {
         tableView.reloadData()
     }
     
+    func getSelectedUnit() -> MeasurementUnits {
+        return selectedUnit
+    }
+    
     func setActiveRadioButton(for position: Int) {
         
         for item in radioButtons {
@@ -79,18 +83,15 @@ extension UnitsCheckBox {
         case 1:
             selectedUnit = .imperial
             break
-        default:    // position = 0;
+        case 0: 
             selectedUnit = .metric
+            break
+        default:
+            print("POSITION OUT OF RANGE IN UnitsCheckBox.swift")
+            break
         }
         radioButtons[position].isActive = true
-        
-        print("Selected unit is: \(selectedUnit)")
-        
         tableView.reloadData()
-    }
-    
-    func getSelectedUnit() -> MeasurementUnits {
-        return selectedUnit
     }
 }
 

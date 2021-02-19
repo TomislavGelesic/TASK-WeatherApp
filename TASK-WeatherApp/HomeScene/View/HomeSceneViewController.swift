@@ -141,7 +141,7 @@ class HomeSceneViewController: UIViewController {
     }
     
     deinit {
-        print("HomeSceneViewController deinit")
+//        print("HomeSceneViewController deinit")
     }
     
     required init?(coder: NSCoder) {
@@ -153,7 +153,7 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setSubscribers()
-        setLocationManager()
+        startLocationManager()
         viewModel.fetchWeather.send()
     }
     
@@ -251,32 +251,14 @@ extension HomeSceneViewController {
     }
     
     func updateUI() {
-        
-        updateBackgroundImage()
     
         humidityConditionView.isHidden = true
         pressureConditionView.isHidden = true
         windConditionView.isHidden = true
         
-        
         cityNameLabel.text = viewModel.screenData.cityName.uppercased()
         weatherDescriptionLabel.text = viewModel.screenData.weatherDescription.uppercased()
         humidityConditionView.conditionValueLabel.text = viewModel.screenData.humidity + " [%]"
-        
-        for item in viewModel.getConditionsToShow() {
-            switch item {
-            case .humidity:
-                humidityConditionView.isHidden = false
-                break
-            case .pressure:
-                pressureConditionView.isHidden = false
-                break
-            case .windSpeed:
-                windConditionView.isHidden = false
-                break
-            }
-        }
-        
         switch viewModel.getUserSettings().measurmentUnit {
         case .imperial:
             currentTemperatureLabel.text = "\(viewModel.screenData.current_Temperature)" + " F"
@@ -293,9 +275,24 @@ extension HomeSceneViewController {
             pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure + " [hPa]"
             break
         }
+        
+        for item in viewModel.getConditionsToShow() {
+            switch item {
+            case .humidity:
+                humidityConditionView.isHidden = false
+                break
+            case .pressure:
+                pressureConditionView.isHidden = false
+                break
+            case .windSpeed:
+                windConditionView.isHidden = false
+                break
+            }
+        }
+        updateBackgroundImage()
     }
     
-    func setLocationManager() {
+    func startLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()

@@ -33,7 +33,7 @@ class HomeSceneViewModel {
     }
     
     deinit {
-        print("HomeSceneViewModel deinit")
+//        print("HomeSceneViewModel deinit")
     }
     
     func initializeScreenData(for subject: AnyPublisher<Void, Never>) -> AnyCancellable {

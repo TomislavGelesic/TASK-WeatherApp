@@ -12,6 +12,8 @@ import SnapKit
 
 class SearchSceneViewModel {
     
+    var coordinator: SearchSceneCoordinator
+    
     var coreDataService = CoreDataService.sharedInstance
     
     var searchRepository: GeoNamesRepository
@@ -22,13 +24,13 @@ class SearchSceneViewModel {
     
     let fetchCitySubject = PassthroughSubject<String, Never>()
     
-    init(searchRepository: GeoNamesRepository) {
-        
+    init(coordinator: SearchSceneCoordinator, searchRepository: GeoNamesRepository) {
+        self.coordinator = coordinator
         self.searchRepository = searchRepository
     }
     
     deinit {
-        print("SearchSceneViewModel deinit")
+//        print("SearchSceneViewModel deinit")
     }
 }
 
@@ -68,5 +70,15 @@ extension SearchSceneViewModel {
                                                shouldShowPressure: nil,
                                                shouldShowHumidity: nil)
         coreDataService.save(item)
+    }
+    
+    func cancelTapped() {
+        coordinator.goToHomeScene()
+    }
+    
+    func didSelectCity(at position: Int) {
+        saveCity(at: position)
+        UserDefaultsService.setShouldShowUserLocationWeather(false)
+        coordinator.goToHomeScene()
     }
 }

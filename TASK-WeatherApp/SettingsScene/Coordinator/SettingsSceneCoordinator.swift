@@ -21,7 +21,7 @@ class SettingsSceneCoordinator: Coordinator {
     }
     
     deinit {
-        print("SettingsSceneCoordinator deinit")
+//        print("SettingsSceneCoordinator deinit")
     }
 }
 
@@ -29,7 +29,7 @@ extension SettingsSceneCoordinator {
     
     func start() {
         
-        let viewController = SettingsSceneViewController(coordinator: self, viewModel: SettingsSceneViewModel())
+        let viewController = SettingsSceneViewController(viewModel: SettingsSceneViewModel(coordinator: self))
         
         navigationController.pushViewController(viewController, animated: true)
     }

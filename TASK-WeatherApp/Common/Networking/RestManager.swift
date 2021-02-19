@@ -26,7 +26,7 @@ public class RestManager {
             guard let encodedUrl = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
                 return promise(.failure(NetworkError.badResponseCode))
             }
-            
+            // HERE I STARTED
             let request = RestManager.manager
                 .request(encodedUrl, encoding: URLEncoding.default)
                 .validate()

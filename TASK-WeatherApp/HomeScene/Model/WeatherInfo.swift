@@ -9,29 +9,33 @@ import Foundation
 
 class WeatherInfo {
     
-    var id: String = "-1"
+    var id: String = ""
     var cityName: String = ""
     var weatherDescription: String = ""
-    var pressure: String = "-1"
-    var windSpeed: String = "-1"
-    var humidity: String = "-1"
-    var min_Temperature: String = "X"
-    var current_Temperature: String = "X"
-    var max_Temperature: String = "X"
+    var pressure: String = ""
+    var windSpeed: String = ""
+    var humidity: String = ""
+    var min_Temperature: String = ""
+    var current_Temperature: String = ""
+    var max_Temperature: String = ""
     var weatherType: String = "800"
     var daytime: Bool = false
+    var latitude: String = "0.0"
+    var longitude: String = "0.0"
     
-    init(id: String = "-1",
+    init(id: String = "",
          cityName: String = "",
          weatherDescription: String = "",
-         pressure: String = "-1",
-         windSpeed: String = "-1",
-         humidity: String = "-1",
-         min_Temperature: String = "X",
-         current_Temperature: String = "X",
-         max_Temperature: String = "X",
+         pressure: String = "",
+         windSpeed: String = "",
+         humidity: String = "",
+         min_Temperature: String = "",
+         current_Temperature: String = "",
+         max_Temperature: String = "",
          weatherType: String = "800",
-         daytime: Bool = false) {
+         daytime: Bool = false,
+         latitude: String = "0.0",
+         longitude: String = "0.0") {
         
         self.id = id
         self.cityName = cityName
@@ -44,12 +48,16 @@ class WeatherInfo {
         self.max_Temperature = max_Temperature
         self.weatherType = weatherType
         self.daytime = daytime
+        self.latitude = latitude
+        self.longitude = longitude
     }
     
     init(_ coreDataItem: CityWeather) {
         
         self.id = String(coreDataItem.id)
         self.cityName = coreDataItem.name ?? ""
+        self.longitude = coreDataItem.longitude ?? ""
+        self.latitude = coreDataItem.latitude ?? ""
     }
     
     init (_ response: WeatherResponse) {
@@ -65,7 +73,8 @@ class WeatherInfo {
         max_Temperature         = String(response.main.temp_max)
         weatherType             = String(response.weather.id)
         daytime                 = response.weather.icon.suffix(1) == "d" ? true : false
-        
+        latitude                = String(response.coord.lat)
+        longitude               = String(response.coord.lon)
     }
     
 }

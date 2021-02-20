@@ -12,7 +12,6 @@ import Combine
 class SettingsSceneViewController: UIViewController {
     
     var disposeBag = Set<AnyCancellable>()
-    
     var viewModel: SettingsSceneViewModel
     
     let locationsLabelDescription: UILabel = {
@@ -77,11 +76,8 @@ class SettingsSceneViewController: UIViewController {
         return button
     }()
     
-    
-    
     init(viewModel: SettingsSceneViewModel) {
         self.viewModel = viewModel
-        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -95,24 +91,20 @@ class SettingsSceneViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         updateBackgroundImage()
         setNavigationBar()
         setSubviews()
         setConstraints()
         setSubscribers()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
 }
@@ -192,33 +184,18 @@ extension SettingsSceneViewController {
         conditionsCheckBox.didSelectCondition
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (type) in
-                print("\(type) updating")
-                self.viewModel.conditionTapped(type)
-            }
+            .sink { [unowned self] (type) in self.viewModel.conditionTapped(type) }
             .store(in: &disposeBag)
         
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (_) in
-                
                 self.locationsCollectionView.reloadData()
-                
                 self.unitsCheckBox.setActiveRadioButton(for: UserDefaultsService.fetchUpdated().measurmentUnit)
-                
-                if UserDefaultsService.fetchUpdated().shouldShowHumidity {
-                    self.conditionsCheckBox.setActive(for: .humidity)
-                }
-                
-                if UserDefaultsService.fetchUpdated().shouldShowPressure {
-                    self.conditionsCheckBox.setActive(for: .pressure)
-                }
-                
-                if UserDefaultsService.fetchUpdated().shouldShowWindSpeed {
-                    self.conditionsCheckBox.setActive(for: .windSpeed)
-                }
-                
+                if UserDefaultsService.fetchUpdated().shouldShowHumidity { self.conditionsCheckBox.setActive(for: .humidity) }
+                if UserDefaultsService.fetchUpdated().shouldShowPressure { self.conditionsCheckBox.setActive(for: .pressure) }
+                if UserDefaultsService.fetchUpdated().shouldShowWindSpeed { self.conditionsCheckBox.setActive(for: .windSpeed) }
             }
             .store(in: &disposeBag)
     }
@@ -227,17 +204,13 @@ extension SettingsSceneViewController {
 extension SettingsSceneViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
         return viewModel.savedLocations.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cell: SavedLocationsCollectionViewCell = collectionView.dequeueReusableCell(for: indexPath)
         cell.configure(with: viewModel.savedLocations[indexPath.row])
-        cell.removeButtonAction = { [unowned self] in
-            self.viewModel.remove(at: indexPath.row)
-        }
+        cell.removeButtonAction = { [unowned self] in self.viewModel.remove(at: indexPath.row) }
         return cell
     }
 }
@@ -254,7 +227,6 @@ extension SettingsSceneViewController: UICollectionViewDelegateFlowLayout {
 extension SettingsSceneViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
         viewModel.didSelectSavedCity(wantedCity: indexPath.row, unitsCheckBox.getSelectedUnit())
     }
 }
@@ -266,7 +238,6 @@ extension SettingsSceneViewController: UICollectionViewDelegate {
 extension SettingsSceneViewController {
     
     func setConstraints() {
-        
         setConstraintsOnLocationsLabelDescription()
         setConstraintsOnLocationsCollectionView()
         setConstraintsOnUnitsLabelDescription()
@@ -277,7 +248,6 @@ extension SettingsSceneViewController {
     }
     
     func setConstraintsOnLocationsLabelDescription() {
-        
         locationsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(view).inset(UIEdgeInsets(top: getTopBarHeight(), left: 5, bottom: 0, right: 5))
             make.centerX.equalTo(view)
@@ -287,7 +257,6 @@ extension SettingsSceneViewController {
     }
     
     func setConstraintsOnLocationsCollectionView() {
-        
         locationsCollectionView.snp.makeConstraints { (make) in
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
             make.top.equalTo(locationsLabelDescription.snp.bottom)
@@ -296,7 +265,6 @@ extension SettingsSceneViewController {
     }
     
     func setConstraintsOnUnitsLabelDescription() {
-        
         unitsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(locationsCollectionView.snp.bottom).offset(20)
             make.centerX.equalTo(view.snp.centerX).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -305,7 +273,6 @@ extension SettingsSceneViewController {
     }
     
     func setConstraintsOnUnitsCheckBox() {
-        
         unitsCheckBox.snp.makeConstraints { (make) in
             make.top.equalTo(unitsLabelDescription.snp.bottom).offset(20)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -314,7 +281,6 @@ extension SettingsSceneViewController {
     }
     
     func setConstraintsOnConditionsLabelDescription() {
-        
         conditionsLabelDescription.snp.makeConstraints { (make) in
             make.top.equalTo(unitsCheckBox.snp.bottom).offset(20)
             make.centerX.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -323,7 +289,6 @@ extension SettingsSceneViewController {
     }
     
     func setConstraintsOnConditionsCheckBox() {
-        
         conditionsCheckBox.snp.makeConstraints { (make) in
             make.top.equalTo(conditionsLabelDescription.snp.bottom).offset(20)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -332,7 +297,6 @@ extension SettingsSceneViewController {
     }
     
     func setConstraintsOnApplyButton() {
-        
         applyButton.snp.makeConstraints { (make) in
             make.width.equalTo(88)
             make.height.equalTo(44)

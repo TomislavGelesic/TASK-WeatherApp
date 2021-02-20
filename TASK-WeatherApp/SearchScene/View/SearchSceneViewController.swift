@@ -96,51 +96,32 @@ class SearchSceneViewController: UIViewController {
 extension SearchSceneViewController {
     
     func setupViews() {
-        
         view.addSubviews([cancelButton, tableView, inputField])
-        
         searchIconContainer.addSubview(searchIcon)
-        
         inputField.delegate = self
         inputField.leftViewMode = .always
         inputField.leftView = searchIconContainer
         inputField.leftView?.layoutIfNeeded()
         inputField.addTarget(self, action: #selector(inputFieldDidChange), for: .allEditingEvents)
-        
-        
         tableView.dataSource = self
         tableView.delegate = self
-        
         cancelButton.addTarget(self, action: #selector(cancelSearchTapped), for: .touchUpInside)
     }
     
     @objc func inputFieldDidChange() {
-        
-        if let validText = inputField.text {
-            if validText.isEmpty {
-                
-                viewModel.screenData.removeAll()
-                viewModel.refreshUISubject.send()
-            } else {
-                
-                viewModel.fetchCitySubject.send(validText)
-            }
-        }
-        
+        guard let validText = inputField.text else { return }
+        validText.isEmpty ? viewModel.search(text: nil) : viewModel.search(text: validText)
     }
     
-    @objc func cancelSearchTapped() {
-        viewModel.cancelTapped()
-    }
+    @objc func cancelSearchTapped() { viewModel.cancelTapped() }
     
     func setupKeyboardNotifications() {
-        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc func keyboardWillShow(notification: Notification) {
+        
         guard let userInfo = notification.userInfo as? [String: Any],
               let keyboardEndFrame = userInfo["UIKeyboardFrameEndUserInfoKey"] as? CGRect
         else { return }
@@ -150,13 +131,12 @@ extension SearchSceneViewController {
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
         let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
-    
+        
         UIView.animate(
             withDuration: duration * 2,
             delay: TimeInterval(1),
             options: animationCurve,
-            animations: { [unowned self] in
-                
+            animations: { [unowned self] in                
                 self.setConstraintsOnInputField(for: newBottomOffset_inputField)
                 self.inputField.layoutIfNeeded()
             },
@@ -188,7 +168,20 @@ extension SearchSceneViewController {
     
     func setSubscribers() {
         
-        viewModel.initializeFetchSubject(subject: viewModel.fetchCitySubject.eraseToAnyPublisher())
+        viewModel.spinnerSubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (value) in
+                value ? self.showSpinner() : self.hideSpinner()
+            }
+        viewModel.alertSubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (message) in
+                self.showAlert(text: message) { }
+            }
+        
+        viewModel.initializeSearchSubject(subject: viewModel.searchSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
         viewModel.refreshUISubject
@@ -198,7 +191,6 @@ extension SearchSceneViewController {
                 
                 if let text = inputField.text,
                    text.isEmpty {
-                    
                     viewModel.screenData.removeAll()
                 }
                 self.tableView.reloadData()
@@ -210,7 +202,6 @@ extension SearchSceneViewController {
 extension SearchSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         inputField.resignFirstResponder()
         return true
     }
@@ -233,7 +224,6 @@ extension SearchSceneViewController: UITableViewDataSource {
 extension SearchSceneViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         viewModel.didSelectCity(at: indexPath.row)
         inputField.text = ""
         inputField.resignFirstResponder()
@@ -246,7 +236,6 @@ extension SearchSceneViewController: UITableViewDelegate {
 extension SearchSceneViewController {
     
     func setConstraints() {
-        
         setConstraintsOnCancelButton()
         setConstraintsOnAvailableCitiesTableView()
         setConstraintsOnSearchIcon()
@@ -256,22 +245,20 @@ extension SearchSceneViewController {
     
     func setConstraintsOnCancelButton() {
         cancelButton.snp.makeConstraints { (make) in
-            make.width.height.equalTo(20)
-            make.top.trailing.equalTo(view).inset(UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 5))
+            make.width.height.equalTo(30)
+            make.top.trailing.equalTo(view).inset(UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 15))
         }
     }
     
     func setConstraintsOnAvailableCitiesTableView() {
-        
         tableView.snp.makeConstraints { (make) in
             make.top.equalTo(cancelButton.snp.bottom).offset(10)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.height.equalTo(360)
+            make.height.equalTo(330)
         }
     }
     
     func setConstraintsOnSearchIcon() {
-        
         searchIcon.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
             make.centerX.centerY.equalTo(searchIconContainer)
@@ -285,10 +272,9 @@ extension SearchSceneViewController {
         }
     }
     
-    func setConstraintsOnInputField(for bottomOffset: CGFloat) {
-        
+    func setConstraintsOnInputField(for bottomInset: CGFloat) {
         inputField.snp.remakeConstraints { (make) in
-            make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))
+            make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomInset, right: 5))
             make.height.equalTo(20)
         }
     }

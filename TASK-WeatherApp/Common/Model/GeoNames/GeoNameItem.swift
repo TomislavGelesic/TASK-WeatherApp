@@ -9,6 +9,7 @@ import Foundation
 
 struct GeoNameItem: Codable {
     
+    
     var name: String
     var countryName: String
     var lat: String
@@ -16,4 +17,13 @@ struct GeoNameItem: Codable {
     var countryCode: String
     var geonameId: Int
     
+    
+    init(name: String, countryName: String, lat: String, lng: String, countryCode: String, geonameId: Int) {
+        self.name = name
+        self.countryName = countryName
+        self.lat = lat
+        self.lng = lng
+        self.countryCode = countryCode
+        self.geonameId = geonameId
+    }
 }

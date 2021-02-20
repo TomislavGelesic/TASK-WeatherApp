@@ -13,16 +13,14 @@ import CoreLocation
 class HomeSceneViewController: UIViewController {
     
     var viewModel: HomeSceneViewModel
-    
     var disposeBag = Set<AnyCancellable>()
-    
     var locationManager: CLLocationManager
+    var locationPermissionGranted: Bool = false
     
     let currentTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
         label.font = label.font.withSize(30)
-        label.text = "Curr T"
         label.textAlignment = .center
         return label
     }()
@@ -30,7 +28,6 @@ class HomeSceneViewController: UIViewController {
     let weatherDescriptionLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "W desc"
         label.textAlignment = .center
         return label
     }()
@@ -38,7 +35,6 @@ class HomeSceneViewController: UIViewController {
     let cityNameLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "city name".uppercased()
         label.textAlignment = .center
         return label
     }()
@@ -46,7 +42,6 @@ class HomeSceneViewController: UIViewController {
     let minTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "min T"
         label.textAlignment = .center
         return label
     }()
@@ -63,7 +58,6 @@ class HomeSceneViewController: UIViewController {
     let maxTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "max T"
         label.textAlignment = .center
         return label
     }()
@@ -120,10 +114,8 @@ class HomeSceneViewController: UIViewController {
     }()
     
     let searchTextField: UITextField = {
-        
         let iconView = UIImageView(image: UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysTemplate))
         iconView.tintColor = .black
-        
         let textField = UITextField()
         textField.leftView = iconView
         textField.leftViewMode = .always
@@ -136,7 +128,6 @@ class HomeSceneViewController: UIViewController {
     init(viewModel: HomeSceneViewModel) {
         self.viewModel = viewModel
         self.locationManager = CLLocationManager()
-        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -153,13 +144,11 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setSubscribers()
-        startLocationManager()
-        viewModel.fetchWeather.send()
+        checkLocationServices()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         updateBackgroundImage()
     }
 }
@@ -167,9 +156,7 @@ class HomeSceneViewController: UIViewController {
 extension HomeSceneViewController {
     
     func setSubviews() {
-        
         view.backgroundColor = .lightGray
-        
         view.addSubviews([
             currentTemperatureLabel,
             weatherDescriptionLabel,
@@ -192,112 +179,123 @@ extension HomeSceneViewController {
         
         for value in viewModel.getConditionsToShow() {
             switch value {
-            case .humidity:
-                humidityConditionView.isHidden = false
-                break
-            case .windSpeed:
-                pressureConditionView.isHidden = false
-                break
-            case .pressure:
-                windConditionView.isHidden = false
-                break
-
+            case .humidity: humidityConditionView.isHidden = false
+            case .windSpeed: pressureConditionView.isHidden = false
+            case .pressure: windConditionView.isHidden = false
             }
         }
-        
         searchTextField.delegate = self
-        
         settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
     }
     
-    @objc func settingsButtonTapped() {
-        
-        viewModel.settingsTapped()
-    }
+    @objc func settingsButtonTapped() { viewModel.settingsTapped() }
     
     func setSubscribers() {
-        
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] () in
-                
                 self.updateUI()
             }
             .store(in: &disposeBag)
         
-        viewModel.initializeScreenData(for: viewModel.fetchWeather.eraseToAnyPublisher())
-            .store(in: &disposeBag)
-        
-        viewModel.initializeLocationSubject(subject: viewModel.getCityIdForLocation.eraseToAnyPublisher())
+        viewModel.initializeWeatherSubject(subject: viewModel.weatherSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
         viewModel.alertSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (error) in
-                
-                self.showAPIFailedAlert(for: error)
+                self.showAlert(text: error) { [unowned self] in
+                    self.checkLocationServices()
+                    print("calling this")
+                }
             }
             .store(in: &disposeBag)
         
         viewModel.spinnerSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (shouldShow) in
-                shouldShow ? self.showSpinner() : self.hideSpinner()
-            }
+            .sink { [unowned self] (shouldShow) in shouldShow ? self.showSpinner() : self.hideSpinner() }
             .store(in: &disposeBag)
     }
     
     func updateUI() {
-    
-        humidityConditionView.isHidden = true
-        pressureConditionView.isHidden = true
-        windConditionView.isHidden = true
-        
-        cityNameLabel.text = viewModel.screenData.cityName.uppercased()
-        weatherDescriptionLabel.text = viewModel.screenData.weatherDescription.uppercased()
-        humidityConditionView.conditionValueLabel.text = viewModel.screenData.humidity + " [%]"
-        switch viewModel.getUserSettings().measurmentUnit {
-        case .imperial:
-            currentTemperatureLabel.text = "\(viewModel.screenData.current_Temperature)" + " F"
-            minTemperatureLabel.text = "\(viewModel.screenData.min_Temperature)" + " F"
-            maxTemperatureLabel.text = "\(viewModel.screenData.max_Temperature)" + " F"
-            windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed + " [mph]"
-            pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure + " [psi]"
-            break
-        case .metric:
-            currentTemperatureLabel.text = "\(viewModel.screenData.current_Temperature)" + " °C"
-            minTemperatureLabel.text = "\(viewModel.screenData.min_Temperature)" + " °C"
-            maxTemperatureLabel.text = "\(viewModel.screenData.max_Temperature)" + " °C"
-            windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed + " [km/h]"
-            pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure + " [hPa]"
-            break
-        }
-        
-        for item in viewModel.getConditionsToShow() {
-            switch item {
-            case .humidity:
-                humidityConditionView.isHidden = false
-                break
-            case .pressure:
-                pressureConditionView.isHidden = false
-                break
-            case .windSpeed:
-                windConditionView.isHidden = false
-                break
-            }
-        }
+        viewModel.isDayTime() ? setTextColor(UIColor.black) : setTextColor(UIColor.white)
+        setScreenText(with: viewModel.screenData, for: viewModel.getMeasurementUnit())
+        updateConditions(with: viewModel.getConditionsToShow())
         updateBackgroundImage()
     }
     
-    func startLocationManager() {
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
+    func setTextColor(_ color: UIColor) {
+        cityNameLabel.textColor = color
+        weatherDescriptionLabel.textColor = color
+        currentTemperatureLabel.textColor = color
+        minTemperatureLabel.textColor = color
+        maxTemperatureLabel.textColor = color
+        windConditionView.conditionValueLabel.textColor = color
+        pressureConditionView.conditionValueLabel.textColor = color
+        humidityConditionView.conditionValueLabel.textColor = color
     }
     
+    func updateConditions(with conditions: [ConditionTypes]) {
+        
+        humidityConditionView.isHidden = true
+        pressureConditionView.isHidden = true
+        windConditionView.isHidden = true
+        for item in conditions {
+            switch item {
+            case .humidity: humidityConditionView.isHidden = false
+            case .pressure: pressureConditionView.isHidden = false
+            case .windSpeed: windConditionView.isHidden = false
+            }
+        }
+    }
+    
+    func setScreenText(with info: WeatherInfo, for unit: MeasurementUnits) {
+        cityNameLabel.text = info.cityName.uppercased()
+        weatherDescriptionLabel.text = info.weatherDescription.uppercased()
+        humidityConditionView.conditionValueLabel.text = info.humidity + " [%]"
+        switch unit {
+        case .imperial:
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " [mph]"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " [psi]"
+            break
+        case .metric:
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " [km/h]"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " [hPa]"
+            break
+        }
+    }
+    
+    func checkLocationServices() {
+        if CLLocationManager.locationServicesEnabled() {
+            setupLocationManager()
+            startLocationManager()
+        }
+        else {
+            showAlert(text: "Device location dissabled.") { [unowned self] in self.checkLocationServices() }
+        }
+    }
+    
+    func setupLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    func startLocationManager() {
+        #warning("when does locationmanager call requestWhenInUserLocationAuthorization()?")
+        if locationPermissionGranted { getWeather(coordinates: locationManager.location?.coordinate) }
+        else { locationManager.requestWhenInUseAuthorization() }
+    }
+    
+    func getWeather(coordinates: CLLocationCoordinate2D?) { viewModel.weatherSubject.send(coordinates) }
 }
 
 extension HomeSceneViewController: UITextFieldDelegate {
@@ -312,28 +310,26 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
-        case .authorizedWhenInUse, .authorizedAlways:
-            locationManager.startUpdatingLocation()
-            break
-        case .denied:
-            viewModel.fetchWeather.send()
-            break
+        case .restricted, .denied:
+            showAlert(text: "Unable to retreive location, using default Vienna location.") { [unowned self] in  self.getWeather(coordinates: nil)
+            }
         default:
-            manager.requestWhenInUseAuthorization()
-            break
+            locationManager.startUpdatingLocation()
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        if let coordinate = locationManager.location?.coordinate,
-           UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
-            
-            viewModel.getCityIdForLocation.send(coordinate)
+        if let location = locations.last,
+           shouldShowUserLocation() {
+            getWeather(coordinates: location.coordinate)
         } else {
-            viewModel.fetchWeather.send()
+            
+            getWeather(coordinates: nil)
         }
     }
+    
+    func shouldShowUserLocation() -> Bool { return viewModel.shouldShowUserLocation() }
 }
 
 //MARK: CONSTRAINTS BELOW

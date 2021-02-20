@@ -11,26 +11,21 @@ import SnapKit
 extension UIViewController {
     
     func showSpinner() {
-        
         SpinnerViewManager.addSpinnerView(to: self.view)
     }
     
     func hideSpinner() {
-        
         SpinnerViewManager.removeSpinnerView()
     }
     
-    func showAPIFailedAlert(for errorMessage: String) {
-        
-        let alert: UIAlertController = {
-            let alert = UIAlertController(title: "Sorry", message: errorMessage, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-            return alert
-        }()
-        
-        hideSpinner()
-        
-        present(alert, animated: true, completion: nil)
+    func showAlert(text errorMessage: String, completion: @escaping ()->()) {
+        let alert = UIAlertController(title: "Sorry", message: errorMessage, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: { (_) in
+            completion()
+        }))
+        DispatchQueue.main.async { [unowned self] in
+            self.present(alert, animated: true)
+        }
     }
     
     func getTopBarHeight() -> CGFloat {

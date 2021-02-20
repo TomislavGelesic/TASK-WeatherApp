@@ -72,9 +72,12 @@ class HomeSceneViewModel {
                     return homeSceneRepositoryImpl.fetchWeatherDataBy(location: safeCoordinate)
                         .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
                             switch result {
-                            case .success(let weatherResponse): return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
+                            case .success(let weatherResponse):
+                                return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
                             case .failure(_):
-                                self.alertSubject.send("No internet connection.")
+                                #warning("fix alert message")
+                                self.spinnerSubject.send(false)
+                                self.alertSubject.send("Nope.")
                                 return Just(WeatherInfo()).eraseToAnyPublisher()
                             }
                         }.eraseToAnyPublisher()
@@ -129,9 +132,7 @@ class HomeSceneViewModel {
                 
                 switch completion {
                 case .finished: break
-                case .failure(_):
-                    print("THIS ERROR SHOULD NEVER HAPPEN")
-                    break
+                case .failure(_): print("THIS ERROR SHOULD NEVER HAPPEN")
                 }
             } receiveValue: { [unowned self] (data) in
                 self.screenData = data
@@ -163,5 +164,9 @@ class HomeSceneViewModel {
         
         userDefaults.setValue(weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
         userDefaults.setValue(daytime, forKey: Constants.UserDefaults.IS_DAY_TIME)
+    }
+    
+    func shouldShowUserLocation() -> Bool {
+        return UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather
     }
 }

@@ -115,18 +115,8 @@ extension SearchSceneViewController {
     }
     
     @objc func inputFieldDidChange() {
-        
-        if let validText = inputField.text {
-            if validText.isEmpty {
-                
-                viewModel.screenData.removeAll()
-                viewModel.refreshUISubject.send()
-            } else {
-                
-                viewModel.fetchCitySubject.send(validText)
-            }
-        }
-        
+        guard let validText = inputField.text else { return }
+        validText.isEmpty ? viewModel.search(text: nil) : viewModel.search(text: validText)
     }
     
     @objc func cancelSearchTapped() {
@@ -188,7 +178,7 @@ extension SearchSceneViewController {
     
     func setSubscribers() {
         
-        viewModel.initializeFetchSubject(subject: viewModel.fetchCitySubject.eraseToAnyPublisher())
+        viewModel.initializeSearchSubject(subject: viewModel.searchSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
         viewModel.refreshUISubject
@@ -285,10 +275,10 @@ extension SearchSceneViewController {
         }
     }
     
-    func setConstraintsOnInputField(for bottomOffset: CGFloat) {
+    func setConstraintsOnInputField(for bottomInset: CGFloat) {
         
         inputField.snp.remakeConstraints { (make) in
-            make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomOffset, right: 5))
+            make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomInset, right: 5))
             make.height.equalTo(20)
         }
     }

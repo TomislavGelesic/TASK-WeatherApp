@@ -43,6 +43,8 @@ class AppCoordinator: Coordinator {
 extension AppCoordinator {
     
     func initializeUserSettings() {
+        
+        #warning("switch comment tags for real usage..")
 //        UserDefaultsService.update(with: UserDefaultsService.fetchUpdated())
         UserDefaultsService.update(with: UserDefaultsService())
     }

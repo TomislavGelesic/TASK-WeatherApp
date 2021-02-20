@@ -7,11 +7,12 @@
 
 import Foundation
 import Combine
+import Alamofire
 
 class SearchRepositoryImpl: GeoNamesRepository {
     
     
-    func fetchSearchResult(for searchText: String) -> AnyPublisher<GeoNameResponse, NetworkError> {
+    func fetchSearchResult(for searchText: String) -> AnyPublisher<Result<GeoNameResponse, AFError>, Never> {
         
         var path = String()
         path.append(Constants.GeoNamesORG.BASE_SearchScene)
@@ -22,8 +23,7 @@ class SearchRepositoryImpl: GeoNamesRepository {
         path.append(Constants.GeoNamesORG.KEY)
         
         
-//        return RestManager.requestObservable(url: path)
-        return PassthroughSubject<GeoNameResponse, NetworkError>().eraseToAnyPublisher()
+        return RestManager.requestObservable(url: path)
     }
     
 }

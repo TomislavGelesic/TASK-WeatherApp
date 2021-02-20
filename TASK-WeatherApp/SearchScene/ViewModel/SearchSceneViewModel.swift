@@ -18,11 +18,15 @@ class SearchSceneViewModel {
     
     var searchRepository: GeoNamesRepository
     
-    var screenData = [GeoNameItem]()
+    var screenData = [Geoname]()
+    
+    var spinnerSubject = PassthroughSubject<Bool, Never>()
+    
+    var alertSubject = PassthroughSubject<String, Never>()
     
     var refreshUISubject = PassthroughSubject<Void, Never>()
     
-    let fetchCitySubject = PassthroughSubject<String, Never>()
+    let searchSubject = PassthroughSubject<String, Never>()
     
     init(coordinator: SearchSceneCoordinator, searchRepository: GeoNamesRepository) {
         self.coordinator = coordinator
@@ -36,26 +40,48 @@ class SearchSceneViewModel {
 
 extension SearchSceneViewModel {
     
-    func initializeFetchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
+    func initializeSearchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
         
         return subject
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.global())
             .removeDuplicates()
-            .flatMap { [unowned self] (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
+            .flatMap { [unowned self] (searchText) -> AnyPublisher<[Geoname], Never> in
                 
                 return self.searchRepository.fetchSearchResult(for: searchText)
+                    .flatMap { [unowned self] (result) -> AnyPublisher<[Geoname], Never> in
+                        switch result {
+                        case .success(let geonamesResponse):
+                            let data: [Geoname] = geonamesResponse.geonames.map{Geoname($0)}
+                            return Just(data).eraseToAnyPublisher()
+                            
+                        case .failure(_):
+                            #warning("fix alert message")
+                            self.spinnerSubject.send(false)
+                            self.alertSubject.send("Nope")
+                            return Just([Geoname]()).eraseToAnyPublisher()
+                        }
+                    }.eraseToAnyPublisher()
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { (completion) in
-                
-            }, receiveValue: { [unowned self] (response) in
-                
-                self.screenData = response.geonames
+                switch completion {
+                case .finished: break
+                case .failure(_): print("THIS ERROR SHOULD NEVER HAPPEN")
+                }
+            }, receiveValue: { [unowned self] (data) in
+                self.screenData = data
                 self.refreshUISubject.send()
             })
     }
-    
+    func search(text: String?) {
+        if let text = text {
+            searchSubject.send(text)
+        } else {
+            screenData.removeAll()
+            refreshUISubject.send()
+        }
+    }
     func getScreenData(for position: Int) -> String {
         
         return "\(screenData[position].name), (\(screenData[position].countryName))"

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		202E6128E8E7E5C2045799AC /* Pods_TASK_WeatherApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD325B9A619230A1ED6C345D /* Pods_TASK_WeatherApp.framework */; };
+		60056D7925E130D2000FDCE2 /* Geoname.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60056D7825E130D2000FDCE2 /* Geoname.swift */; };
 		600D41D025CD9BF400CA2540 /* TASK_WeatherAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D41CF25CD9BF400CA2540 /* TASK_WeatherAppTests.swift */; };
 		6040B54225D1838700625587 /* RestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6040B54125D1838700625587 /* RestManager.swift */; };
 		6040B54625D183D700625587 /* SerializationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6040B54525D183D700625587 /* SerializationManager.swift */; };
@@ -44,7 +45,6 @@
 		60796F5925B1890E00988BC1 /* SearchSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */; };
 		60796F5E25B18E2500988BC1 /* SearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5D25B18E2500988BC1 /* SearchResultTableViewCell.swift */; };
 		60796F6A25B1E4E900988BC1 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F6925B1E4E900988BC1 /* AppCoordinator.swift */; };
-		60B1EEBE25C9B0810020F34B /* UserLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B1EEBD25C9B0810020F34B /* UserLocationResponse.swift */; };
 		60B642EF25B2D97700DE43EC /* SettingsSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */; };
 		60B642F425B2DD5C00DE43EC /* HomeSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */; };
 		60B642FA25B2DDC100DE43EC /* HomeSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */; };
@@ -90,6 +90,7 @@
 		04D5A738B9554AE2294F8536 /* Pods-TASK-WeatherApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TASK-WeatherApp.release.xcconfig"; path = "Target Support Files/Pods-TASK-WeatherApp/Pods-TASK-WeatherApp.release.xcconfig"; sourceTree = "<group>"; };
 		1645C7E1D4D936249B847CFF /* Pods-TASK-WeatherApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TASK-WeatherApp.debug.xcconfig"; path = "Target Support Files/Pods-TASK-WeatherApp/Pods-TASK-WeatherApp.debug.xcconfig"; sourceTree = "<group>"; };
 		47D509C36D06D4B4B2AEF7C6 /* Pods-TASK-WeatherAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TASK-WeatherAppTests.debug.xcconfig"; path = "Target Support Files/Pods-TASK-WeatherAppTests/Pods-TASK-WeatherAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		60056D7825E130D2000FDCE2 /* Geoname.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geoname.swift; sourceTree = "<group>"; };
 		600D41CD25CD9BF400CA2540 /* TASK-WeatherAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TASK-WeatherAppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		600D41CF25CD9BF400CA2540 /* TASK_WeatherAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TASK_WeatherAppTests.swift; sourceTree = "<group>"; };
 		600D41D125CD9BF400CA2540 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -128,7 +129,6 @@
 		60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneViewController.swift; sourceTree = "<group>"; };
 		60796F5D25B18E2500988BC1 /* SearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		60796F6925B1E4E900988BC1 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
-		60B1EEBD25C9B0810020F34B /* UserLocationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLocationResponse.swift; sourceTree = "<group>"; };
 		60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneViewModel.swift; sourceTree = "<group>"; };
 		60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneViewModel.swift; sourceTree = "<group>"; };
 		60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneCoordinator.swift; sourceTree = "<group>"; };
@@ -217,9 +217,9 @@
 		6047F23F25B447B400C2D5F6 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				605BB03225DD1AB70014536E /* WeatherInfo.swift */,
 				605BB04425DD1B080014536E /* HomeSceneRepositoryImpl.swift */,
 				6047F29125B5CE8300C2D5F6 /* ConditionTypes.swift */,
-				60B1EEBD25C9B0810020F34B /* UserLocationResponse.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -248,14 +248,6 @@
 				6060B43F25B02E0800860602 /* SavedLocationsCollectionViewCell.swift */,
 				6060B47225B05BB200860602 /* ConditionsCheckBox.swift */,
 				6060B48425B09BD900860602 /* CheckBox.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		6060B44325B0339200860602 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				6047ECC625B5D8BE00DDC559 /* ConditionsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -302,14 +294,6 @@
 				60F5D6BF25D55E36008BA163 /* MockHomeSceneRepositoryImpl.swift */,
 			);
 			path = CuckooMocks;
-			sourceTree = "<group>";
-		};
-		60B1EEC025C9B5E30020F34B /* Domain */ = {
-			isa = PBXGroup;
-			children = (
-				605BB03225DD1AB70014536E /* WeatherInfo.swift */,
-			);
-			path = Domain;
 			sourceTree = "<group>";
 		};
 		60B642ED25B2D95300DE43EC /* ViewModel */ = {
@@ -365,6 +349,7 @@
 			isa = PBXGroup;
 			children = (
 				60B6432125B31F3600DE43EC /* SearchRepositoryImpl.swift */,
+				60056D7825E130D2000FDCE2 /* Geoname.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -451,7 +436,6 @@
 				6047F28525B5C37B00C2D5F6 /* UserDefaults */,
 				6047F23825B4464B00C2D5F6 /* CoreData */,
 				60B6431A25B31C8200DE43EC /* Networking */,
-				6060B44325B0339200860602 /* Views */,
 				60D87F1C25AF65C80033CB7A /* Model */,
 				60D87F1125AF653A0033CB7A /* Protocols */,
 				60D87F0825AF63CF0033CB7A /* Spinner */,
@@ -531,7 +515,6 @@
 		60D87F1C25AF65C80033CB7A /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				60B1EEC025C9B5E30020F34B /* Domain */,
 				60BE223825C496460023C97E /* GeoNames */,
 				60BE223725C496390023C97E /* Weather */,
 				60D87F1D25AF65E00033CB7A /* NetworkError.swift */,
@@ -546,6 +529,7 @@
 		60D87F2625AF69090033CB7A /* View */ = {
 			isa = PBXGroup;
 			children = (
+				6047ECC625B5D8BE00DDC559 /* ConditionsView.swift */,
 				60D87F2725AF69420033CB7A /* HomeSceneViewController.swift */,
 			);
 			path = View;
@@ -792,7 +776,6 @@
 				6047ECC725B5D8BE00DDC559 /* ConditionsView.swift in Sources */,
 				6060B47925B05CA900860602 /* UICollectionView+Extensions.swift in Sources */,
 				6047F26925B47A4E00C2D5F6 /* Weather_CityWeatherResponse.swift in Sources */,
-				60B1EEBE25C9B0810020F34B /* UserLocationResponse.swift in Sources */,
 				605BB03325DD1AB70014536E /* WeatherInfo.swift in Sources */,
 				60D87F3C25AF757C0033CB7A /* UICollectionViewCell+Extensions.swift in Sources */,
 				6060B46D25B05ABA00860602 /* ConditionsRadioButton.swift in Sources */,
@@ -834,6 +817,7 @@
 				60D87F0325AF63400033CB7A /* UIViewController+Extensions.swift in Sources */,
 				60796F5925B1890E00988BC1 /* SearchSceneViewController.swift in Sources */,
 				60B642EF25B2D97700DE43EC /* SettingsSceneViewModel.swift in Sources */,
+				60056D7925E130D2000FDCE2 /* Geoname.swift in Sources */,
 				6040B54225D1838700625587 /* RestManager.swift in Sources */,
 				60D87F1E25AF65E00033CB7A /* NetworkError.swift in Sources */,
 				6060B44025B02E0800860602 /* SavedLocationsCollectionViewCell.swift in Sources */,

@@ -158,7 +158,6 @@ class HomeSceneViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         updateBackgroundImage()
     }
 }
@@ -327,11 +326,18 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else {
+        
+        if let location = locations.last,
+           shouldShowUserLocation() {
+            getWeather(coordinates: location.coordinate)
+        } else {
+            
             getWeather(coordinates: nil)
-            return
         }
-        getWeather(coordinates: location.coordinate)
+    }
+    
+    func shouldShowUserLocation() -> Bool {
+        return viewModel.shouldShowUserLocation()
     }
 }
 

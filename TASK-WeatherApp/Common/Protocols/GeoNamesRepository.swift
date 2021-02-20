@@ -7,8 +7,9 @@
 
 import Foundation
 import Combine
+import Alamofire
 
 protocol GeoNamesRepository: class {
     
-    func fetchSearchResult(for searchText: String) -> AnyPublisher<GeoNameResponse, NetworkError>
+    func fetchSearchResult(for searchText: String) -> AnyPublisher<Result<GeoNameResponse, AFError>, Never>
 }

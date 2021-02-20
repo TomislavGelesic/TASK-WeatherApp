@@ -109,22 +109,21 @@ extension CoreDataService {
         saveContext()
     }
     
-    func save(_ item: GeoNameItem) {
+    func save(_ item: Geoname) {
         
         let managedContext = persistentContainer.viewContext
         
-        if let _ = get(id: Int64(item.geonameId))?.first {
+        if let _ = get(id: Int64(item.id) ?? -1)?.first {
             
             return
         }
         else {
-            #warning("DoesCoreData work fine?")
             let city = CityWeather(context: managedContext)
             
-            city.setValue(Int64(item.geonameId), forKey: "id")
+            city.setValue(Int64(item.id) ?? -1, forKey: "id")
             city.setValue(item.name, forKey: "name")
-            city.setValue(item.lng, forKey: "longitude")
-            city.setValue(item.lat, forKey: "latitude")
+            city.setValue(item.longitude, forKey: "longitude")
+            city.setValue(item.latitude, forKey: "latitude")
             saveContext()
         }
         

@@ -115,11 +115,11 @@ extension UserDefaultsService {
         userDefaults.setValue(weatherData.latitude, forKey: Constants.UserDefaults.LAST_LATITUDE)
     }
     
-    static func update(with geoNameData: GeoNameItem) {
+    static func update(with item: Geoname) {
         let userDefaults = UserDefaults.standard
-        userDefaults.setValue(geoNameData.geonameId, forKey: Constants.UserDefaults.CITY_ID)
-        userDefaults.setValue(geoNameData.lng, forKey: Constants.UserDefaults.LAST_LONGITUDE)
-        userDefaults.setValue(geoNameData.lat, forKey: Constants.UserDefaults.LAST_LATITUDE)
+        userDefaults.setValue(item.id, forKey: Constants.UserDefaults.CITY_ID)
+        userDefaults.setValue(item.longitude, forKey: Constants.UserDefaults.LAST_LONGITUDE)
+        userDefaults.setValue(item.latitude, forKey: Constants.UserDefaults.LAST_LATITUDE)
     }
     
     static func setShouldShowUserLocationWeather (_ value: Bool) {

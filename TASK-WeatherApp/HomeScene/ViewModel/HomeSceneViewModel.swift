@@ -62,6 +62,9 @@ class HomeSceneViewModel {
         
         return subject
             .flatMap({ [unowned self] (coordinate) -> AnyPublisher<WeatherInfo, Never> in
+                
+                self.spinnerSubject.send(true)
+                
                 if let safeCoordinate = coordinate {
                     return homeSceneRepositoryImpl.fetchWeatherDataBy(location: safeCoordinate)
                         .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
@@ -69,9 +72,8 @@ class HomeSceneViewModel {
                             case .success(let weatherResponse):
                                 return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
                             case .failure(_):
-                                #warning("fix alert message")
                                 self.spinnerSubject.send(false)
-                                self.alertSubject.send("Nope.")
+                                self.alertSubject.send("Internet connection lost.")
                                 return Just(WeatherInfo()).eraseToAnyPublisher()
                             }
                         }.eraseToAnyPublisher()
@@ -92,7 +94,6 @@ class HomeSceneViewModel {
                     
                 }
                 else {
-                    #warning("SearchScene - doesn't search...")
                     let settings = UserDefaultsService.fetchUpdated()
                     let latitude = Double(settings.latitude) ?? 0.0
                     let longitude = Double(settings.longitude) ?? 0.0 
@@ -103,7 +104,8 @@ class HomeSceneViewModel {
                             switch result {
                             case .success(let weatherResponse): return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
                             case .failure(_):
-                                self.alertSubject.send("No internet connection.")
+                                self.spinnerSubject.send(false)
+                                self.alertSubject.send("Internet connection lost.")
                                 return Just(WeatherInfo()).eraseToAnyPublisher()
                             }
                         }.eraseToAnyPublisher()

@@ -13,19 +13,12 @@ import SnapKit
 class SearchSceneViewModel {
     
     var coordinator: SearchSceneCoordinator
-    
     var coreDataService = CoreDataService.sharedInstance
-    
     var searchRepository: GeoNamesRepository
-    
     var screenData = [Geoname]()
-    
     var spinnerSubject = PassthroughSubject<Bool, Never>()
-    
     var alertSubject = PassthroughSubject<String, Never>()
-    
     var refreshUISubject = PassthroughSubject<Void, Never>()
-    
     let searchSubject = PassthroughSubject<String, Never>()
     
     init(coordinator: SearchSceneCoordinator, searchRepository: GeoNamesRepository) {
@@ -46,12 +39,11 @@ extension SearchSceneViewModel {
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.global())
             .removeDuplicates()
             .flatMap { [unowned self] (searchText) -> AnyPublisher<[Geoname], Never> in
-                
                 return self.searchRepository.fetchSearchResult(for: searchText)
-                    .flatMap { [unowned self] (result) -> AnyPublisher<[Geoname], Never> in
+                    .flatMap { (result) -> AnyPublisher<[Geoname], Never> in
                         switch result {
                         case .success(let geonamesResponse):
-                            let data: [Geoname] = geonamesResponse.geonames.map{Geoname($0)}
+                            let data: [Geoname] = geonamesResponse.geonames.map{ Geoname($0) }
                             return Just(data).eraseToAnyPublisher()
                         case .failure(let error):
                             print(error)
@@ -71,6 +63,7 @@ extension SearchSceneViewModel {
                 self.refreshUISubject.send()
             })
     }
+    
     func search(text: String?) {
         if let text = text {
             searchSubject.send(text)
@@ -79,21 +72,16 @@ extension SearchSceneViewModel {
             refreshUISubject.send()
         }
     }
-    func getScreenData(for position: Int) -> String {
-        
-        return "\(screenData[position].name), (\(screenData[position].countryName))"
-    }
+    
+    func getScreenData(for position: Int) -> String { return "\(screenData[position].name), (\(screenData[position].countryName))" }
     
     func saveCity(at position: Int) {
-        
         let item = screenData[position]
         UserDefaultsService.update(with: item)
         coreDataService.save(item)
     }
     
-    func cancelTapped() {
-        coordinator.goToHomeScene()
-    }
+    func cancelTapped() { coordinator.goToHomeScene() }
     
     func didSelectCity(at position: Int) {
         saveCity(at: position)

@@ -15,12 +15,12 @@ class HomeSceneViewController: UIViewController {
     var viewModel: HomeSceneViewModel
     var disposeBag = Set<AnyCancellable>()
     var locationManager: CLLocationManager
+    var locationPermissionGranted: Bool = false
     
     let currentTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
         label.font = label.font.withSize(30)
-        label.text = "Curr T"
         label.textAlignment = .center
         return label
     }()
@@ -28,7 +28,6 @@ class HomeSceneViewController: UIViewController {
     let weatherDescriptionLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "W desc"
         label.textAlignment = .center
         return label
     }()
@@ -36,7 +35,6 @@ class HomeSceneViewController: UIViewController {
     let cityNameLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "city name".uppercased()
         label.textAlignment = .center
         return label
     }()
@@ -44,7 +42,6 @@ class HomeSceneViewController: UIViewController {
     let minTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "min T"
         label.textAlignment = .center
         return label
     }()
@@ -61,7 +58,6 @@ class HomeSceneViewController: UIViewController {
     let maxTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
-        label.text = "max T"
         label.textAlignment = .center
         return label
     }()
@@ -198,7 +194,9 @@ extension HomeSceneViewController {
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] () in self.updateUI() }
+            .sink { [unowned self] () in
+                self.updateUI()
+            }
             .store(in: &disposeBag)
         
         viewModel.initializeWeatherSubject(subject: viewModel.weatherSubject.eraseToAnyPublisher())
@@ -208,7 +206,10 @@ extension HomeSceneViewController {
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (error) in
-                self.showAlert(text: error) { [unowned self] in self.checkLocationServices() }
+                self.showAlert(text: error) { [unowned self] in
+                    self.checkLocationServices()
+                    print("calling this")
+                }
             }
             .store(in: &disposeBag)
         
@@ -274,7 +275,6 @@ extension HomeSceneViewController {
     }
     
     func checkLocationServices() {
-        showSpinner()
         if CLLocationManager.locationServicesEnabled() {
             setupLocationManager()
             startLocationManager()
@@ -290,12 +290,12 @@ extension HomeSceneViewController {
     }
     
     func startLocationManager() {
-        locationManager.requestWhenInUseAuthorization()
+        #warning("when does locationmanager call requestWhenInUserLocationAuthorization()?")
+        if locationPermissionGranted { getWeather(coordinates: locationManager.location?.coordinate) }
+        else { locationManager.requestWhenInUseAuthorization() }
     }
     
-    func getWeather(coordinates: CLLocationCoordinate2D?) {
-        viewModel.weatherSubject.send(coordinates)
-    }
+    func getWeather(coordinates: CLLocationCoordinate2D?) { viewModel.weatherSubject.send(coordinates) }
 }
 
 extension HomeSceneViewController: UITextFieldDelegate {
@@ -329,9 +329,7 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
         }
     }
     
-    func shouldShowUserLocation() -> Bool {
-        return viewModel.shouldShowUserLocation()
-    }
+    func shouldShowUserLocation() -> Bool { return viewModel.shouldShowUserLocation() }
 }
 
 //MARK: CONSTRAINTS BELOW

@@ -11,21 +11,20 @@ import SnapKit
 extension UIViewController {
     
     func showSpinner() {
-        
         SpinnerViewManager.addSpinnerView(to: self.view)
     }
     
     func hideSpinner() {
-        
         SpinnerViewManager.removeSpinnerView()
     }
     
     func showAlert(text errorMessage: String, completion: @escaping ()->()) {
-        #warning("not working correctly")
         let alert = UIAlertController(title: "Sorry", message: errorMessage, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .cancel))
-        present(alert, animated: true) {
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: { (_) in
             completion()
+        }))
+        DispatchQueue.main.async { [unowned self] in
+            self.present(alert, animated: true)
         }
     }
     

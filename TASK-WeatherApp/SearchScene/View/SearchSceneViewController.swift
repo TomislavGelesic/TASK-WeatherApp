@@ -96,21 +96,15 @@ class SearchSceneViewController: UIViewController {
 extension SearchSceneViewController {
     
     func setupViews() {
-        
         view.addSubviews([cancelButton, tableView, inputField])
-        
         searchIconContainer.addSubview(searchIcon)
-        
         inputField.delegate = self
         inputField.leftViewMode = .always
         inputField.leftView = searchIconContainer
         inputField.leftView?.layoutIfNeeded()
         inputField.addTarget(self, action: #selector(inputFieldDidChange), for: .allEditingEvents)
-        
-        
         tableView.dataSource = self
         tableView.delegate = self
-        
         cancelButton.addTarget(self, action: #selector(cancelSearchTapped), for: .touchUpInside)
     }
     
@@ -119,18 +113,15 @@ extension SearchSceneViewController {
         validText.isEmpty ? viewModel.search(text: nil) : viewModel.search(text: validText)
     }
     
-    @objc func cancelSearchTapped() {
-        viewModel.cancelTapped()
-    }
+    @objc func cancelSearchTapped() { viewModel.cancelTapped() }
     
     func setupKeyboardNotifications() {
-        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc func keyboardWillShow(notification: Notification) {
+        
         guard let userInfo = notification.userInfo as? [String: Any],
               let keyboardEndFrame = userInfo["UIKeyboardFrameEndUserInfoKey"] as? CGRect
         else { return }
@@ -140,7 +131,7 @@ extension SearchSceneViewController {
         let animationCurveRawNSN = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber
         let animationCurveRaw = animationCurveRawNSN?.uintValue ?? UIView.AnimationOptions.curveEaseInOut.rawValue
         let animationCurve:UIView.AnimationOptions = UIView.AnimationOptions(rawValue: animationCurveRaw)
-    
+        
         UIView.animate(
             withDuration: duration * 2,
             delay: TimeInterval(1),
@@ -187,9 +178,7 @@ extension SearchSceneViewController {
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (message) in
-                self.showAlert(text: message) {
-                    #warning("check this out")
-                }
+                self.showAlert(text: message) { }
             }
         
         viewModel.initializeSearchSubject(subject: viewModel.searchSubject.eraseToAnyPublisher())

@@ -114,6 +114,7 @@ extension UserDefaultsService {
         userDefaults.setValue(userSettings.dayTime, forKey: Constants.UserDefaults.IS_DAY_TIME)
         userDefaults.setValue(userSettings.longitude, forKey: Constants.UserDefaults.LAST_LONGITUDE)
         userDefaults.setValue(userSettings.latitude, forKey: Constants.UserDefaults.LAST_LATITUDE)
+        userDefaults.synchronize()
     }
     
     static func update(with weatherData: WeatherInfo) {
@@ -123,6 +124,7 @@ extension UserDefaultsService {
         userDefaults.setValue(weatherData.daytime, forKey: Constants.UserDefaults.IS_DAY_TIME)
         userDefaults.setValue(weatherData.longitude, forKey: Constants.UserDefaults.LAST_LONGITUDE)
         userDefaults.setValue(weatherData.latitude, forKey: Constants.UserDefaults.LAST_LATITUDE)
+        userDefaults.synchronize()
     }
     
     static func update(with item: Geoname) {
@@ -136,5 +138,6 @@ extension UserDefaultsService {
     static func setShouldShowUserLocationWeather (_ value: Bool) {
         let userDefaults = UserDefaults.standard
         userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_USER_LOCATION_WEATHER)
+        userDefaults.synchronize()
     }
 }

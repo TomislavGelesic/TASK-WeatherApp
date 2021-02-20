@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class ConditionsCheckBox: UIView {
+    
+    var didSelectCondition = PassthroughSubject<ConditionTypes, Never>()
     
     let humidityCheckBoxWithImage: CheckBox = {
         let image = UIImage(named: "humidity_icon")?.withRenderingMode(.alwaysTemplate)
@@ -70,36 +73,32 @@ extension ConditionsCheckBox {
     }
     
     @objc func humidityRadioButtonTapped() {
-        
         humidityCheckBoxWithImage.radioButton.isSelected = !humidityCheckBoxWithImage.radioButton.isSelected
+        didSelectCondition.send(.humidity)
     }
     
     @objc func windRadioButtonTapped() {
-        
         windCheckBoxWithImage.radioButton.isSelected = !windCheckBoxWithImage.radioButton.isSelected
+        didSelectCondition.send(.windSpeed)
     }
     
     @objc func pressureRadioButtonTapped() {
-        
         pressureCheckBoxWithImage.radioButton.isSelected = !pressureCheckBoxWithImage.radioButton.isSelected
+        didSelectCondition.send(.pressure)
     }
     
-    func getSelectedConditions() -> [ConditionTypes] {
-        var conditions = [ConditionTypes]()
+    func setActive(for type: ConditionTypes) {
         
-        if humidityCheckBoxWithImage.radioButton.isSelected {
-            conditions.append(.humidity)
+        switch type {
+        case .humidity:
+            humidityCheckBoxWithImage.radioButton.isSelected = true
+        case .pressure:
+            pressureCheckBoxWithImage.radioButton.isSelected = true
+        case .windSpeed:
+            windCheckBoxWithImage.radioButton.isSelected = true
         }
-        if pressureCheckBoxWithImage.radioButton.isSelected {
-            conditions.append(.pressure)
-        }
-        if windCheckBoxWithImage.radioButton.isSelected {
-            conditions.append(.windSpeed)
-        }
-        
-        return conditions
+        didSelectCondition.send(type)
     }
-    
 }
 
 extension ConditionsCheckBox {
@@ -135,18 +134,6 @@ extension ConditionsCheckBox {
     func setConstraintOnOPressureCheckBoxWithImage() {
         humidityCheckBoxWithImage.snp.makeConstraints { (make) in
             make.height.equalTo(self)
-        }
-    }
-    
-    func setActive(for type: ConditionTypes) {
-        
-        switch type {
-        case .humidity:
-            humidityCheckBoxWithImage.radioButton.isSelected = true
-        case .pressure:
-            pressureCheckBoxWithImage.radioButton.isSelected = true
-        case .windSpeed:
-            windCheckBoxWithImage.radioButton.isSelected = true
         }
     }
 }

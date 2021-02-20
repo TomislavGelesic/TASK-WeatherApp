@@ -1,17 +1,16 @@
 
 import UIKit
 import Combine
+import CoreLocation
 
-class HomeSceneRepositoryImpl : WeatherRepository, GeoNamesRepository {
+class HomeSceneRepositoryImpl : WeatherRepository {
     
-    func fetchWeatherData(id: String) -> AnyPublisher<WeatherResponse, NetworkError> {
+    func fetchWeatherDataBy(location: CLLocationCoordinate2D) -> AnyPublisher<WeatherResponse, NetworkError> {
         
         var path = String()
         path.append(Constants.OpenWeatherMapORG.BASE)
-        path.append(Constants.OpenWeatherMapORG.GET_CITY_BY_ID)
-        path.append("\(id)")
+        path.append("lat=\(location.latitude)&lon=\(location.longitude)")
         path.append(Constants.OpenWeatherMapORG.KEY)
-        
         switch UserDefaultsService.fetchUpdated().measurmentUnit {
         case .metric:
             path.append(Constants.OpenWeatherMapORG.WITH_METRIC_UNITS)
@@ -21,6 +20,24 @@ class HomeSceneRepositoryImpl : WeatherRepository, GeoNamesRepository {
             break
         }
         
+        return RestManager.requestObservable(url: path)
+    }
+    
+    
+    func fetchWeatherDataBy(id: String) -> AnyPublisher<WeatherResponse, NetworkError> {
+        
+        var path = String()
+        path.append(Constants.OpenWeatherMapORG.BASE)
+        path.append("id=\(id)")
+        path.append(Constants.OpenWeatherMapORG.KEY)
+        switch UserDefaultsService.fetchUpdated().measurmentUnit {
+        case .metric:
+            path.append(Constants.OpenWeatherMapORG.WITH_METRIC_UNITS)
+            break
+        case .imperial:
+            path.append(Constants.OpenWeatherMapORG.WITH_IMPERIAL_UNITS)
+            break
+        }        
         return RestManager.requestObservable(url: path)
     }
     
@@ -43,15 +60,5 @@ class HomeSceneRepositoryImpl : WeatherRepository, GeoNamesRepository {
         }
         
         return conditions
-    }
-    
-    func fetchSearchResult(for searchText: String) -> AnyPublisher<GeoNameResponse, NetworkError> {
-        
-        var path = String()
-        path.append(Constants.GeoNamesORG.BASE_HomeScene)
-        path.append(searchText)
-        path.append(Constants.GeoNamesORG.KEY)
-        
-        return RestManager.requestObservable(url: path)
     }
 }

@@ -12,8 +12,6 @@ import CoreLocation
 
 class HomeSceneViewController: UIViewController {
     
-    var coordinator: HomeSceneCoordinator
-    
     var viewModel: HomeSceneViewModel
     
     var disposeBag = Set<AnyCancellable>()
@@ -90,7 +88,7 @@ class HomeSceneViewController: UIViewController {
     let conditionsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.distribution = .equalCentering
+        stackView.distribution = .equalSpacing
         stackView.backgroundColor = .clear
         return stackView
     }()
@@ -135,9 +133,7 @@ class HomeSceneViewController: UIViewController {
         return textField
     }()
     
-    init(coordinator: HomeSceneCoordinator, viewModel: HomeSceneViewModel) {
-        
-        self.coordinator = coordinator
+    init(viewModel: HomeSceneViewModel) {
         self.viewModel = viewModel
         self.locationManager = CLLocationManager()
         
@@ -145,7 +141,7 @@ class HomeSceneViewController: UIViewController {
     }
     
     deinit {
-        print("HomeSceneViewController deinit")
+//        print("HomeSceneViewController deinit")
     }
     
     required init?(coder: NSCoder) {
@@ -154,11 +150,17 @@ class HomeSceneViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setSubviews()
         setConstraints()
         setSubscribers()
-        setLocationManager()
+        startLocationManager()
+        viewModel.fetchWeather.send()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateBackgroundImage()
     }
 }
 
@@ -182,10 +184,11 @@ extension HomeSceneViewController {
             searchTextField
         ])
         
-        
+        conditionsStackView.addArrangedSubview(UIView())
         conditionsStackView.addArrangedSubview(humidityConditionView)
         conditionsStackView.addArrangedSubview(pressureConditionView)
         conditionsStackView.addArrangedSubview(windConditionView)
+        conditionsStackView.addArrangedSubview(UIView())
         
         for value in viewModel.getConditionsToShow() {
             switch value {
@@ -208,7 +211,8 @@ extension HomeSceneViewController {
     }
     
     @objc func settingsButtonTapped() {
-        coordinator.goToSettingsScene()
+        
+        viewModel.settingsTapped()
     }
     
     func setSubscribers() {
@@ -218,11 +222,11 @@ extension HomeSceneViewController {
             .receive(on: RunLoop.main)
             .sink { [unowned self] () in
                 
-                self.updateWeather(with: viewModel.screenData)
+                self.updateUI()
             }
             .store(in: &disposeBag)
         
-        viewModel.initializeScreenData(for: viewModel.getNewScreenData.eraseToAnyPublisher())
+        viewModel.initializeScreenData(for: viewModel.fetchWeather.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
         viewModel.initializeLocationSubject(subject: viewModel.getCityIdForLocation.eraseToAnyPublisher())
@@ -246,20 +250,31 @@ extension HomeSceneViewController {
             .store(in: &disposeBag)
     }
     
-    func updateWeather(with info: WeatherInfo) {
-        
-        UserDefaultsService.updateBackgorundImage(weatherType: Int(info.weatherType) ?? 800, daytime: info.daytime)
-        
-        setBackgroundImage(with: UserDefaultsService.getBackgroundImage())
-        
+    func updateUI() {
+    
         humidityConditionView.isHidden = true
         pressureConditionView.isHidden = true
         windConditionView.isHidden = true
         
-        
-        cityNameLabel.text = info.cityName.uppercased()
-        weatherDescriptionLabel.text = info.weatherDescription.uppercased()
-        humidityConditionView.conditionValueLabel.text = info.humidity + " [%]"
+        cityNameLabel.text = viewModel.screenData.cityName.uppercased()
+        weatherDescriptionLabel.text = viewModel.screenData.weatherDescription.uppercased()
+        humidityConditionView.conditionValueLabel.text = viewModel.screenData.humidity + " [%]"
+        switch viewModel.getUserSettings().measurmentUnit {
+        case .imperial:
+            currentTemperatureLabel.text = "\(viewModel.screenData.current_Temperature)" + " F"
+            minTemperatureLabel.text = "\(viewModel.screenData.min_Temperature)" + " F"
+            maxTemperatureLabel.text = "\(viewModel.screenData.max_Temperature)" + " F"
+            windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed + " [mph]"
+            pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure + " [psi]"
+            break
+        case .metric:
+            currentTemperatureLabel.text = "\(viewModel.screenData.current_Temperature)" + " °C"
+            minTemperatureLabel.text = "\(viewModel.screenData.min_Temperature)" + " °C"
+            maxTemperatureLabel.text = "\(viewModel.screenData.max_Temperature)" + " °C"
+            windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed + " [km/h]"
+            pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure + " [hPa]"
+            break
+        }
         
         for item in viewModel.getConditionsToShow() {
             switch item {
@@ -274,26 +289,10 @@ extension HomeSceneViewController {
                 break
             }
         }
-        
-        switch viewModel.getUserSettings().measurmentUnit {
-        case .imperial:
-            currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
-            minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
-            maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
-            windConditionView.conditionValueLabel.text = info.windSpeed + " [mph]"
-            pressureConditionView.conditionValueLabel.text = info.pressure + " [psi]"
-            break
-        case .metric:
-            currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
-            minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
-            maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
-            windConditionView.conditionValueLabel.text = info.windSpeed + " [km/h]"
-            pressureConditionView.conditionValueLabel.text = info.pressure + " [hPa]"
-            break
-        }
+        updateBackgroundImage()
     }
     
-    func setLocationManager() {
+    func startLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
@@ -304,9 +303,7 @@ extension HomeSceneViewController {
 extension HomeSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        
-        coordinator.goToSearchScene()
-        
+        viewModel.searchTapped()
         return true
     }
 }
@@ -314,13 +311,12 @@ extension HomeSceneViewController: UITextFieldDelegate {
 extension HomeSceneViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.startUpdatingLocation()
             break
         case .denied:
-            viewModel.getNewScreenData.send()
+            viewModel.fetchWeather.send()
             break
         default:
             manager.requestWhenInUseAuthorization()
@@ -335,7 +331,7 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
             
             viewModel.getCityIdForLocation.send(coordinate)
         } else {
-            viewModel.getNewScreenData.send()
+            viewModel.fetchWeather.send()
         }
     }
 }
@@ -360,7 +356,7 @@ extension HomeSceneViewController {
     
     func setConstraintsOnCurrentTemperatureLabel() {
         currentTemperatureLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(view.snp.top).offset(10)
+            make.top.equalTo(view.snp.top).offset(100)
             make.height.equalTo(80)
             make.centerX.equalTo(view.snp.centerX)
         }
@@ -404,7 +400,7 @@ extension HomeSceneViewController {
     func setConstraintsOnVerticalLine() {
         verticalLine.snp.makeConstraints { (make) in
             make.width.equalTo(2)
-            make.height.equalTo(90)
+            make.height.equalTo(100)
             make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
             make.centerX.equalTo(view.snp.centerX)
         }
@@ -439,7 +435,7 @@ extension HomeSceneViewController {
     func setConstraintsOnSettingsButton() {
         settingsButton.snp.makeConstraints { (make) in
             make.width.height.equalTo(44)
-            make.bottom.equalTo(view.snp.bottom).offset(-2)
+            make.bottom.equalTo(view.snp.bottom).offset(-50)
             make.leading.equalTo(view.snp.leading).offset(10)
         }
         
@@ -450,7 +446,7 @@ extension HomeSceneViewController {
             make.width.equalTo(view.frame.width - 44 - 30)
             make.height.equalTo(44)
             make.trailing.equalTo(view.snp.trailing).offset(-10)
-            make.bottom.equalTo(view.snp.bottom).offset(-2)
+            make.bottom.equalTo(view.snp.bottom).offset(-50)
         }
         
     }

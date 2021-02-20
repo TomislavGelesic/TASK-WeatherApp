@@ -10,8 +10,10 @@ import Foundation
 
 struct Constants {
     
-    static let DEFAULT_CITY_ID = "2761369" // Vienna
-    static let DEFAULT_LATITUDE_LONGITUDE = "lat=48.20849&lng=16.37208" //Vienna
+    // Vienna
+    static let DEFAULT_CITY_ID = "2761369"
+    static let DEFAULT_LATITUDE = 48.20849
+    static let DEFAULT_LONGITUDE = 16.37208
     
     struct GeoNamesORG  {
         
@@ -35,8 +37,6 @@ struct Constants {
         static let BASE = "https://api.openweathermap.org/data/2.5/weather?"
         
         static let KEY = "&appid=" + "c89f972e8095d59db84f5e88b5ad621e"
-        
-        static let GET_CITY_BY_ID = "id="
         
         static let WITH_METRIC_UNITS = "&units=metric"
         

@@ -17,9 +17,9 @@ class HomeSceneCoordinator: Coordinator {
     
     func start() {
         
-        let viewModel = HomeSceneViewModel(repository: HomeSceneRepositoryImpl())
+        let viewModel = HomeSceneViewModel(coordinator: self, repository: HomeSceneRepositoryImpl())
         
-        let viewController = HomeSceneViewController(coordinator: self, viewModel: viewModel)
+        let viewController = HomeSceneViewController(viewModel: viewModel)
         
         navigationController.pushViewController(viewController, animated: false)
     }
@@ -31,7 +31,7 @@ class HomeSceneCoordinator: Coordinator {
     }
 
     deinit {
-        print("HomeSceneCoordinator deinit")
+//        print("HomeSceneCoordinator deinit")
     }
     
     func goToSearchScene() {

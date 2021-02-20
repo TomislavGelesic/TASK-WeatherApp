@@ -12,8 +12,8 @@ import Combine
 public class RestManager {
     private static let manager: Alamofire.Session = {
         var configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 50
-        configuration.timeoutIntervalForResource = 50
+//        configuration.timeoutIntervalForRequest = 50
+//        configuration.timeoutIntervalForResource = 50
         let sessionManager = Session(configuration: configuration)
         
         return sessionManager
@@ -26,7 +26,7 @@ public class RestManager {
             guard let encodedUrl = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
                 return promise(.failure(NetworkError.badResponseCode))
             }
-            
+            // HERE I STARTED
             let request = RestManager.manager
                 .request(encodedUrl, encoding: URLEncoding.default)
                 .validate()

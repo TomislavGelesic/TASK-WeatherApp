@@ -10,16 +10,16 @@ import Combine
 
 class UserDefaultsService {
     
-    var measurmentUnit: MeasurementUnits = .metric
-    var lastCityId: String = "2761369"                      // Vienna id
-    var shouldShowWindSpeed: Bool = false
-    var shouldShowPressure: Bool = false
-    var shouldShowHumidity: Bool = false
-    var weatherType: Int = 800
-    var dayTime: Bool = true
-    var shouldShowUserLocationWeather: Bool = true
+    var measurmentUnit: MeasurementUnits
+    var lastCityId: String
+    var shouldShowWindSpeed: Bool
+    var shouldShowPressure: Bool
+    var shouldShowHumidity: Bool
+    var weatherType: Int
+    var dayTime: Bool
+    var shouldShowUserLocationWeather: Bool
     
-    init(measurmentUnit: MeasurementUnits = .metric, lastCityId: String = "2761369", shouldShowWindSpeed: Bool = false, shouldShowPressure: Bool = false, shouldShowHumidity: Bool = false, weatherType: Int = 800, dayTime: Bool = true, shouldShowUserLocationWeather: Bool = true) {
+    init(measurmentUnit: MeasurementUnits = .metric, lastCityId: String = Constants.DEFAULT_CITY_ID, shouldShowWindSpeed: Bool = false, shouldShowPressure: Bool = false, shouldShowHumidity: Bool = false, weatherType: Int = 800, dayTime: Bool = true, shouldShowUserLocationWeather: Bool = true) {
         self.measurmentUnit = measurmentUnit
         self.lastCityId = lastCityId
         self.shouldShowWindSpeed = shouldShowWindSpeed
@@ -78,11 +78,18 @@ extension UserDefaultsService {
         return userSettings
     }
     
-    static func updateUserSettings(measurmentUnit: MeasurementUnits? = nil, lastCityId: String? = nil, shouldShowWindSpeed: Bool? = nil, shouldShowPressure: Bool? = nil, shouldShowHumidity: Bool? = nil) {
+    static func updateUserSettings(measurmentUnit: MeasurementUnits? = nil,
+                                   lastCityId: String? = nil,
+                                   shouldShowWindSpeed: Bool? = nil,
+                                   shouldShowPressure: Bool? = nil,
+                                   shouldShowHumidity: Bool? = nil,
+                                   dayTime: Bool? = nil,
+                                   weatherType: Int? = nil) {
         
         let userDefaults = UserDefaults.standard
         
         if let value = measurmentUnit {
+//            print("updating measurement unit to: \(value)")
             switch value {
             case .imperial:
                 userDefaults.setValue("imperial", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
@@ -92,74 +99,38 @@ extension UserDefaultsService {
         }
         
         if let value = lastCityId {
+//            print("updating id to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.CITY_ID)
         }
         
         if let value = shouldShowPressure {
+//            print("updating pressure to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
         }
         
         if let value = shouldShowHumidity {
+//            print("updating humidity to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
         }
         
         if let value = shouldShowWindSpeed {
+//            print("updating wind to: \(value)")
             userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
         }
-    }
-    
-    static func updateBackgorundImage(weatherType: Int, daytime: Bool) {
         
-        let userDefaults = UserDefaults.standard
+        if let value = weatherType {
+//            print("updating weather type to: \(value)")
+            userDefaults.setValue(value, forKey: Constants.UserDefaults.WEATHER_TYPE)
+        }
         
-        userDefaults.setValue(weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
-        userDefaults.setValue(daytime, forKey: Constants.UserDefaults.IS_DAY_TIME)
-    }
-    
-    static func getBackgroundImage() -> UIImage? {
-        
-        let userSettings = UserDefaultsService.fetchUpdated()
-        let weatherType = userSettings.weatherType
-        let dayTime = userSettings.dayTime
-        
-        switch weatherType {
-        // Thunderstorm
-        case 200..<300:
-            return UIImage(named: "body_image-thunderstorm")
-        // Drizzle & Rain
-        case 300..<600:
-            return UIImage(named: "body_image-rain")
-            
-        // Snow
-        case 600..<700:
-            return UIImage(named: "body_image-snow")
-            
-        // Atmosphere
-        case 700..<800:
-            if weatherType == 741 {
-                return UIImage(named: "body_image-fog")
-            }
-            if weatherType == 781 {
-                return UIImage(named: "body_image-tornado")
-            }
-           return UIImage(named: "body_image-fog")
-        // Clouds
-        case 801..<810:
-            if dayTime {
-                return UIImage(named: "body_image-partly-cloudy-day")
-            }
-            return UIImage(named: "body_image-partly-cloudy-night")
-            
-        // Clear == 800, or others - currently don't exist on server
-        default:
-            if dayTime {
-                return UIImage(named: "body_image-clear-day")
-            }
-            return UIImage(named: "body_image-clear-night")
+        if let value = dayTime {
+//            print("updating day time to: \(value)")
+            userDefaults.setValue(value, forKey: Constants.UserDefaults.IS_DAY_TIME)
         }
     }
     
     static func setShouldShowUserLocationWeather (_ value: Bool) {
+//        print("updating show location weather to: \(value)")
         let userDefaults = UserDefaults.standard
         userDefaults.setValue(value, forKey: Constants.UserDefaults.SHOULD_SHOW_USER_LOCATION_WEATHER)
     }

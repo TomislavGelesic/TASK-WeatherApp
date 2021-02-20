@@ -43,31 +43,30 @@ class AppCoordinator: Coordinator {
 extension AppCoordinator {
     
     func initializeUserSettings() {
+        let settings = UserDefaultsService.fetchUpdated()
         
-        let userDefaults = UserDefaults.standard
-        let settings = UserDefaultsService()
+        UserDefaultsService.updateUserSettings(measurmentUnit: settings.measurmentUnit,
+                                               lastCityId: settings.lastCityId,
+                                               shouldShowWindSpeed: settings.shouldShowWindSpeed,
+                                               shouldShowPressure: settings.shouldShowPressure,
+                                               shouldShowHumidity: settings.shouldShowHumidity,
+                                               dayTime: settings.dayTime,
+                                               weatherType: settings.weatherType)
         
-        
-        userDefaults.setValue(settings.lastCityId, forKey: Constants.UserDefaults.CITY_ID)
-        userDefaults.setValue("metric", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
-        userDefaults.setValue(settings.shouldShowHumidity, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
-        userDefaults.setValue(settings.shouldShowPressure, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
-        userDefaults.setValue(settings.shouldShowWindSpeed, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
-        userDefaults.setValue(settings.weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
-        userDefaults.setValue(settings.dayTime, forKey: Constants.UserDefaults.IS_DAY_TIME)
     }
     
     func childDidFinish(_ coordinator: Coordinator, goTo nextScene: SceneOption) {
         
         navigationController.viewControllers.removeAll()
         
-        for (index, childCoordinator) in childCoordinators.enumerated() {
-            if childCoordinator === coordinator {
-                print("Child (\(childCoordinator.self)) with index \(index) did finish. ")
+        childCoordinators = childCoordinators.filter({ (coord) -> Bool in
+            if coord === coordinator {
+//                print("Child (\(coord.self)) did finish. ")
+                return false
+            } else {
+                return true
             }
-        }
-        
-        childCoordinators.removeAll()
+        })
         
         switch nextScene {
         case .homeScene:

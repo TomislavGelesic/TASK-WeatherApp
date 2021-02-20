@@ -112,11 +112,7 @@ extension SettingsSceneViewModel {
             
         }
         
-        UserDefaultsService.updateUserSettings(measurmentUnit: userSettings.measurmentUnit,
-                                               lastCityId: userSettings.lastCityId,
-                                               shouldShowWindSpeed: userSettings.shouldShowWindSpeed,
-                                               shouldShowPressure: userSettings.shouldShowPressure,
-                                               shouldShowHumidity: userSettings.shouldShowHumidity)
+        UserDefaultsService.update(with: userSettings)
         
         userSettings = UserDefaultsService.fetchUpdated()
         

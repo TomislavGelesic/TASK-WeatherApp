@@ -154,7 +154,7 @@ class HomeSceneViewController: UIViewController {
         setConstraints()
         setSubscribers()
         startLocationManager()
-        viewModel.fetchWeather.send()
+        viewModel.weatherSubject.send(nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -226,10 +226,7 @@ extension HomeSceneViewController {
             }
             .store(in: &disposeBag)
         
-        viewModel.initializeScreenData(for: viewModel.fetchWeather.eraseToAnyPublisher())
-            .store(in: &disposeBag)
-        
-        viewModel.initializeLocationSubject(subject: viewModel.getCityIdForLocation.eraseToAnyPublisher())
+        viewModel.initializeWeatherSubject(subject: viewModel.weatherSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
         viewModel.alertSubject
@@ -251,32 +248,29 @@ extension HomeSceneViewController {
     }
     
     func updateUI() {
+        viewModel.screenData.daytime ? setTextColor(UIColor.black) : setTextColor(UIColor.white)
+        setScreenText(with: viewModel.screenData, for: viewModel.getMeasurementUnit())
+        updateConditions(with: viewModel.getConditionsToShow())
+        updateBackgroundImage()
+    }
     
+    func setTextColor(_ color: UIColor) {
+        cityNameLabel.textColor = color
+        weatherDescriptionLabel.textColor = color
+        currentTemperatureLabel.textColor = color
+        minTemperatureLabel.textColor = color
+        maxTemperatureLabel.textColor = color
+        windConditionView.conditionValueLabel.textColor = color
+        pressureConditionView.conditionValueLabel.textColor = color
+        humidityConditionView.conditionValueLabel.textColor = color
+    }
+    
+    func updateConditions(with conditions: [ConditionTypes]) {
+        
         humidityConditionView.isHidden = true
         pressureConditionView.isHidden = true
         windConditionView.isHidden = true
-        
-        cityNameLabel.text = viewModel.screenData.cityName.uppercased()
-        weatherDescriptionLabel.text = viewModel.screenData.weatherDescription.uppercased()
-        humidityConditionView.conditionValueLabel.text = viewModel.screenData.humidity + " [%]"
-        switch viewModel.getUserSettings().measurmentUnit {
-        case .imperial:
-            currentTemperatureLabel.text = "\(viewModel.screenData.current_Temperature)" + " F"
-            minTemperatureLabel.text = "\(viewModel.screenData.min_Temperature)" + " F"
-            maxTemperatureLabel.text = "\(viewModel.screenData.max_Temperature)" + " F"
-            windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed + " [mph]"
-            pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure + " [psi]"
-            break
-        case .metric:
-            currentTemperatureLabel.text = "\(viewModel.screenData.current_Temperature)" + " °C"
-            minTemperatureLabel.text = "\(viewModel.screenData.min_Temperature)" + " °C"
-            maxTemperatureLabel.text = "\(viewModel.screenData.max_Temperature)" + " °C"
-            windConditionView.conditionValueLabel.text = viewModel.screenData.windSpeed + " [km/h]"
-            pressureConditionView.conditionValueLabel.text = viewModel.screenData.pressure + " [hPa]"
-            break
-        }
-        
-        for item in viewModel.getConditionsToShow() {
+        for item in conditions {
             switch item {
             case .humidity:
                 humidityConditionView.isHidden = false
@@ -289,9 +283,29 @@ extension HomeSceneViewController {
                 break
             }
         }
-        updateBackgroundImage()
     }
     
+    func setScreenText(with info: WeatherInfo, for unit: MeasurementUnits) {
+        cityNameLabel.text = info.cityName.uppercased()
+        weatherDescriptionLabel.text = info.weatherDescription.uppercased()
+        humidityConditionView.conditionValueLabel.text = info.humidity + " [%]"
+        switch unit {
+        case .imperial:
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " F"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " F"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " F"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " [mph]"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " [psi]"
+            break
+        case .metric:
+            currentTemperatureLabel.text = "\(info.current_Temperature)" + " °C"
+            minTemperatureLabel.text = "\(info.min_Temperature)" + " °C"
+            maxTemperatureLabel.text = "\(info.max_Temperature)" + " °C"
+            windConditionView.conditionValueLabel.text = info.windSpeed + " [km/h]"
+            pressureConditionView.conditionValueLabel.text = info.pressure + " [hPa]"
+            break
+        }
+    }
     func startLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -316,7 +330,7 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
             locationManager.startUpdatingLocation()
             break
         case .denied:
-            viewModel.fetchWeather.send()
+            viewModel.weatherSubject.send(nil)
             break
         default:
             manager.requestWhenInUseAuthorization()
@@ -326,13 +340,22 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        if let coordinate = locationManager.location?.coordinate,
-           UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
+        viewModel.userLocationDidUpdate(locationManager.location?.coordinate)
+        
+        
+//        if let coordinate = locationManager.location?.coordinate,
+//           UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
+            #warning("sort this out")
+            /* implementiraj jedan subject za dohvacanje lokacije
+            - azuriraj lat i long u userdefaultsu i pozovi fetch
+             - vidi dal radi ovo savrseno rjesenje ...
+             */
             
-            viewModel.getCityIdForLocation.send(coordinate)
-        } else {
-            viewModel.fetchWeather.send()
-        }
+//            viewModel.getCityIdForLocation.send(coordinate)
+//
+//        } else {
+//            viewModel.fetchWeather.send()
+//        }
     }
 }
 

@@ -22,7 +22,8 @@ class SearchRepositoryImpl: GeoNamesRepository {
         path.append(Constants.GeoNamesORG.KEY)
         
         
-        return RestManager.requestObservable(url: path)
+//        return RestManager.requestObservable(url: path)
+        return PassthroughSubject<GeoNameResponse, NetworkError>().eraseToAnyPublisher()
     }
     
 }

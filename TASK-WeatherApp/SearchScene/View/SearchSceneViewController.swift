@@ -256,8 +256,8 @@ extension SearchSceneViewController {
     
     func setConstraintsOnCancelButton() {
         cancelButton.snp.makeConstraints { (make) in
-            make.width.height.equalTo(20)
-            make.top.trailing.equalTo(view).inset(UIEdgeInsets(top: 5, left: 0, bottom: 0, right: 5))
+            make.width.height.equalTo(30)
+            make.top.trailing.equalTo(view).inset(UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 15))
         }
     }
     
@@ -266,7 +266,7 @@ extension SearchSceneViewController {
         tableView.snp.makeConstraints { (make) in
             make.top.equalTo(cancelButton.snp.bottom).offset(10)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-            make.height.equalTo(360)
+            make.height.equalTo(330)
         }
     }
     

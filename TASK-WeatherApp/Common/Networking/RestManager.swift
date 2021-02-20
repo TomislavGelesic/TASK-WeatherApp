@@ -19,32 +19,40 @@ public class RestManager {
         return sessionManager
     }()
     
-    static func requestObservable<T: Codable>(url: String) -> AnyPublisher<T, NetworkError> {
+    static func requestObservable<T: Codable>(url: String) -> AnyPublisher<Result<T, AFError>, Never> {
         
-        return Future { promise in
-            
-            guard let encodedUrl = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                return promise(.failure(NetworkError.badResponseCode))
-            }
-            // HERE I STARTED
-            let request = RestManager.manager
-                .request(encodedUrl, encoding: URLEncoding.default)
-                .validate()
-                .responseData { (response) in
-                    switch response.result {
-                    case .success(let value):
-                        if let decodedObject: T = SerializationManager.parseData(jsonData: value) {
-                            promise(.success(decodedObject))
-                        } else {
-                            promise(.failure(NetworkError.decodingError))
-                        }
-                    case .failure:
-                        promise(.failure(NetworkError.noDataError))
-                    }
-                }
-            request.resume()
-            
-        }.eraseToAnyPublisher()
+        return RestManager.manager
+            .request(url, encoding: URLEncoding.default)
+            .validate()
+            .publishDecodable(type: T.self)
+            .result()
+            .eraseToAnyPublisher()
+        
+//        return Future { promise in
+//
+//            guard let encodedUrl = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+//                return promise(.failure(NetworkError.badResponseCode))
+//            }
+//            // HERE I STARTED
+//
+//            let request = RestManager.manager
+//                .request(encodedUrl, encoding: URLEncoding.default)
+//                .validate()
+//                .responseData { (response) in
+//                    switch response.result {
+//                    case .success(let value):
+//                        if let decodedObject: T = SerializationManager.parseData(jsonData: value) {
+//                            promise(.success(decodedObject))
+//                        } else {
+//                            promise(.failure(NetworkError.decodingError))
+//                        }
+//                    case .failure:
+//                        promise(.failure(NetworkError.noDataError))
+//                    }
+//                }
+//            request.resume()
+//
+//        }.eraseToAnyPublisher()
     }
     
 }

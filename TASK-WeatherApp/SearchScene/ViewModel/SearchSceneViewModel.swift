@@ -39,7 +39,7 @@ extension SearchSceneViewModel {
     func initializeFetchSubject(subject: AnyPublisher<String, Never>) -> AnyCancellable {
         
         return subject
-            .debounce(for: 0.5, scheduler: DispatchQueue.global())
+            .debounce(for: .seconds(0.5), scheduler: DispatchQueue.global())
             .removeDuplicates()
             .flatMap { [unowned self] (searchText) -> AnyPublisher<GeoNameResponse, NetworkError> in
                 
@@ -64,11 +64,7 @@ extension SearchSceneViewModel {
     func saveCity(at position: Int) {
         
         let item = screenData[position]
-        UserDefaultsService.updateUserSettings(measurmentUnit: nil,
-                                               lastCityId: String(item.geonameId),
-                                               shouldShowWindSpeed: nil,
-                                               shouldShowPressure: nil,
-                                               shouldShowHumidity: nil)
+        UserDefaultsService.update(with: item)
         coreDataService.save(item)
     }
     

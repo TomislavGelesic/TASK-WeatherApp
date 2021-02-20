@@ -104,7 +104,8 @@ extension CoreDataService {
         
         city.setValue(Int64(item.id), forKey: "id")
         city.setValue(item.cityName, forKey: "name")
-        
+        city.setValue(item.longitude, forKey: "longitude")
+        city.setValue(item.latitude, forKey: "latitude")
         saveContext()
     }
     
@@ -117,12 +118,13 @@ extension CoreDataService {
             return
         }
         else {
-            
+            #warning("DoesCoreData work fine?")
             let city = CityWeather(context: managedContext)
             
             city.setValue(Int64(item.geonameId), forKey: "id")
             city.setValue(item.name, forKey: "name")
-            
+            city.setValue(item.lng, forKey: "longitude")
+            city.setValue(item.lat, forKey: "latitude")
             saveContext()
         }
         

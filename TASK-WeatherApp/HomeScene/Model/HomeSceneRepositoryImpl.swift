@@ -2,10 +2,11 @@
 import UIKit
 import Combine
 import CoreLocation
+import Alamofire
 
 class HomeSceneRepositoryImpl : WeatherRepository {
     
-    func fetchWeatherDataBy(location: CLLocationCoordinate2D) -> AnyPublisher<WeatherResponse, NetworkError> {
+    func fetchWeatherDataBy(location: CLLocationCoordinate2D) -> AnyPublisher<Result<WeatherResponse, AFError>, Never> {
         
         var path = String()
         path.append(Constants.OpenWeatherMapORG.BASE)
@@ -24,7 +25,7 @@ class HomeSceneRepositoryImpl : WeatherRepository {
     }
     
     
-    func fetchWeatherDataBy(id: String) -> AnyPublisher<WeatherResponse, NetworkError> {
+    func fetchWeatherDataBy(id: String) -> AnyPublisher<Result<WeatherResponse, AFError>, Never> {
         
         var path = String()
         path.append(Constants.OpenWeatherMapORG.BASE)

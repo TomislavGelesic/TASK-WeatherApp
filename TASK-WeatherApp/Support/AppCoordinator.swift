@@ -43,16 +43,7 @@ class AppCoordinator: Coordinator {
 extension AppCoordinator {
     
     func initializeUserSettings() {
-        let settings = UserDefaultsService.fetchUpdated()
-        
-        UserDefaultsService.updateUserSettings(measurmentUnit: settings.measurmentUnit,
-                                               lastCityId: settings.lastCityId,
-                                               shouldShowWindSpeed: settings.shouldShowWindSpeed,
-                                               shouldShowPressure: settings.shouldShowPressure,
-                                               shouldShowHumidity: settings.shouldShowHumidity,
-                                               dayTime: settings.dayTime,
-                                               weatherType: settings.weatherType)
-        
+        UserDefaultsService.update(with: UserDefaultsService.fetchUpdated())        
     }
     
     func childDidFinish(_ coordinator: Coordinator, goTo nextScene: SceneOption) {

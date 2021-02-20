@@ -57,6 +57,8 @@ struct Constants {
         static let WEATHER_TYPE = "weathertype"
         static let IS_DAY_TIME = "daytime"
         static let SHOULD_SHOW_USER_LOCATION_WEATHER = "shouldShowUserLocationWeather"
+        static let LAST_LATITUDE = "lastlatitude"
+        static let LAST_LONGITUDE = "lastlongitude"
     }
     
     static func getPath(for searchText: String) -> String {

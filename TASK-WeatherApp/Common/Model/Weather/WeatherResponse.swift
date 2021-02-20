@@ -8,8 +8,6 @@
 import Foundation
 
 struct WeatherResponse: Codable {
-
-
     var id: Double
     var name: String
     var coord: Coordinations_CityWeatherResponse

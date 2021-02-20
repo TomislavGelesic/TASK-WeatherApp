@@ -20,16 +20,16 @@ extension UIViewController {
         SpinnerViewManager.removeSpinnerView()
     }
     
-    func showAPIFailedAlert(for errorMessage: String) {
+    func showAlert(text errorMessage: String, completion: @escaping ()->()) {
         
         let alert: UIAlertController = {
             let alert = UIAlertController(title: "Sorry", message: errorMessage, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .cancel))
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: { (_) in
+                completion()
+            }))
             return alert
         }()
-        
         hideSpinner()
-        
         present(alert, animated: true, completion: nil)
     }
     

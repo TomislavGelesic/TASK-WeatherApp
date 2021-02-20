@@ -44,10 +44,8 @@ extension UserDefaultsService {
         
         if let type = userDefaults.value(forKey: Constants.UserDefaults.MEASURMENT_UNIT) as? String {
             switch type {
-            case "imperial":
-                userSettings.measurmentUnit = .imperial
-            default:
-                userSettings.measurmentUnit = .metric
+            case "imperial": userSettings.measurmentUnit = .imperial
+            default: userSettings.measurmentUnit = .metric
             }
         }
         
@@ -95,10 +93,8 @@ extension UserDefaultsService {
         let userDefaults = UserDefaults.standard
         
         switch userSettings.measurmentUnit {
-        case .imperial:
-            userDefaults.setValue("imperial", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
-        default:
-            userDefaults.setValue("metric", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
+        case .imperial: userDefaults.setValue("imperial", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
+        default: userDefaults.setValue("metric", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
         }
         userDefaults.setValue(userSettings.lastCityId, forKey: Constants.UserDefaults.CITY_ID)
         userDefaults.setValue(userSettings.shouldShowPressure, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)

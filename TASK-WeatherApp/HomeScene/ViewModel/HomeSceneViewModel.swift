@@ -68,16 +68,13 @@ class HomeSceneViewModel {
         
         return subject
             .flatMap({ [unowned self] (coordinate) -> AnyPublisher<WeatherInfo, Never> in
-                
                 if let safeCoordinate = coordinate {
-                    print("lat:\(safeCoordinate.latitude) & long: \(safeCoordinate.longitude)")
                     return homeSceneRepositoryImpl.fetchWeatherDataBy(location: safeCoordinate)
                         .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
                             switch result {
                             case .success(let weatherResponse): return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
                             case .failure(_):
-                                #warning("FIX THIS: dummy message")
-                                self.alertSubject.send("doing well my man")
+                                self.alertSubject.send("No internet connection.")
                                 return Just(WeatherInfo()).eraseToAnyPublisher()
                             }
                         }.eraseToAnyPublisher()
@@ -98,18 +95,16 @@ class HomeSceneViewModel {
                     
                 }
                 else {
-                    
+                    #warning("SearchScene - doesn't search...")
                     let defaultLocation = CLLocationCoordinate2D(latitude: Constants.DEFAULT_LATITUDE,
                                                                  longitude: Constants.DEFAULT_LONGITUDE)
-                    
-                        print("lat:\(defaultLocation.latitude) & long: \(defaultLocation.longitude)")
+                    print("fetching weather for lat:\(defaultLocation.latitude) & long: \(defaultLocation.longitude)")
                     return homeSceneRepositoryImpl.fetchWeatherDataBy(location: defaultLocation)
                         .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
                             switch result {
                             case .success(let weatherResponse): return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
                             case .failure(_):
-                                #warning("FIX THIS: dummy message")
-                                self.alertSubject.send("doing well my man")
+                                self.alertSubject.send("No internet connection.")
                                 return Just(WeatherInfo()).eraseToAnyPublisher()
                             }
                         }.eraseToAnyPublisher()
@@ -168,16 +163,5 @@ class HomeSceneViewModel {
         
         userDefaults.setValue(weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
         userDefaults.setValue(daytime, forKey: Constants.UserDefaults.IS_DAY_TIME)
-    }
-    
-    func userLocationDidUpdate(_ coordinate: CLLocationCoordinate2D?) {
-        
-        if let safeCoordinate = coordinate,
-           UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
-            weatherSubject.send(safeCoordinate)
-        }
-        else {
-            weatherSubject.send(nil)
-        }
     }
 }

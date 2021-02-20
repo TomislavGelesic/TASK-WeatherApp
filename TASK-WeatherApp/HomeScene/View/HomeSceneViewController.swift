@@ -153,8 +153,7 @@ class HomeSceneViewController: UIViewController {
         setSubviews()
         setConstraints()
         setSubscribers()
-        startLocationManager()
-        viewModel.weatherSubject.send(nil)
+        checkLocationServices()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -167,9 +166,7 @@ class HomeSceneViewController: UIViewController {
 extension HomeSceneViewController {
     
     func setSubviews() {
-        
         view.backgroundColor = .lightGray
-        
         view.addSubviews([
             currentTemperatureLabel,
             weatherDescriptionLabel,
@@ -192,38 +189,22 @@ extension HomeSceneViewController {
         
         for value in viewModel.getConditionsToShow() {
             switch value {
-            case .humidity:
-                humidityConditionView.isHidden = false
-                break
-            case .windSpeed:
-                pressureConditionView.isHidden = false
-                break
-            case .pressure:
-                windConditionView.isHidden = false
-                break
-
+            case .humidity: humidityConditionView.isHidden = false
+            case .windSpeed: pressureConditionView.isHidden = false
+            case .pressure: windConditionView.isHidden = false
             }
         }
-        
         searchTextField.delegate = self
-        
         settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
     }
     
-    @objc func settingsButtonTapped() {
-        
-        viewModel.settingsTapped()
-    }
+    @objc func settingsButtonTapped() { viewModel.settingsTapped() }
     
     func setSubscribers() {
-        
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] () in
-                
-                self.updateUI()
-            }
+            .sink { [unowned self] () in self.updateUI() }
             .store(in: &disposeBag)
         
         viewModel.initializeWeatherSubject(subject: viewModel.weatherSubject.eraseToAnyPublisher())
@@ -233,17 +214,14 @@ extension HomeSceneViewController {
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (error) in
-                
-                self.showAPIFailedAlert(for: error)
+                self.showAlert(text: error) { [unowned self] in self.checkLocationServices() }
             }
             .store(in: &disposeBag)
         
         viewModel.spinnerSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (shouldShow) in
-                shouldShow ? self.showSpinner() : self.hideSpinner()
-            }
+            .sink { [unowned self] (shouldShow) in shouldShow ? self.showSpinner() : self.hideSpinner() }
             .store(in: &disposeBag)
     }
     
@@ -272,15 +250,9 @@ extension HomeSceneViewController {
         windConditionView.isHidden = true
         for item in conditions {
             switch item {
-            case .humidity:
-                humidityConditionView.isHidden = false
-                break
-            case .pressure:
-                pressureConditionView.isHidden = false
-                break
-            case .windSpeed:
-                windConditionView.isHidden = false
-                break
+            case .humidity: humidityConditionView.isHidden = false
+            case .pressure: pressureConditionView.isHidden = false
+            case .windSpeed: windConditionView.isHidden = false
             }
         }
     }
@@ -306,12 +278,32 @@ extension HomeSceneViewController {
             break
         }
     }
-    func startLocationManager() {
+    
+    func checkLocationServices() {
+        showSpinner()
+        if CLLocationManager.locationServicesEnabled() {
+            setupLocationManager()
+            startLocationManager()
+        }
+        else {
+            showAlert(text: "Device location dissabled.") { [unowned self] in
+                self.checkLocationServices()
+            }
+        }
+    }
+    
+    func setupLocationManager() {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    func startLocationManager() {
         locationManager.requestWhenInUseAuthorization()
     }
     
+    func getWeather(coordinates: CLLocationCoordinate2D?) {
+        viewModel.weatherSubject.send(coordinates)
+    }
 }
 
 extension HomeSceneViewController: UITextFieldDelegate {
@@ -326,36 +318,20 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
-        case .authorizedWhenInUse, .authorizedAlways:
-            locationManager.startUpdatingLocation()
-            break
-        case .denied:
-            viewModel.weatherSubject.send(nil)
-            break
+        case .restricted, .denied:
+            showAlert(text: "Unable to retreive location, using default Vienna location.") { [unowned self] in  self.getWeather(coordinates: nil)
+            }
         default:
-            manager.requestWhenInUseAuthorization()
-            break
+            locationManager.startUpdatingLocation()
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
-        viewModel.userLocationDidUpdate(locationManager.location?.coordinate)
-        
-        
-//        if let coordinate = locationManager.location?.coordinate,
-//           UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
-            #warning("sort this out")
-            /* implementiraj jedan subject za dohvacanje lokacije
-            - azuriraj lat i long u userdefaultsu i pozovi fetch
-             - vidi dal radi ovo savrseno rjesenje ...
-             */
-            
-//            viewModel.getCityIdForLocation.send(coordinate)
-//
-//        } else {
-//            viewModel.fetchWeather.send()
-//        }
+        guard let location = locations.last else {
+            getWeather(coordinates: nil)
+            return
+        }
+        getWeather(coordinates: location.coordinate)
     }
 }
 

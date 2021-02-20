@@ -43,7 +43,8 @@ class AppCoordinator: Coordinator {
 extension AppCoordinator {
     
     func initializeUserSettings() {
-        UserDefaultsService.update(with: UserDefaultsService.fetchUpdated())        
+//        UserDefaultsService.update(with: UserDefaultsService.fetchUpdated())
+        UserDefaultsService.update(with: UserDefaultsService())
     }
     
     func childDidFinish(_ coordinator: Coordinator, goTo nextScene: SceneOption) {

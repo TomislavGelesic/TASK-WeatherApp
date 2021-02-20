@@ -44,7 +44,6 @@ class ConditionsCheckBox: UIView {
     
     init() {
         super.init(frame: .zero)
-        
         setViews()
         setConstraints()
     }
@@ -58,18 +57,13 @@ class ConditionsCheckBox: UIView {
 extension ConditionsCheckBox {
     
     func setViews() {
-        
         addSubview(stackView)
         stackView.addArrangedSubview(humidityCheckBoxWithImage)
         stackView.addArrangedSubview(windCheckBoxWithImage)
         stackView.addArrangedSubview(pressureCheckBoxWithImage)
-    
         humidityCheckBoxWithImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(humidityRadioButtonTapped)))
-        
         windCheckBoxWithImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(windRadioButtonTapped)))
-        
         pressureCheckBoxWithImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pressureRadioButtonTapped)))
-        
     }
     
     @objc func humidityRadioButtonTapped() {
@@ -88,14 +82,10 @@ extension ConditionsCheckBox {
     }
     
     func setActive(for type: ConditionTypes) {
-        
         switch type {
-        case .humidity:
-            humidityCheckBoxWithImage.radioButton.isSelected = true
-        case .pressure:
-            pressureCheckBoxWithImage.radioButton.isSelected = true
-        case .windSpeed:
-            windCheckBoxWithImage.radioButton.isSelected = true
+        case .humidity: humidityCheckBoxWithImage.radioButton.isSelected = true
+        case .pressure: pressureCheckBoxWithImage.radioButton.isSelected = true
+        case .windSpeed: windCheckBoxWithImage.radioButton.isSelected = true
         }
         didSelectCondition.send(type)
     }

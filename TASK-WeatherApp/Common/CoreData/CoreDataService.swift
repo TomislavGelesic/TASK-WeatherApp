@@ -97,7 +97,6 @@ extension CoreDataService {
     }
     
     func save(_ item: WeatherInfo) {
-        
         let managedContext = persistentContainer.viewContext
         
         let city = CityWeather(context: managedContext)

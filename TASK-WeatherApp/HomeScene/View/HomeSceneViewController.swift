@@ -13,9 +13,7 @@ import CoreLocation
 class HomeSceneViewController: UIViewController {
     
     var viewModel: HomeSceneViewModel
-    
     var disposeBag = Set<AnyCancellable>()
-    
     var locationManager: CLLocationManager
     
     let currentTemperatureLabel: UILabel = {
@@ -120,10 +118,8 @@ class HomeSceneViewController: UIViewController {
     }()
     
     let searchTextField: UITextField = {
-        
         let iconView = UIImageView(image: UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysTemplate))
         iconView.tintColor = .black
-        
         let textField = UITextField()
         textField.leftView = iconView
         textField.leftViewMode = .always
@@ -136,7 +132,6 @@ class HomeSceneViewController: UIViewController {
     init(viewModel: HomeSceneViewModel) {
         self.viewModel = viewModel
         self.locationManager = CLLocationManager()
-        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -225,7 +220,7 @@ extension HomeSceneViewController {
     }
     
     func updateUI() {
-        viewModel.screenData.daytime ? setTextColor(UIColor.black) : setTextColor(UIColor.white)
+        viewModel.isDayTime() ? setTextColor(UIColor.black) : setTextColor(UIColor.white)
         setScreenText(with: viewModel.screenData, for: viewModel.getMeasurementUnit())
         updateConditions(with: viewModel.getConditionsToShow())
         updateBackgroundImage()
@@ -285,9 +280,7 @@ extension HomeSceneViewController {
             startLocationManager()
         }
         else {
-            showAlert(text: "Device location dissabled.") { [unowned self] in
-                self.checkLocationServices()
-            }
+            showAlert(text: "Device location dissabled.") { [unowned self] in self.checkLocationServices() }
         }
     }
     

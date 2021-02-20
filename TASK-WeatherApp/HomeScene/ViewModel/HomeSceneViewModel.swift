@@ -12,17 +12,11 @@ import MapKit
 class HomeSceneViewModel {
     
     var coordinator: HomeSceneCoordinator
-    
     var homeSceneRepositoryImpl: HomeSceneRepositoryImpl
-    
     var spinnerSubject = PassthroughSubject<Bool, Never>()
-    
     var alertSubject = PassthroughSubject<String, Never>()
-    
     var refreshUISubject = PassthroughSubject<Void, Never>()
-    
     var weatherSubject = PassthroughSubject<CLLocationCoordinate2D?, Never>()
-    
     var screenData = WeatherInfo()
     
     init(coordinator coord: HomeSceneCoordinator, repository: HomeSceneRepositoryImpl) {
@@ -99,9 +93,11 @@ class HomeSceneViewModel {
                 }
                 else {
                     #warning("SearchScene - doesn't search...")
-                    let defaultLocation = CLLocationCoordinate2D(latitude: Constants.DEFAULT_LATITUDE,
-                                                                 longitude: Constants.DEFAULT_LONGITUDE)
-                    print("fetching weather for lat:\(defaultLocation.latitude) & long: \(defaultLocation.longitude)")
+                    let settings = UserDefaultsService.fetchUpdated()
+                    let latitude = Double(settings.latitude) ?? 0.0
+                    let longitude = Double(settings.longitude) ?? 0.0 
+                    let defaultLocation = CLLocationCoordinate2D(latitude: latitude,
+                                                                 longitude: longitude)
                     return homeSceneRepositoryImpl.fetchWeatherDataBy(location: defaultLocation)
                         .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
                             switch result {
@@ -129,7 +125,6 @@ class HomeSceneViewModel {
             .receive(on: RunLoop.main)
             .subscribe(on: DispatchQueue.global(qos: .background))
             .sink { (completion) in
-                
                 switch completion {
                 case .finished: break
                 case .failure(_): print("THIS ERROR SHOULD NEVER HAPPEN")
@@ -159,14 +154,13 @@ class HomeSceneViewModel {
     func searchTapped() { coordinator.goToSearchScene() }
     
     func updateBackgorundImageInfo(weatherType: String, daytime: Bool) {
-        
         let userDefaults = UserDefaults.standard
-        
         userDefaults.setValue(weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
         userDefaults.setValue(daytime, forKey: Constants.UserDefaults.IS_DAY_TIME)
     }
     
-    func shouldShowUserLocation() -> Bool {
-        return UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather
+    func shouldShowUserLocation() -> Bool { return UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather }
+    func isDayTime() -> Bool {
+        screenData.daytime
     }
 }

@@ -145,8 +145,7 @@ extension SearchSceneViewController {
             withDuration: duration * 2,
             delay: TimeInterval(1),
             options: animationCurve,
-            animations: { [unowned self] in
-                
+            animations: { [unowned self] in                
                 self.setConstraintsOnInputField(for: newBottomOffset_inputField)
                 self.inputField.layoutIfNeeded()
             },
@@ -178,6 +177,21 @@ extension SearchSceneViewController {
     
     func setSubscribers() {
         
+        viewModel.spinnerSubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (value) in
+                value ? self.showSpinner() : self.hideSpinner()
+            }
+        viewModel.alertSubject
+            .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] (message) in
+                self.showAlert(text: message) {
+                    #warning("check this out")
+                }
+            }
+        
         viewModel.initializeSearchSubject(subject: viewModel.searchSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
         
@@ -188,7 +202,6 @@ extension SearchSceneViewController {
                 
                 if let text = inputField.text,
                    text.isEmpty {
-                    
                     viewModel.screenData.removeAll()
                 }
                 self.tableView.reloadData()
@@ -200,7 +213,6 @@ extension SearchSceneViewController {
 extension SearchSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         inputField.resignFirstResponder()
         return true
     }
@@ -223,7 +235,6 @@ extension SearchSceneViewController: UITableViewDataSource {
 extension SearchSceneViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         viewModel.didSelectCity(at: indexPath.row)
         inputField.text = ""
         inputField.resignFirstResponder()
@@ -236,7 +247,6 @@ extension SearchSceneViewController: UITableViewDelegate {
 extension SearchSceneViewController {
     
     func setConstraints() {
-        
         setConstraintsOnCancelButton()
         setConstraintsOnAvailableCitiesTableView()
         setConstraintsOnSearchIcon()
@@ -252,7 +262,6 @@ extension SearchSceneViewController {
     }
     
     func setConstraintsOnAvailableCitiesTableView() {
-        
         tableView.snp.makeConstraints { (make) in
             make.top.equalTo(cancelButton.snp.bottom).offset(10)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
@@ -261,7 +270,6 @@ extension SearchSceneViewController {
     }
     
     func setConstraintsOnSearchIcon() {
-        
         searchIcon.snp.makeConstraints { (make) in
             make.width.height.equalTo(20)
             make.centerX.centerY.equalTo(searchIconContainer)
@@ -276,7 +284,6 @@ extension SearchSceneViewController {
     }
     
     func setConstraintsOnInputField(for bottomInset: CGFloat) {
-        
         inputField.snp.remakeConstraints { (make) in
             make.bottom.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 5, bottom: bottomInset, right: 5))
             make.height.equalTo(20)

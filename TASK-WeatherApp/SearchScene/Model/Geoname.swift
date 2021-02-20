@@ -24,7 +24,7 @@ class Geoname {
     }
     
     init(_ item: GeoNameItem) {
-        self.id = item.geonameId
+        self.id = String(item.geonameId)
         self.name = item.name
         self.countryName = item.countryName
         self.latitude = item.lat

@@ -20,8 +20,8 @@ class WeatherInfo {
     var max_Temperature: String = "X"
     var weatherType: String = "800"
     var daytime: Bool = false
-    var latitude: Double = 0.0
-    var longitude: Double = 0.0
+    var latitude: String = "0.0"
+    var longitude: String = "0.0"
     
     init(id: String = "-1",
          cityName: String = "",
@@ -34,8 +34,8 @@ class WeatherInfo {
          max_Temperature: String = "X",
          weatherType: String = "800",
          daytime: Bool = false,
-         latitude: Double = 0.0,
-         longitude: Double = 0.0) {
+         latitude: String = "0.0",
+         longitude: String = "0.0") {
         
         self.id = id
         self.cityName = cityName
@@ -56,8 +56,8 @@ class WeatherInfo {
         
         self.id = String(coreDataItem.id)
         self.cityName = coreDataItem.name ?? ""
-        self.longitude = coreDataItem.longitude
-        self.latitude = coreDataItem.latitude
+        self.longitude = coreDataItem.longitude ?? ""
+        self.latitude = coreDataItem.latitude ?? ""
     }
     
     init (_ response: WeatherResponse) {
@@ -73,8 +73,8 @@ class WeatherInfo {
         max_Temperature         = String(response.main.temp_max)
         weatherType             = String(response.weather.id)
         daytime                 = response.weather.icon.suffix(1) == "d" ? true : false
-        latitude                = response.coord.lat
-        longitude               = response.coord.lon
+        latitude                = String(response.coord.lat)
+        longitude               = String(response.coord.lon)
     }
     
 }

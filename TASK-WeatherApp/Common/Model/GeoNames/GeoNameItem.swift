@@ -15,10 +15,10 @@ struct GeoNameItem: Codable {
     var lat: String
     var lng: String
     var countryCode: String
-    var geonameId: String
+    var geonameId: Int
     
     
-    init(name: String, countryName: String, lat: String, lng: String, countryCode: String, geonameId: String) {
+    init(name: String, countryName: String, lat: String, lng: String, countryCode: String, geonameId: Int) {
         self.name = name
         self.countryName = countryName
         self.lat = lat

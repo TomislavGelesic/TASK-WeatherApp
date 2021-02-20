@@ -53,11 +53,8 @@ extension SearchSceneViewModel {
                         case .success(let geonamesResponse):
                             let data: [Geoname] = geonamesResponse.geonames.map{Geoname($0)}
                             return Just(data).eraseToAnyPublisher()
-                            
-                        case .failure(_):
-                            #warning("fix alert message")
-                            self.spinnerSubject.send(false)
-                            self.alertSubject.send("Nope")
+                        case .failure(let error):
+                            print(error)
                             return Just([Geoname]()).eraseToAnyPublisher()
                         }
                     }.eraseToAnyPublisher()

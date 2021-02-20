@@ -12,8 +12,8 @@ class UserDefaultsService {
     
     var measurmentUnit: MeasurementUnits
     var lastCityId: String
-    var latitude: Double
-    var longitude: Double
+    var latitude: String
+    var longitude: String
     var shouldShowWindSpeed: Bool
     var shouldShowPressure: Bool
     var shouldShowHumidity: Bool
@@ -21,7 +21,17 @@ class UserDefaultsService {
     var dayTime: Bool
     var shouldShowUserLocationWeather: Bool
     
-    init(measurmentUnit: MeasurementUnits = .metric, lastCityId: String = Constants.DEFAULT_CITY_ID, shouldShowWindSpeed: Bool = false, shouldShowPressure: Bool = false, shouldShowHumidity: Bool = false, weatherType: Int = 800, dayTime: Bool = true, shouldShowUserLocationWeather: Bool = true, latitude: Double = 0.0, longitude: Double = 0.0) {
+    init(measurmentUnit: MeasurementUnits = .metric,
+         lastCityId: String = Constants.DEFAULT_CITY_ID,
+         shouldShowWindSpeed: Bool = false,
+         shouldShowPressure: Bool = false,
+         shouldShowHumidity: Bool = false,
+         weatherType: Int = 800,
+         dayTime: Bool = true,
+         shouldShowUserLocationWeather: Bool = true,
+         latitude: String = Constants.DEFAULT_LATITUDE,
+         longitude: String = Constants.DEFAULT_LONGITUDE) {
+        
         self.measurmentUnit = measurmentUnit
         self.lastCityId = lastCityId
         self.shouldShowWindSpeed = shouldShowWindSpeed
@@ -49,7 +59,7 @@ extension UserDefaultsService {
             }
         }
         
-        if let cityID = userDefaults.value(forKey: Constants.UserDefaults.CITY_ID) as? String {
+        if let cityID = userDefaults.value(forKey: Constants.UserDefaults.LAST_CITY_ID) as? String {
             userSettings.lastCityId = cityID
         }
         
@@ -77,11 +87,11 @@ extension UserDefaultsService {
             userSettings.shouldShowUserLocationWeather = status
         }
         
-        if let latitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LATITUDE) as? Double {
+        if let latitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LATITUDE) as? String {
             userSettings.latitude = latitude
         }
         
-        if let longitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LONGITUDE) as? Double {
+        if let longitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LONGITUDE) as? String {
             userSettings.longitude = longitude
         }
         
@@ -96,7 +106,7 @@ extension UserDefaultsService {
         case .imperial: userDefaults.setValue("imperial", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
         default: userDefaults.setValue("metric", forKey: Constants.UserDefaults.MEASURMENT_UNIT)
         }
-        userDefaults.setValue(userSettings.lastCityId, forKey: Constants.UserDefaults.CITY_ID)
+        userDefaults.setValue(userSettings.lastCityId, forKey: Constants.UserDefaults.LAST_CITY_ID)
         userDefaults.setValue(userSettings.shouldShowPressure, forKey: Constants.UserDefaults.SHOULD_SHOW_PRESSURE)
         userDefaults.setValue(userSettings.shouldShowHumidity, forKey: Constants.UserDefaults.SHOULD_SHOW_HUMIDITY)
         userDefaults.setValue(userSettings.shouldShowWindSpeed, forKey: Constants.UserDefaults.SHOULD_SHOW_WIND_SPEED)
@@ -108,7 +118,7 @@ extension UserDefaultsService {
     
     static func update(with weatherData: WeatherInfo) {
         let userDefaults = UserDefaults.standard
-        userDefaults.setValue(weatherData.id, forKey: Constants.UserDefaults.CITY_ID)
+        userDefaults.setValue(weatherData.id, forKey: Constants.UserDefaults.LAST_CITY_ID)
         userDefaults.setValue(weatherData.weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
         userDefaults.setValue(weatherData.daytime, forKey: Constants.UserDefaults.IS_DAY_TIME)
         userDefaults.setValue(weatherData.longitude, forKey: Constants.UserDefaults.LAST_LONGITUDE)
@@ -117,9 +127,10 @@ extension UserDefaultsService {
     
     static func update(with item: Geoname) {
         let userDefaults = UserDefaults.standard
-        userDefaults.setValue(item.id, forKey: Constants.UserDefaults.CITY_ID)
+        userDefaults.setValue(item.id, forKey: Constants.UserDefaults.LAST_CITY_ID)
         userDefaults.setValue(item.longitude, forKey: Constants.UserDefaults.LAST_LONGITUDE)
         userDefaults.setValue(item.latitude, forKey: Constants.UserDefaults.LAST_LATITUDE)
+        userDefaults.synchronize()
     }
     
     static func setShouldShowUserLocationWeather (_ value: Bool) {

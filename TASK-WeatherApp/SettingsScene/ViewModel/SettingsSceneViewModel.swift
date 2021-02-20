@@ -11,27 +11,18 @@ import SnapKit
 
 class SettingsSceneViewModel {
     
-    
     var coordinator: SettingsSceneCoordinator
-    
     var savedLocations = [WeatherInfo]()
-    
     var coreDataService = CoreDataService.sharedInstance
-    
     var userSettings = UserDefaultsService.fetchUpdated()
-    
     var selectedConditions = [ConditionTypes]()
-    
     var refreshUISubject = CurrentValueSubject<Bool, Never>(true)
     
     init(coordinator: SettingsSceneCoordinator) {
-        
         self.coordinator = coordinator
-        
         if let cities = coreDataService.get(.all) {
             savedLocations = cities
         }
-        
     }
     
     deinit {
@@ -52,7 +43,6 @@ extension SettingsSceneViewModel {
     }
     
     func applyTapped(_ type: MeasurementUnits) {
-        print("selected unit is: \(type)")
         saveUserSettings(measurmentUnit: type,
                          wantedCity: nil,
                          conditions: selectedConditions)
@@ -84,38 +74,27 @@ extension SettingsSceneViewModel {
         if let unitToSave = measurmentUnit {
             userSettings.measurmentUnit = unitToSave
         }
-        
         if let index = position {
-            userSettings.lastCityId = savedLocations[index].id
+            let city = savedLocations[index]
+            userSettings.lastCityId = city.id
+            userSettings.latitude = city.latitude
+            userSettings.longitude = city.longitude
             UserDefaultsService.setShouldShowUserLocationWeather(false)
         }
-
-        
         userSettings.shouldShowHumidity = false
         userSettings.shouldShowPressure = false
         userSettings.shouldShowWindSpeed = false
         if let conditionsToSave = conditions {
-            
             for condition in conditionsToSave {
                 switch condition {
-                case .humidity:
-                    userSettings.shouldShowHumidity = true
-                    break
-                case .pressure:
-                    userSettings.shouldShowPressure = true
-                    break
-                case .windSpeed:
-                    userSettings.shouldShowWindSpeed = true
-                    break
+                case .humidity: userSettings.shouldShowHumidity = true
+                case .pressure: userSettings.shouldShowPressure = true
+                case .windSpeed: userSettings.shouldShowWindSpeed = true
                 }
             }
-            
         }
-        
         UserDefaultsService.update(with: userSettings)
-        
         userSettings = UserDefaultsService.fetchUpdated()
-        
         refreshUISubject.send(true)
     }
 }

@@ -28,7 +28,8 @@ class HomeSceneCoordinator: Coordinator {
         //print("HomeSceneCoordinator deinit")
     }
     
-    func goToSearchScene() { parentCoordinator?.childDidFinish(self, goTo: .searchScene) }
-    
-    func goToSettingsScene() { parentCoordinator?.childDidFinish(self, goTo: .settingsScene) }
+    func goToSettingsScene() {
+        navigationController.popViewController(animated: true)
+        parentCoordinator?.childDidFinish(self, goTo: .settingsScene)
+    }
 }

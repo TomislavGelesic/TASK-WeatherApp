@@ -9,13 +9,13 @@ import Foundation
 
 class Geoname {
     
-    var id: String
+    var id: Int64
     var name: String
     var countryName: String
-    var latitude: String
-    var longitude: String
+    var latitude: Double
+    var longitude: Double
     
-    init(id: String = "", name: String = "", countryName: String = "", latitude: String = "", longitude: String = "") {
+    init(id: Int64 = 0, name: String = "", countryName: String = "", latitude: Double = 0.0, longitude: Double = 0.0) {
         self.id = id
         self.name = name
         self.countryName = countryName
@@ -24,11 +24,11 @@ class Geoname {
     }
     
     init(_ item: GeoNameItem) {
-        self.id = String(item.geonameId)
+        self.id = Int64(item.geonameId)
         self.name = item.name
         self.countryName = item.countryName
-        self.latitude = item.lat
-        self.longitude = item.lng
+        self.latitude = Double(item.lat) ?? 0.0
+        self.longitude = Double(item.lng) ?? 0.0
     }
     
 }

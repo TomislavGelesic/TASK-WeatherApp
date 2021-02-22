@@ -53,8 +53,7 @@ class SearchSceneViewController: UIViewController {
 
     
     deinit {
-//        print("SearchSceneViewController deinit")
-//        print("SearchSceneViewController NotificationCenter observers removed")
+        print("SearchSceneViewController deinit")
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -79,8 +78,6 @@ class SearchSceneViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        updateBackgroundImage()
         inputField.becomeFirstResponder()
         navigationController?.navigationBar.isHidden = true
     }
@@ -88,7 +85,6 @@ class SearchSceneViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         navigationController?.navigationBar.isHidden = false
     }
 }
@@ -96,6 +92,7 @@ class SearchSceneViewController: UIViewController {
 extension SearchSceneViewController {
     
     func setupViews() {
+        view.backgroundColor = .lightGray
         view.addSubviews([cancelButton, tableView, inputField])
         searchIconContainer.addSubview(searchIcon)
         inputField.delegate = self
@@ -113,7 +110,7 @@ extension SearchSceneViewController {
         validText.isEmpty ? viewModel.search(text: nil) : viewModel.search(text: validText)
     }
     
-    @objc func cancelSearchTapped() { viewModel.cancelTapped() }
+    @objc func cancelSearchTapped() { viewModel.didSelectCancel() }
     
     func setupKeyboardNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -174,12 +171,15 @@ extension SearchSceneViewController {
             .sink { [unowned self] (value) in
                 value ? self.showSpinner() : self.hideSpinner()
             }
+            .store(in: &disposeBag)
+        
         viewModel.alertSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (message) in
                 self.showAlert(text: message) { }
             }
+            .store(in: &disposeBag)
         
         viewModel.initializeSearchSubject(subject: viewModel.searchSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
@@ -203,6 +203,7 @@ extension SearchSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         inputField.resignFirstResponder()
+        viewModel.didSelectCancel()
         return true
     }
 }

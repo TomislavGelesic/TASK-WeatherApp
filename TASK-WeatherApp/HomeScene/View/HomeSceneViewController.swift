@@ -15,8 +15,12 @@ class HomeSceneViewController: UIViewController {
     var viewModel: HomeSceneViewModel
     var disposeBag = Set<AnyCancellable>()
     var locationManager: CLLocationManager
-    var locationPermissionGranted: Bool = false
+    var initialSetup: Bool = true
     
+    let backgroundImage: UIImageView = {
+        let imageView = UIImageView()
+        return imageView
+    }()
     let currentTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
@@ -110,18 +114,20 @@ class HomeSceneViewController: UIViewController {
         button.setImage(UIImage(systemName: "gearshape.2.fill")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setImage(UIImage(systemName: "gearshape.2")?.withRenderingMode(.alwaysTemplate), for: .selected)
         button.tintColor = .black
+        button.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 50.0), forImageIn: .normal)
         return button
     }()
     
     let searchTextField: UITextField = {
-        let iconView = UIImageView(image: UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysTemplate))
+        let img = UIImage(systemName: "magnifyingglass", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30.0))
+        let iconView = UIImageView(image: img?.withRenderingMode(.alwaysTemplate))
         iconView.tintColor = .black
         let textField = UITextField()
         textField.leftView = iconView
         textField.leftViewMode = .always
         textField.placeholder = "Search"
         textField.layer.borderWidth = 1
-        textField.layer.borderColor = CGColor.init(red: 0, green: 0, blue: 0, alpha: 1)
+        textField.layer.borderColor = CGColor.init(red: 0.0, green: 0.0, blue: 0.0, alpha: 1)
         return textField
     }()
     
@@ -131,25 +137,20 @@ class HomeSceneViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    deinit {
-//        print("HomeSceneViewController deinit")
-    }
+    deinit { print("HomeSceneViewController deinit") }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setSubviews()
         setConstraints()
         setSubscribers()
-        checkLocationServices()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateBackgroundImage()
+        checkLocationServices()
     }
 }
 
@@ -158,6 +159,7 @@ extension HomeSceneViewController {
     func setSubviews() {
         view.backgroundColor = .lightGray
         view.addSubviews([
+            backgroundImage,
             currentTemperatureLabel,
             weatherDescriptionLabel,
             cityNameLabel,
@@ -188,9 +190,42 @@ extension HomeSceneViewController {
         settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
     }
     
+    func updateBackgroundImage(_ info: WeatherInfo) {
+        
+        var image = UIImage(systemName: "photo")
+        let weatherType = info.weatherType
+        let dayTime = info.daytime
+
+        switch weatherType {
+        // Thunderstorm
+        case 200..<300: image = UIImage(named: "body_image-thunderstorm")
+        // Drizzle & Rain
+        case 300..<600: image = UIImage(named: "body_image-rain")!
+        // Snow
+        case 600..<700: image = UIImage(named: "body_image-snow")
+        // Atmosphere
+        case 700..<800:
+            if weatherType == 741 { image = UIImage(named: "body_image-fog") }
+            if weatherType == 781 { image = UIImage(named: "body_image-tornado") }
+            image = UIImage(named: "body_image-fog")
+        // Clouds
+        case 801..<810:
+            if dayTime { image = UIImage(named: "body_image-partly-cloudy-day") }
+            else { image = UIImage(named: "body_image-partly-cloudy-night") }
+        // Clear == 800, or others - currently don't exist on server
+        default:
+            if dayTime { image = UIImage(named: "body_image-clear-day") }
+            else { image = UIImage(named: "body_image-clear-night") }
+        }
+        backgroundImage.image = image
+        backgroundImage.setNeedsLayout()
+        view.layoutIfNeeded()
+    }
+    
     @objc func settingsButtonTapped() { viewModel.settingsTapped() }
     
     func setSubscribers() {
+        
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
@@ -224,7 +259,7 @@ extension HomeSceneViewController {
         viewModel.isDayTime() ? setTextColor(UIColor.black) : setTextColor(UIColor.white)
         setScreenText(with: viewModel.screenData, for: viewModel.getMeasurementUnit())
         updateConditions(with: viewModel.getConditionsToShow())
-        updateBackgroundImage()
+        updateBackgroundImage(viewModel.screenData)
     }
     
     func setTextColor(_ color: UIColor) {
@@ -239,7 +274,6 @@ extension HomeSceneViewController {
     }
     
     func updateConditions(with conditions: [ConditionTypes]) {
-        
         humidityConditionView.isHidden = true
         pressureConditionView.isHidden = true
         windConditionView.isHidden = true
@@ -276,32 +310,49 @@ extension HomeSceneViewController {
     
     func checkLocationServices() {
         if CLLocationManager.locationServicesEnabled() {
-            setupLocationManager()
-            startLocationManager()
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            switch locationManager.authorizationStatus {
+            case .denied, .restricted, .notDetermined:
+                locationManager.requestWhenInUseAuthorization()
+            default:
+                locationManager.startUpdatingLocation()
+                if let coordinates = locationManager.location?.coordinate,
+                   UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
+                    let lat = coordinates.latitude
+                    let lon = coordinates.longitude
+                    viewModel.weatherSubject.send(CLLocationCoordinate2D(latitude: lat, longitude: lon))
+                }
+                else {
+                    let settings = UserDefaultsService.fetchUpdated()
+                    viewModel.weatherSubject.send(CLLocationCoordinate2D(latitude: settings.lastLatitude, longitude: settings.lastLongitude))
+                }
+            }
         }
         else {
-            showAlert(text: "Device location dissabled.") { [unowned self] in self.checkLocationServices() }
+            showAlert(text: "Device location dissabled.\nUsing default weather info for Vienna location.") { }
         }
     }
     
-    func setupLocationManager() {
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+    func returnToHomeScene(_ item: Geoname?) {
+        dismiss(animated: true, completion: nil)
+        searchTextField.resignFirstResponder()
+        if let selectedCity = item { viewModel.update(selectedCity) }
     }
     
-    func startLocationManager() {
-        #warning("when does locationmanager call requestWhenInUserLocationAuthorization()?")
-        if locationPermissionGranted { getWeather(coordinates: locationManager.location?.coordinate) }
-        else { locationManager.requestWhenInUseAuthorization() }
+    func presentSearchScene() {
+        let vm = SearchSceneViewModel(searchRepository: SearchRepositoryImpl())
+        vm.delegate = self
+        let vc = SearchSceneViewController(viewModel: vm)
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true)
     }
-    
-    func getWeather(coordinates: CLLocationCoordinate2D?) { viewModel.weatherSubject.send(coordinates) }
 }
 
 extension HomeSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        viewModel.searchTapped()
+        presentSearchScene()
         return true
     }
 }
@@ -310,22 +361,20 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
-        case .restricted, .denied:
-            showAlert(text: "Unable to retreive location, using default Vienna location.") { [unowned self] in  self.getWeather(coordinates: nil)
-            }
+        case .restricted, .denied, .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
         default:
-            locationManager.startUpdatingLocation()
+            if let coordinate = locationManager.location?.coordinate {
+                viewModel.weatherSubject.send(CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude))
+            }
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
         if let location = locations.last,
-           shouldShowUserLocation() {
-            getWeather(coordinates: location.coordinate)
-        } else {
-            
-            getWeather(coordinates: nil)
+           UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather {
+            viewModel.weatherSubject.send(CLLocationCoordinate2D(latitude: location.coordinate.latitude,
+                                                                 longitude: location.coordinate.longitude))
         }
     }
     
@@ -336,7 +385,7 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
 extension HomeSceneViewController {
     
     func setConstraints() {
-        
+        setConstraintsBackgroundImage()
         setConstraintsOnCurrentTemperatureLabel()
         setConstraintsOnWeatherDescriptionLabel()
         setConstraintsOnCityNameLabel()
@@ -350,9 +399,11 @@ extension HomeSceneViewController {
         setConstraintsOnSearchTextField()
     }
     
+    func setConstraintsBackgroundImage() { backgroundImage.snp.makeConstraints { (make) in make.edges.equalTo(view) } }
+    
     func setConstraintsOnCurrentTemperatureLabel() {
         currentTemperatureLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(view.snp.top).offset(100)
+            make.top.equalTo(view.snp.top).offset(80)
             make.height.equalTo(80)
             make.centerX.equalTo(view.snp.centerX)
         }
@@ -379,7 +430,7 @@ extension HomeSceneViewController {
     func setConstraintsOnMinTemperatureLabel() {
         minTemperatureLabel.snp.makeConstraints { (make) in
             make.height.equalTo(50)
-            make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
+            make.top.equalTo(cityNameLabel.snp.bottom).offset(30)
             make.trailing.equalTo(verticalLine.snp.leading).offset(-15)
         }
     }
@@ -397,7 +448,7 @@ extension HomeSceneViewController {
         verticalLine.snp.makeConstraints { (make) in
             make.width.equalTo(2)
             make.height.equalTo(100)
-            make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
+            make.top.equalTo(cityNameLabel.snp.bottom).offset(30)
             make.centerX.equalTo(view.snp.centerX)
         }
     }
@@ -405,7 +456,7 @@ extension HomeSceneViewController {
     func setConstraintsOnMaxTemperatureLabel() {
         maxTemperatureLabel.snp.makeConstraints { (make) in
             make.height.equalTo(50)
-            make.top.equalTo(cityNameLabel.snp.bottom).offset(10)
+            make.top.equalTo(cityNameLabel.snp.bottom).offset(30)
             make.leading.equalTo(verticalLine.snp.trailing).offset(15)
         }
     }
@@ -420,18 +471,17 @@ extension HomeSceneViewController {
     }
     
     func setConstraintsOnConditionsStackView() {
-        
         conditionsStackView.snp.makeConstraints { (make) in
             make.top.equalTo(verticalLine.snp.bottom).offset(30)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20))
-            make.bottom.equalTo(searchTextField.snp.top).offset(-10)
+            make.bottom.equalTo(searchTextField.snp.top).offset(-30)
         }
     }
     
     func setConstraintsOnSettingsButton() {
         settingsButton.snp.makeConstraints { (make) in
-            make.width.height.equalTo(44)
-            make.bottom.equalTo(view.snp.bottom).offset(-50)
+            make.width.height.equalTo(70)
+            make.bottom.equalTo(view.snp.bottom).offset(-30)
             make.leading.equalTo(view.snp.leading).offset(10)
         }
         
@@ -439,9 +489,9 @@ extension HomeSceneViewController {
     
     func setConstraintsOnSearchTextField() {
         searchTextField.snp.makeConstraints { (make) in
-            make.width.equalTo(view.frame.width - 44 - 30)
-            make.height.equalTo(44)
-            make.trailing.equalTo(view.snp.trailing).offset(-10)
+            make.leading.equalTo(settingsButton.snp.trailing).offset(30)
+            make.height.equalTo(40)
+            make.trailing.equalTo(view.snp.trailing).offset(-20)
             make.bottom.equalTo(view.snp.bottom).offset(-50)
         }
         

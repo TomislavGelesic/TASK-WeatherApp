@@ -30,5 +30,8 @@ extension SettingsSceneCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func returnToHomeScene() { parentCoordinator.childDidFinish(self, goTo: .homeScene) }
+    func returnToHomeScene() {
+        navigationController.popViewController(animated: true)
+        parentCoordinator.childDidFinish(self, goTo: .homeScene)
+    }
 }

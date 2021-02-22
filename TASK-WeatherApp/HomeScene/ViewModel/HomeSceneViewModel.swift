@@ -16,8 +16,9 @@ class HomeSceneViewModel {
     var spinnerSubject = PassthroughSubject<Bool, Never>()
     var alertSubject = PassthroughSubject<String, Never>()
     var refreshUISubject = PassthroughSubject<Void, Never>()
-    var weatherSubject = PassthroughSubject<CLLocationCoordinate2D?, Never>()
+    var weatherSubject = CurrentValueSubject<CLLocationCoordinate2D, Never>(Constants.DEFAULT_LOCATION)
     var screenData = WeatherInfo()
+    var coreDataService = CoreDataService.sharedInstance
     
     init(coordinator coord: HomeSceneCoordinator, repository: HomeSceneRepositoryImpl) {
         coordinator = coord
@@ -25,104 +26,25 @@ class HomeSceneViewModel {
     }
     
     deinit {
-        //        print("HomeSceneViewModel deinit")
+        print("HomeSceneViewModel deinit")
     }
     
-    //    func initializeScreenData(for subject: AnyPublisher<Void, Never>) -> AnyCancellable {
-    //
-    //        return subject
-    //            .flatMap {[unowned self] (_) -> AnyPublisher<WeatherResponse, Never> in
-    //                self.spinnerSubject.send(true)
-    //                return self.homeSceneRepositoryImpl.fetchWeatherDataBy(id: UserDefaultsService.fetchUpdated().lastCityId)
-    //            }
-    //            .map({ WeatherInfo($0) })
-    //            .subscribe(on: DispatchQueue.global(qos: .background))
-    //            .receive(on: RunLoop.main)
-    //            .sink(receiveCompletion: { [unowned self] completion in
-    //                switch completion {
-    //                case .finished:
-    //                    break
-    //                case .failure(let error):
-    //                    switch error {
-    //                    case .noDataError:
-    //                        self.alertSubject.send("There is no weather data for this city, yet!\nTry another one.")
-    //                    default:
-    //                        self.alertSubject.send("Error occured requesting weather data for this city!\nSearch for another one.")
-    //                    }
-    //                }
-    //            }, receiveValue: {[unowned self] data in
-    //                self.screenData = data
-    //                self.updateBackgorundImageInfo(weatherType: data.weatherType, daytime: data.daytime)
-    //                self.refreshUISubject.send()
-    //                self.spinnerSubject.send(false)
-    //            })
-    //    }
-    
-    func initializeWeatherSubject(subject: AnyPublisher<CLLocationCoordinate2D?, Never>) -> AnyCancellable {
+    func initializeWeatherSubject(subject: AnyPublisher<CLLocationCoordinate2D, Never>) -> AnyCancellable {
         
         return subject
             .flatMap({ [unowned self] (coordinate) -> AnyPublisher<WeatherInfo, Never> in
-                
                 self.spinnerSubject.send(true)
-                
-                if let safeCoordinate = coordinate {
-                    return homeSceneRepositoryImpl.fetchWeatherDataBy(location: safeCoordinate)
-                        .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
-                            switch result {
-                            case .success(let weatherResponse):
-                                return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
-                            case .failure(_):
-                                self.spinnerSubject.send(false)
-                                self.alertSubject.send("Internet connection lost.")
-                                return Just(WeatherInfo()).eraseToAnyPublisher()
-                            }
-                        }.eraseToAnyPublisher()
-                    
-                    //                            .tryMap { (result) -> AnyPublisher<WeatherInfo, Never> in
-                    //
-                    //
-                    //                                switch result {
-                    //                                case .success(let weatherResponse): return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
-                    //                                case .failure(let error): throw NetworkError.noDataError
-                    //                                }
-                    //                            }
-                    //                            .catch { (_) -> AnyPublisher<WeatherInfo, Never> in
-                    //                                #warning("stupid message")
-                    //                                self.alertSubject.send("doing well my man")
-                    //                                return Just(WeatherInfo()).eraseToAnyPublisher
-                    //                            }
-                    
-                }
-                else {
-                    let settings = UserDefaultsService.fetchUpdated()
-                    let latitude = Double(settings.latitude) ?? 0.0
-                    let longitude = Double(settings.longitude) ?? 0.0 
-                    let defaultLocation = CLLocationCoordinate2D(latitude: latitude,
-                                                                 longitude: longitude)
-                    return homeSceneRepositoryImpl.fetchWeatherDataBy(location: defaultLocation)
-                        .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
-                            switch result {
-                            case .success(let weatherResponse): return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
-                            case .failure(_):
-                                self.spinnerSubject.send(false)
-                                self.alertSubject.send("Internet connection lost.")
-                                return Just(WeatherInfo()).eraseToAnyPublisher()
-                            }
-                        }.eraseToAnyPublisher()
-                    
-                    //                        return homeSceneRepositoryImpl.fetchWeatherDataBy(location: defaultLocation)
-                    //                            .tryMap { (result) -> AnyPublisher<WeatherInfo, Never> in
-                    //                                switch result {
-                    //                                case .success(let weatherResponse): return WeatherInfo(weatherResponse)
-                    //                                case .failure(let error): throw NetworkError.noDataError
-                    //                                }
-                    //                            }
-                    //                            .catch { (_) in
-                    //                                #warning("stupid message")
-                    //                                self.alertSubject.send("doing well my man")
-                    //                                return WeatherInfo()
-                    //                            }
-                }
+                return homeSceneRepositoryImpl.fetchWeatherDataBy(location: coordinate)
+                    .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
+                        switch result {
+                        case .success(let weatherResponse):
+                            return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
+                        case .failure(_):
+                            self.spinnerSubject.send(false)
+                            self.alertSubject.send("Internet connection lost.")
+                            return Just(WeatherInfo()).eraseToAnyPublisher()
+                        }
+                    }.eraseToAnyPublisher()
             })
             .receive(on: RunLoop.main)
             .subscribe(on: DispatchQueue.global(qos: .background))
@@ -134,7 +56,7 @@ class HomeSceneViewModel {
             } receiveValue: { [unowned self] (data) in
                 self.screenData = data
                 UserDefaultsService.update(with: data)
-                self.updateBackgorundImageInfo(weatherType: data.weatherType, daytime: data.daytime)
+                self.coreDataService.save(data)
                 self.refreshUISubject.send()
                 self.spinnerSubject.send(false)
             }
@@ -153,8 +75,6 @@ class HomeSceneViewModel {
     
     func settingsTapped() { coordinator.goToSettingsScene() }
     
-    func searchTapped() { coordinator.goToSearchScene() }
-    
     func updateBackgorundImageInfo(weatherType: String, daytime: Bool) {
         let userDefaults = UserDefaults.standard
         userDefaults.setValue(weatherType, forKey: Constants.UserDefaults.WEATHER_TYPE)
@@ -162,7 +82,13 @@ class HomeSceneViewModel {
     }
     
     func shouldShowUserLocation() -> Bool { return UserDefaultsService.fetchUpdated().shouldShowUserLocationWeather }
-    func isDayTime() -> Bool {
-        screenData.daytime
+    
+    func isDayTime() -> Bool { screenData.daytime }
+    
+    func update(_ item: Geoname) {
+        coreDataService.save(item)
+        UserDefaultsService.update(with: item)
+        let settings = UserDefaultsService.fetchUpdated()
+        weatherSubject.send(CLLocationCoordinate2D(latitude: settings.lastLatitude, longitude: settings.lastLongitude))
     }
 }

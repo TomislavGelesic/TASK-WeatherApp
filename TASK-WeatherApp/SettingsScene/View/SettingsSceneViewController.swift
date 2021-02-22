@@ -82,7 +82,7 @@ class SettingsSceneViewController: UIViewController {
     }
     
     deinit {
-//        print("SettingsSceneViewController deinit")
+        print("SettingsSceneViewController deinit")
     }
     
     required init?(coder: NSCoder) {
@@ -91,7 +91,6 @@ class SettingsSceneViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateBackgroundImage()
         setNavigationBar()
         setSubviews()
         setConstraints()

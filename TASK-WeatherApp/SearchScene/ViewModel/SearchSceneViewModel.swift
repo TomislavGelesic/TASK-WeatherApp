@@ -12,8 +12,7 @@ import SnapKit
 
 class SearchSceneViewModel {
     
-    var coordinator: SearchSceneCoordinator
-    var coreDataService = CoreDataService.sharedInstance
+    var delegate: HomeSceneViewController?
     var searchRepository: GeoNamesRepository
     var screenData = [Geoname]()
     var spinnerSubject = PassthroughSubject<Bool, Never>()
@@ -21,14 +20,9 @@ class SearchSceneViewModel {
     var refreshUISubject = PassthroughSubject<Void, Never>()
     let searchSubject = PassthroughSubject<String, Never>()
     
-    init(coordinator: SearchSceneCoordinator, searchRepository: GeoNamesRepository) {
-        self.coordinator = coordinator
-        self.searchRepository = searchRepository
-    }
+    init(searchRepository: GeoNamesRepository) { self.searchRepository = searchRepository }
     
-    deinit {
-//        print("SearchSceneViewModel deinit")
-    }
+    deinit { print("SearchSceneViewModel deinit") }
 }
 
 extension SearchSceneViewModel {
@@ -65,9 +59,8 @@ extension SearchSceneViewModel {
     }
     
     func search(text: String?) {
-        if let text = text {
-            searchSubject.send(text)
-        } else {
+        if let text = text { searchSubject.send(text) }
+        else {
             screenData.removeAll()
             refreshUISubject.send()
         }
@@ -75,17 +68,7 @@ extension SearchSceneViewModel {
     
     func getScreenData(for position: Int) -> String { return "\(screenData[position].name), (\(screenData[position].countryName))" }
     
-    func saveCity(at position: Int) {
-        let item = screenData[position]
-        UserDefaultsService.update(with: item)
-        coreDataService.save(item)
-    }
+    func didSelectCancel() { delegate?.returnToHomeScene(nil) }
     
-    func cancelTapped() { coordinator.goToHomeScene() }
-    
-    func didSelectCity(at position: Int) {
-        saveCity(at: position)
-        UserDefaultsService.setShouldShowUserLocationWeather(false)
-        coordinator.goToHomeScene()
-    }
+    func didSelectCity(at position: Int) { delegate?.returnToHomeScene(screenData[position]) }
 }

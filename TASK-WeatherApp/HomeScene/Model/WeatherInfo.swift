@@ -9,7 +9,7 @@ import Foundation
 
 class WeatherInfo {
     
-    var id: String = ""
+    var id: Int64 = 0
     var cityName: String = ""
     var weatherDescription: String = ""
     var pressure: String = ""
@@ -18,12 +18,12 @@ class WeatherInfo {
     var min_Temperature: String = ""
     var current_Temperature: String = ""
     var max_Temperature: String = ""
-    var weatherType: String = "800"
+    var weatherType: Int = 800
     var daytime: Bool = false
-    var latitude: String = "0.0"
-    var longitude: String = "0.0"
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
     
-    init(id: String = "",
+    init(id: Int64 = 0,
          cityName: String = "",
          weatherDescription: String = "",
          pressure: String = "",
@@ -32,10 +32,10 @@ class WeatherInfo {
          min_Temperature: String = "",
          current_Temperature: String = "",
          max_Temperature: String = "",
-         weatherType: String = "800",
+         weatherType: Int = 800,
          daytime: Bool = false,
-         latitude: String = "0.0",
-         longitude: String = "0.0") {
+         latitude: Double = 0.0,
+         longitude: Double = 0.0) {
         
         self.id = id
         self.cityName = cityName
@@ -53,16 +53,14 @@ class WeatherInfo {
     }
     
     init(_ coreDataItem: CityWeather) {
-        
-        self.id = String(coreDataItem.id)
+        self.id = coreDataItem.id
         self.cityName = coreDataItem.name ?? ""
-        self.longitude = coreDataItem.longitude ?? ""
-        self.latitude = coreDataItem.latitude ?? ""
+        self.longitude = coreDataItem.longitude
+        self.latitude = coreDataItem.latitude
     }
     
     init (_ response: WeatherResponse) {
-        
-        id                      = String(response.id)
+        id                      = Int64(response.id)
         cityName                = String(response.name)
         weatherDescription      = String(response.weather.description)
         pressure                = String(response.main.pressure)
@@ -71,10 +69,10 @@ class WeatherInfo {
         min_Temperature         = String(response.main.temp_min)
         current_Temperature     = String(response.main.temp)
         max_Temperature         = String(response.main.temp_max)
-        weatherType             = String(response.weather.id)
+        weatherType             = response.weather.id
         daytime                 = response.weather.icon.suffix(1) == "d" ? true : false
-        latitude                = String(response.coord.lat)
-        longitude               = String(response.coord.lon)
+        latitude                = response.coord.lat
+        longitude               = response.coord.lon
     }
     
 }

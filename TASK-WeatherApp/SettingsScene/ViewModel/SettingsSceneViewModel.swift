@@ -77,8 +77,8 @@ extension SettingsSceneViewModel {
         if let index = position {
             let city = savedLocations[index]
             userSettings.lastCityId = city.id
-            userSettings.latitude = city.latitude
-            userSettings.longitude = city.longitude
+            userSettings.latitude = Double(city.latitude) ?? 0.0
+            userSettings.longitude = Double(city.longitude) ?? 0.0
             UserDefaultsService.setShouldShowUserLocationWeather(false)
         }
         userSettings.shouldShowHumidity = false

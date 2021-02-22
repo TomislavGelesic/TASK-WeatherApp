@@ -38,24 +38,20 @@ extension AppCoordinator {
     }
     
     func childDidFinish(_ coordinator: Coordinator, goTo nextScene: SceneOption) {
-        navigationController.viewControllers.removeAll()
-        childCoordinators = childCoordinators.filter({ (coord) -> Bool in coord === coordinator ? false : true })
+        childCoordinators = childCoordinators.filter({ (coord) -> Bool in
+            if let _ = coordinator as? HomeSceneCoordinator {
+                return false
+            }
+            return true
+        })
         switch nextScene {
         case .homeScene: goToHomeScene()
-        case .searchScene: goToSearchScene()
         case .settingsScene: goToSettingsScene()
         }
     }
     
     func goToHomeScene(){
         let child = HomeSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
-        childCoordinators.append(child)
-        child.start()
-    }
-    
-    func goToSearchScene() {
-        let child = SearchSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
-        childCoordinators.append(child)
         child.start()
     }
     

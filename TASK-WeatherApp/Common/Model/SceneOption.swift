@@ -10,5 +10,4 @@ import Foundation
 enum SceneOption {
     case homeScene
     case settingsScene
-    case searchScene
 }

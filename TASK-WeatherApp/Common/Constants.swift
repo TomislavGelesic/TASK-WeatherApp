@@ -6,15 +6,15 @@
 //
 
 import Foundation
-
+import CoreLocation
 
 struct Constants {
     
     // Vienna
     static let DEFAULT_CITY_ID = "2761369"
-    static let DEFAULT_LATITUDE = "48.20849"
-    static let DEFAULT_LONGITUDE = "16.37208"
-    
+    static let DEFAULT_LATITUDE: Double = 48.20849
+    static let DEFAULT_LONGITUDE: Double = 16.37208
+    static let DEFAULT_LOCATION = CLLocationCoordinate2D(latitude: Constants.DEFAULT_LATITUDE, longitude: Constants.DEFAULT_LONGITUDE)
     struct GeoNamesORG  {
         static let BASE_HomeScene = "https://secure.geonames.org/findNearbyPlaceNameJSON?"
         static let BASE_SearchScene = "https://secure.geonames.org/searchJSON?"

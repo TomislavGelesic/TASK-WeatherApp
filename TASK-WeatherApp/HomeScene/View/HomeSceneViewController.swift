@@ -110,11 +110,13 @@ class HomeSceneViewController: UIViewController {
         button.setImage(UIImage(systemName: "gearshape.2.fill")?.withRenderingMode(.alwaysTemplate), for: .normal)
         button.setImage(UIImage(systemName: "gearshape.2")?.withRenderingMode(.alwaysTemplate), for: .selected)
         button.tintColor = .black
+        button.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 30.0), forImageIn: .normal)
         return button
     }()
     
     let searchTextField: UITextField = {
-        let iconView = UIImageView(image: UIImage(systemName: "magnifyingglass")?.withRenderingMode(.alwaysTemplate))
+        let img = UIImage(systemName: "magnifyingglass", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30.0))
+        let iconView = UIImageView(image: img?.withRenderingMode(.alwaysTemplate))
         iconView.tintColor = .black
         let textField = UITextField()
         textField.leftView = iconView
@@ -191,6 +193,7 @@ extension HomeSceneViewController {
     @objc func settingsButtonTapped() { viewModel.settingsTapped() }
     
     func setSubscribers() {
+        
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
@@ -290,18 +293,32 @@ extension HomeSceneViewController {
     }
     
     func startLocationManager() {
-        #warning("when does locationmanager call requestWhenInUserLocationAuthorization()?")
-        if locationPermissionGranted { getWeather(coordinates: locationManager.location?.coordinate) }
+        if locationPermissionGranted,
+           let location = locationManager.location?.coordinate { getWeather(coordinates: location) }
         else { locationManager.requestWhenInUseAuthorization() }
     }
     
-    func getWeather(coordinates: CLLocationCoordinate2D?) { viewModel.weatherSubject.send(coordinates) }
+    func getWeather(coordinates: CLLocationCoordinate2D) { viewModel.weatherSubject.send(coordinates) }
+    
+    func returnToHomeScene(_ item: Geoname?) {
+        dismiss(animated: true, completion: nil)
+        searchTextField.resignFirstResponder()
+        if let selectedCity = item { viewModel.update(selectedCity) }
+    }
+    
+    func presentSearchScene() {
+        let vm = SearchSceneViewModel(searchRepository: SearchRepositoryImpl())
+        vm.delegate = self
+        let vc = SearchSceneViewController(viewModel: vm)
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true)
+    }
 }
 
 extension HomeSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        viewModel.searchTapped()
+        presentSearchScene()
         return true
     }
 }
@@ -311,7 +328,8 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .restricted, .denied:
-            showAlert(text: "Unable to retreive location, using default Vienna location.") { [unowned self] in  self.getWeather(coordinates: nil)
+            showAlert(text: "Unable to retreive location, using default Vienna location.") { [unowned self] in
+                self.getWeather(coordinates: Constants.DEFAULT_LOCATION)
             }
         default:
             locationManager.startUpdatingLocation()
@@ -319,14 +337,9 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
         if let location = locations.last,
-           shouldShowUserLocation() {
-            getWeather(coordinates: location.coordinate)
-        } else {
-            
-            getWeather(coordinates: nil)
-        }
+           shouldShowUserLocation() { getWeather(coordinates: location.coordinate) }
+        else { getWeather(coordinates: Constants.DEFAULT_LOCATION) }
     }
     
     func shouldShowUserLocation() -> Bool { return viewModel.shouldShowUserLocation() }
@@ -336,7 +349,6 @@ extension HomeSceneViewController: CLLocationManagerDelegate {
 extension HomeSceneViewController {
     
     func setConstraints() {
-        
         setConstraintsOnCurrentTemperatureLabel()
         setConstraintsOnWeatherDescriptionLabel()
         setConstraintsOnCityNameLabel()
@@ -420,7 +432,6 @@ extension HomeSceneViewController {
     }
     
     func setConstraintsOnConditionsStackView() {
-        
         conditionsStackView.snp.makeConstraints { (make) in
             make.top.equalTo(verticalLine.snp.bottom).offset(30)
             make.leading.trailing.equalTo(view).inset(UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20))

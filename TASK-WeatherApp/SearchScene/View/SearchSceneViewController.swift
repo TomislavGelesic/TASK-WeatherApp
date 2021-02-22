@@ -53,8 +53,7 @@ class SearchSceneViewController: UIViewController {
 
     
     deinit {
-//        print("SearchSceneViewController deinit")
-//        print("SearchSceneViewController NotificationCenter observers removed")
+        print("SearchSceneViewController deinit")
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -88,7 +87,6 @@ class SearchSceneViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         navigationController?.navigationBar.isHidden = false
     }
 }
@@ -113,7 +111,7 @@ extension SearchSceneViewController {
         validText.isEmpty ? viewModel.search(text: nil) : viewModel.search(text: validText)
     }
     
-    @objc func cancelSearchTapped() { viewModel.cancelTapped() }
+    @objc func cancelSearchTapped() { viewModel.didSelectCancel() }
     
     func setupKeyboardNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -164,6 +162,7 @@ extension SearchSceneViewController {
             },
             completion: nil
         )
+        viewModel.didSelectCancel()
     }
     
     func setSubscribers() {

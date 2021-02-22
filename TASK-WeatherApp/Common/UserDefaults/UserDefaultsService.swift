@@ -12,8 +12,8 @@ class UserDefaultsService {
     
     var measurmentUnit: MeasurementUnits
     var lastCityId: String
-    var latitude: String
-    var longitude: String
+    var latitude: Double
+    var longitude: Double
     var shouldShowWindSpeed: Bool
     var shouldShowPressure: Bool
     var shouldShowHumidity: Bool
@@ -29,8 +29,8 @@ class UserDefaultsService {
          weatherType: Int = 800,
          dayTime: Bool = true,
          shouldShowUserLocationWeather: Bool = true,
-         latitude: String = Constants.DEFAULT_LATITUDE,
-         longitude: String = Constants.DEFAULT_LONGITUDE) {
+         latitude: Double = Constants.DEFAULT_LATITUDE,
+         longitude: Double = Constants.DEFAULT_LONGITUDE) {
         
         self.measurmentUnit = measurmentUnit
         self.lastCityId = lastCityId
@@ -87,11 +87,11 @@ extension UserDefaultsService {
             userSettings.shouldShowUserLocationWeather = status
         }
         
-        if let latitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LATITUDE) as? String {
+        if let latitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LATITUDE) as? Double {
             userSettings.latitude = latitude
         }
         
-        if let longitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LONGITUDE) as? String {
+        if let longitude = userDefaults.value(forKey: Constants.UserDefaults.LAST_LONGITUDE) as? Double {
             userSettings.longitude = longitude
         }
         

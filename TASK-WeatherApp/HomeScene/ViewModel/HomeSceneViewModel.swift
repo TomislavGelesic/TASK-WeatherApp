@@ -26,16 +26,14 @@ class HomeSceneViewModel {
     }
     
     deinit {
-        //        print("HomeSceneViewModel deinit")
+        print("HomeSceneViewModel deinit")
     }
     
     func initializeWeatherSubject(subject: AnyPublisher<CLLocationCoordinate2D, Never>) -> AnyCancellable {
         
         return subject
             .flatMap({ [unowned self] (coordinate) -> AnyPublisher<WeatherInfo, Never> in
-                
                 self.spinnerSubject.send(true)
-    
                 return homeSceneRepositoryImpl.fetchWeatherDataBy(location: coordinate)
                     .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
                         switch result {
@@ -47,7 +45,6 @@ class HomeSceneViewModel {
                             return Just(WeatherInfo()).eraseToAnyPublisher()
                         }
                     }.eraseToAnyPublisher()
-                
             })
             .receive(on: RunLoop.main)
             .subscribe(on: DispatchQueue.global(qos: .background))
@@ -59,7 +56,7 @@ class HomeSceneViewModel {
             } receiveValue: { [unowned self] (data) in
                 self.screenData = data
                 UserDefaultsService.update(with: data)
-                self.updateBackgorundImageInfo(weatherType: data.weatherType, daytime: data.daytime)
+                self.coreDataService.save(data)
                 self.refreshUISubject.send()
                 self.spinnerSubject.send(false)
             }
@@ -92,6 +89,6 @@ class HomeSceneViewModel {
         coreDataService.save(item)
         UserDefaultsService.update(with: item)
         let settings = UserDefaultsService.fetchUpdated()
-        weatherSubject.send(CLLocationCoordinate2D(latitude: settings.latitude, longitude: settings.longitude))
+        weatherSubject.send(CLLocationCoordinate2D(latitude: settings.lastLatitude, longitude: settings.lastLongitude))
     }
 }

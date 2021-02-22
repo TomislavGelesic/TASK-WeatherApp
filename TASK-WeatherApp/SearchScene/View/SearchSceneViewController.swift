@@ -78,8 +78,6 @@ class SearchSceneViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        updateBackgroundImage()
         inputField.becomeFirstResponder()
         navigationController?.navigationBar.isHidden = true
     }
@@ -94,6 +92,7 @@ class SearchSceneViewController: UIViewController {
 extension SearchSceneViewController {
     
     func setupViews() {
+        view.backgroundColor = .lightGray
         view.addSubviews([cancelButton, tableView, inputField])
         searchIconContainer.addSubview(searchIcon)
         inputField.delegate = self
@@ -162,7 +161,6 @@ extension SearchSceneViewController {
             },
             completion: nil
         )
-        viewModel.didSelectCancel()
     }
     
     func setSubscribers() {
@@ -173,12 +171,15 @@ extension SearchSceneViewController {
             .sink { [unowned self] (value) in
                 value ? self.showSpinner() : self.hideSpinner()
             }
+            .store(in: &disposeBag)
+        
         viewModel.alertSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
             .sink { [unowned self] (message) in
                 self.showAlert(text: message) { }
             }
+            .store(in: &disposeBag)
         
         viewModel.initializeSearchSubject(subject: viewModel.searchSubject.eraseToAnyPublisher())
             .store(in: &disposeBag)
@@ -202,6 +203,7 @@ extension SearchSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         inputField.resignFirstResponder()
+        viewModel.didSelectCancel()
         return true
     }
 }

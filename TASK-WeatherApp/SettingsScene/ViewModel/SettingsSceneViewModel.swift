@@ -26,59 +26,46 @@ class SettingsSceneViewModel {
     }
     
     deinit {
-//        print("SettingsSceneViewModel deinit")
+        print("SettingsSceneViewModel deinit")
     }
 }
 
 extension SettingsSceneViewModel {
     
     func remove(at position: Int) {
-        
-        if let id = Int64(savedLocations[position].id) {
-            savedLocations.remove(at: position)
-            coreDataService.delete(id)
-            userSettings.shouldShowUserLocationWeather = true
-            refreshUISubject.send(true)
-        }
+        coreDataService.delete(savedLocations[position].id)
+        savedLocations.remove(at: position)
+        if savedLocations.isEmpty { userSettings.shouldShowUserLocationWeather = true }
+        else { userSettings.shouldShowUserLocationWeather = false }        
+        refreshUISubject.send(true)
     }
     
     func applyTapped(_ type: MeasurementUnits) {
-        saveUserSettings(measurmentUnit: type,
-                         wantedCity: nil,
-                         conditions: selectedConditions)
-        
+        saveUserSettings(measurmentUnit: type, wantedCity: nil, conditions: selectedConditions)
         coordinator.returnToHomeScene()
     }
     
-    func backButtonTapped() {
-        coordinator.returnToHomeScene()
-    }
+    func backButtonTapped() { coordinator.returnToHomeScene() }
     
     func didSelectSavedCity(wantedCity position: Int?, _ unit: MeasurementUnits) {
-        saveUserSettings(measurmentUnit: unit,
-                         wantedCity: position,
-                         conditions: selectedConditions)
+        saveUserSettings(measurmentUnit: unit, wantedCity: position, conditions: selectedConditions)
+        UserDefaultsService.setShouldShowUserLocationWeather(false)
+        let settings = UserDefaultsService.fetchUpdated()
         coordinator.returnToHomeScene()
     }
     
     func conditionTapped(_ type: ConditionTypes) {
-        if selectedConditions.contains(type) {
-            selectedConditions = selectedConditions.filter { $0 != type }
-        }
-        else {
-            selectedConditions.append(type)
-        }
+        if selectedConditions.contains(type) { selectedConditions = selectedConditions.filter { $0 != type } }
+        else { selectedConditions.append(type) }
     }
     
     func saveUserSettings(measurmentUnit: MeasurementUnits?, wantedCity position: Int?, conditions: [ConditionTypes]?) {
-        if let unitToSave = measurmentUnit {
-            userSettings.measurmentUnit = unitToSave
-        }
+        if let unitToSave = measurmentUnit { userSettings.measurmentUnit = unitToSave }
         if let index = position {
             let city = savedLocations[index]
             userSettings.lastCityId = city.id
-            userSettings.latitude = Double(city.latitude) ?? 0.0
-            userSettings.longitude = Double(city.longitude) ?? 0.0
+            userSettings.lastLatitude = city.latitude
+            userSettings.lastLongitude = city.longitude
             UserDefaultsService.setShouldShowUserLocationWeather(false)
         }
         userSettings.shouldShowHumidity = false

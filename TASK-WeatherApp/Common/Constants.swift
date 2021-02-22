@@ -11,10 +11,11 @@ import CoreLocation
 struct Constants {
     
     // Vienna
-    static let DEFAULT_CITY_ID = "2761369"
+    static let DEFAULT_CITY_ID: Int64 = 2761369
     static let DEFAULT_LATITUDE: Double = 48.20849
     static let DEFAULT_LONGITUDE: Double = 16.37208
     static let DEFAULT_LOCATION = CLLocationCoordinate2D(latitude: Constants.DEFAULT_LATITUDE, longitude: Constants.DEFAULT_LONGITUDE)
+    
     struct GeoNamesORG  {
         static let BASE_HomeScene = "https://secure.geonames.org/findNearbyPlaceNameJSON?"
         static let BASE_SearchScene = "https://secure.geonames.org/searchJSON?"
@@ -36,7 +37,7 @@ struct Constants {
     
 //    examples Vienna = 2761369:
 //    https://api.openweathermap.org/data/2.5/weather?q=Vienna,WV&appid=c89f972e8095d59db84f5e88b5ad621e&units=metric
-    
+
 //    https://api.openweathermap.org/data/2.5/weather?id=2761369&appid=c89f972e8095d59db84f5e88b5ad621e&units=metric
 
     struct UserDefaults {

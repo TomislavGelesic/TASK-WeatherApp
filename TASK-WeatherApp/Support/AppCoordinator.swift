@@ -31,21 +31,15 @@ class AppCoordinator: Coordinator {
 
 extension AppCoordinator {
     
-    func initializeUserSettings() {
-        #warning("switch comment tags for real usage..")
-//        UserDefaultsService.update(with: UserDefaultsService.fetchUpdated())
-        UserDefaultsService.update(with: UserDefaultsService())
-    }
+    func initializeUserSettings() { UserDefaultsService.update(with: UserDefaultsService.fetchUpdated()) }
     
     func childDidFinish(_ coordinator: Coordinator, goTo nextScene: SceneOption) {
         childCoordinators = childCoordinators.filter({ (coord) -> Bool in
-            if let _ = coordinator as? HomeSceneCoordinator {
-                return false
-            }
-            return true
+            if let _ = coordinator as? HomeSceneCoordinator { return false }
+            else { return true }
         })
         switch nextScene {
-        case .homeScene: goToHomeScene()
+        case .homeScene: break
         case .settingsScene: goToSettingsScene()
         }
     }

@@ -40,7 +40,7 @@ extension AppCoordinator {
         })
         switch nextScene {
         case .homeScene: break
-        case .settingsScene: goToSettingsScene()
+        case .settingsScene(let image): goToSettingsScene(image: image)
         }
     }
     
@@ -49,9 +49,10 @@ extension AppCoordinator {
         child.start()
     }
     
-    func goToSettingsScene() {
+    func goToSettingsScene(image: UIImage) {
         let child = SettingsSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
         childCoordinators.append(child)
+        child.backgroundImage = image
         child.start()
     }
 }

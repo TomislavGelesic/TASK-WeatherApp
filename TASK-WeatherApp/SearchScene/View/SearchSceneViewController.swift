@@ -11,8 +11,12 @@ import Combine
 class SearchSceneViewController: UIViewController {
     
     var disposeBag = Set<AnyCancellable>()
-    
     var viewModel: SearchSceneViewModel
+    
+    let backgroundImage: UIImageView = {
+        let imageView = UIImageView()
+        return imageView
+    }()
     
     let cancelButton: UIButton = {
         let button = UIButton()
@@ -93,7 +97,7 @@ extension SearchSceneViewController {
     
     func setupViews() {
         view.backgroundColor = .lightGray
-        view.addSubviews([cancelButton, tableView, inputField])
+        view.addSubviews([backgroundImage, cancelButton, tableView, inputField])
         searchIconContainer.addSubview(searchIcon)
         inputField.delegate = self
         inputField.leftViewMode = .always
@@ -237,12 +241,15 @@ extension SearchSceneViewController: UITableViewDelegate {
 extension SearchSceneViewController {
     
     func setConstraints() {
+        setConstraintsBackgroundImage()
         setConstraintsOnCancelButton()
         setConstraintsOnAvailableCitiesTableView()
         setConstraintsOnSearchIcon()
         setConstraintsOnSearchIconContainer()
         setConstraintsOnInputField(for: 100)
     }
+    
+    func setConstraintsBackgroundImage() { backgroundImage.snp.makeConstraints { (make) in make.edges.equalTo(view) } }
     
     func setConstraintsOnCancelButton() {
         cancelButton.snp.makeConstraints { (make) in

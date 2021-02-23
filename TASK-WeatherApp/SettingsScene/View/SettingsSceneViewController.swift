@@ -14,6 +14,11 @@ class SettingsSceneViewController: UIViewController {
     var disposeBag = Set<AnyCancellable>()
     var viewModel: SettingsSceneViewModel
     
+    let backgroundImage: UIImageView = {
+        let imageView = UIImageView()
+        return imageView
+    }()
+    
     let locationsLabelDescription: UILabel = {
         let label = UILabel()
         label.text = "Locations"
@@ -153,6 +158,7 @@ extension SettingsSceneViewController {
     
     func setSubviews() {
         view.addSubviews([
+            backgroundImage,
             locationsLabelDescription,
             locationsCollectionView,
             unitsLabelDescription,
@@ -237,6 +243,7 @@ extension SettingsSceneViewController: UICollectionViewDelegate {
 extension SettingsSceneViewController {
     
     func setConstraints() {
+        setConstraintsBackgroundImage()
         setConstraintsOnLocationsLabelDescription()
         setConstraintsOnLocationsCollectionView()
         setConstraintsOnUnitsLabelDescription()
@@ -245,6 +252,8 @@ extension SettingsSceneViewController {
         setConstraintsOnConditionsCheckBox()
         setConstraintsOnApplyButton()
     }
+    
+    func setConstraintsBackgroundImage() { backgroundImage.snp.makeConstraints { (make) in make.edges.equalTo(view) } }
     
     func setConstraintsOnLocationsLabelDescription() {
         locationsLabelDescription.snp.makeConstraints { (make) in

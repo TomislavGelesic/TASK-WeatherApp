@@ -28,8 +28,8 @@ class HomeSceneCoordinator: Coordinator {
         //print("HomeSceneCoordinator deinit")
     }
     
-    func goToSettingsScene() {
+    func goToSettingsScene(image: UIImage) {
         navigationController.popViewController(animated: true)
-        parentCoordinator?.childDidFinish(self, goTo: .settingsScene)
+        parentCoordinator?.childDidFinish(self, goTo: .settingsScene(backgroundImage: image))
     }
 }

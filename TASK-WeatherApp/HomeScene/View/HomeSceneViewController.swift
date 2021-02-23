@@ -21,6 +21,7 @@ class HomeSceneViewController: UIViewController {
         let imageView = UIImageView()
         return imageView
     }()
+    
     let currentTemperatureLabel: UILabel = {
         let label = UILabel()
         label.backgroundColor = .clear
@@ -222,16 +223,16 @@ extension HomeSceneViewController {
         view.layoutIfNeeded()
     }
     
-    @objc func settingsButtonTapped() { viewModel.settingsTapped() }
+    @objc func settingsButtonTapped() {
+        if let image = backgroundImage.image { viewModel.settingsTapped(image: image) }
+    }
     
     func setSubscribers() {
         
         viewModel.refreshUISubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] () in
-                self.updateUI()
-            }
+            .sink { [unowned self] () in self.updateUI() }
             .store(in: &disposeBag)
         
         viewModel.initializeWeatherSubject(subject: viewModel.weatherSubject.eraseToAnyPublisher())
@@ -240,12 +241,7 @@ extension HomeSceneViewController {
         viewModel.alertSubject
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { [unowned self] (error) in
-                self.showAlert(text: error) { [unowned self] in
-                    self.checkLocationServices()
-                    print("calling this")
-                }
-            }
+            .sink { [unowned self] (error) in self.showAlert(text: error) { [unowned self] in self.checkLocationServices() }}
             .store(in: &disposeBag)
         
         viewModel.spinnerSubject
@@ -344,6 +340,7 @@ extension HomeSceneViewController {
         let vm = SearchSceneViewModel(searchRepository: SearchRepositoryImpl())
         vm.delegate = self
         let vc = SearchSceneViewController(viewModel: vm)
+        vc.backgroundImage.image = backgroundImage.image
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true)
     }

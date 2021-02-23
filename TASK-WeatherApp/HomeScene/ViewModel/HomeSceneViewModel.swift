@@ -73,7 +73,7 @@ class HomeSceneViewModel {
     
     func getMeasurementUnit() -> MeasurementUnits { return UserDefaultsService.fetchUpdated().measurmentUnit }
     
-    func settingsTapped() { coordinator.goToSettingsScene() }
+    func settingsTapped(image: UIImage) { coordinator.goToSettingsScene(image: image) }
     
     func updateBackgorundImageInfo(weatherType: String, daytime: Bool) {
         let userDefaults = UserDefaults.standard

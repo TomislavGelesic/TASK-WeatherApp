@@ -5,9 +5,9 @@
 //  Created by Tomislav Gelesic on 29.01.2021..
 //
 
-import Foundation
+import UIKit
 
 enum SceneOption {
     case homeScene
-    case settingsScene
+    case settingsScene(backgroundImage: UIImage)
 }

@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		202E6128E8E7E5C2045799AC /* Pods_TASK_WeatherApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD325B9A619230A1ED6C345D /* Pods_TASK_WeatherApp.framework */; };
 		60056D7925E130D2000FDCE2 /* Geoname.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60056D7825E130D2000FDCE2 /* Geoname.swift */; };
-		600D41D025CD9BF400CA2540 /* TASK_WeatherAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D41CF25CD9BF400CA2540 /* TASK_WeatherAppTests.swift */; };
+		600D41D025CD9BF400CA2540 /* HomeSceneViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D41CF25CD9BF400CA2540 /* HomeSceneViewModelTests.swift */; };
+		6025741A25E833D9005C5D79 /* TASK_WeatherAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6025741925E833D9005C5D79 /* TASK_WeatherAppUITests.swift */; };
 		6040B54225D1838700625587 /* RestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6040B54125D1838700625587 /* RestManager.swift */; };
 		6040B54625D183D700625587 /* SerializationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6040B54525D183D700625587 /* SerializationManager.swift */; };
 		6040B55525D1A0A300625587 /* MockWeatherResponseJSON.json in Resources */ = {isa = PBXBuildFile; fileRef = 6040B55425D1A0A300625587 /* MockWeatherResponseJSON.json */; };
@@ -45,6 +46,7 @@
 		60796F5925B1890E00988BC1 /* SearchSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */; };
 		60796F5E25B18E2500988BC1 /* SearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F5D25B18E2500988BC1 /* SearchResultTableViewCell.swift */; };
 		60796F6A25B1E4E900988BC1 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60796F6925B1E4E900988BC1 /* AppCoordinator.swift */; };
+		6089EBCA25E841CB003BD5DE /* GeneratedMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6089EBC925E841CB003BD5DE /* GeneratedMocks.swift */; };
 		60B642EF25B2D97700DE43EC /* SettingsSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */; };
 		60B642F425B2DD5C00DE43EC /* HomeSceneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */; };
 		60B642FA25B2DDC100DE43EC /* HomeSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */; };
@@ -72,12 +74,18 @@
 		60D87F1E25AF65E00033CB7A /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87F1D25AF65E00033CB7A /* NetworkError.swift */; };
 		60D87F2825AF69420033CB7A /* HomeSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87F2725AF69420033CB7A /* HomeSceneViewController.swift */; };
 		60D87F3C25AF757C0033CB7A /* UICollectionViewCell+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D87F3B25AF757C0033CB7A /* UICollectionViewCell+Extensions.swift */; };
-		60F5D6C025D55E36008BA163 /* MockHomeSceneRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F5D6BF25D55E36008BA163 /* MockHomeSceneRepositoryImpl.swift */; };
 		EBAA6C3653F4B06698EED35B /* Pods_TASK_WeatherAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9E91CD49A0BC6C3E01E2AFD /* Pods_TASK_WeatherAppTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		600D41D225CD9BF400CA2540 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 60D87ECC25AF60360033CB7A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 60D87ED325AF60360033CB7A;
+			remoteInfo = "TASK-WeatherApp";
+		};
+		6025741C25E833D9005C5D79 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 60D87ECC25AF60360033CB7A /* Project object */;
 			proxyType = 1;
@@ -92,8 +100,11 @@
 		47D509C36D06D4B4B2AEF7C6 /* Pods-TASK-WeatherAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TASK-WeatherAppTests.debug.xcconfig"; path = "Target Support Files/Pods-TASK-WeatherAppTests/Pods-TASK-WeatherAppTests.debug.xcconfig"; sourceTree = "<group>"; };
 		60056D7825E130D2000FDCE2 /* Geoname.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geoname.swift; sourceTree = "<group>"; };
 		600D41CD25CD9BF400CA2540 /* TASK-WeatherAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TASK-WeatherAppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		600D41CF25CD9BF400CA2540 /* TASK_WeatherAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TASK_WeatherAppTests.swift; sourceTree = "<group>"; };
+		600D41CF25CD9BF400CA2540 /* HomeSceneViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneViewModelTests.swift; sourceTree = "<group>"; };
 		600D41D125CD9BF400CA2540 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6025741725E833D9005C5D79 /* TASK-WeatherAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TASK-WeatherAppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6025741925E833D9005C5D79 /* TASK_WeatherAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TASK_WeatherAppUITests.swift; sourceTree = "<group>"; };
+		6025741B25E833D9005C5D79 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6040B54125D1838700625587 /* RestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestManager.swift; sourceTree = "<group>"; };
 		6040B54525D183D700625587 /* SerializationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializationManager.swift; sourceTree = "<group>"; };
 		6040B55425D1A0A300625587 /* MockWeatherResponseJSON.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = MockWeatherResponseJSON.json; sourceTree = "<group>"; };
@@ -129,6 +140,7 @@
 		60796F5825B1890E00988BC1 /* SearchSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchSceneViewController.swift; sourceTree = "<group>"; };
 		60796F5D25B18E2500988BC1 /* SearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		60796F6925B1E4E900988BC1 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		6089EBC925E841CB003BD5DE /* GeneratedMocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedMocks.swift; sourceTree = "<group>"; };
 		60B642EE25B2D97700DE43EC /* SettingsSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSceneViewModel.swift; sourceTree = "<group>"; };
 		60B642F325B2DD5C00DE43EC /* HomeSceneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneViewModel.swift; sourceTree = "<group>"; };
 		60B642F925B2DDC100DE43EC /* HomeSceneCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneCoordinator.swift; sourceTree = "<group>"; };
@@ -159,7 +171,6 @@
 		60D87F1D25AF65E00033CB7A /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		60D87F2725AF69420033CB7A /* HomeSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSceneViewController.swift; sourceTree = "<group>"; };
 		60D87F3B25AF757C0033CB7A /* UICollectionViewCell+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewCell+Extensions.swift"; sourceTree = "<group>"; };
-		60F5D6BF25D55E36008BA163 /* MockHomeSceneRepositoryImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockHomeSceneRepositoryImpl.swift; sourceTree = "<group>"; };
 		E9E91CD49A0BC6C3E01E2AFD /* Pods_TASK_WeatherAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TASK_WeatherAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF3D393242CD996B2771BBA5 /* Pods-TASK-WeatherAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TASK-WeatherAppTests.release.xcconfig"; path = "Target Support Files/Pods-TASK-WeatherAppTests/Pods-TASK-WeatherAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		FD325B9A619230A1ED6C345D /* Pods_TASK_WeatherApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TASK_WeatherApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -171,6 +182,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				EBAA6C3653F4B06698EED35B /* Pods_TASK_WeatherAppTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6025741425E833D9005C5D79 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,10 +208,19 @@
 			children = (
 				6040B55325D1A07100625587 /* MocksJSON */,
 				6083F36025D015930089BB55 /* CuckooMocks */,
-				600D41CF25CD9BF400CA2540 /* TASK_WeatherAppTests.swift */,
+				600D41CF25CD9BF400CA2540 /* HomeSceneViewModelTests.swift */,
 				600D41D125CD9BF400CA2540 /* Info.plist */,
 			);
 			path = "TASK-WeatherAppTests";
+			sourceTree = "<group>";
+		};
+		6025741825E833D9005C5D79 /* TASK-WeatherAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				6025741925E833D9005C5D79 /* TASK_WeatherAppUITests.swift */,
+				6025741B25E833D9005C5D79 /* Info.plist */,
+			);
+			path = "TASK-WeatherAppUITests";
 			sourceTree = "<group>";
 		};
 		6040B55325D1A07100625587 /* MocksJSON */ = {
@@ -291,7 +318,7 @@
 		6083F36025D015930089BB55 /* CuckooMocks */ = {
 			isa = PBXGroup;
 			children = (
-				60F5D6BF25D55E36008BA163 /* MockHomeSceneRepositoryImpl.swift */,
+				6089EBC925E841CB003BD5DE /* GeneratedMocks.swift */,
 			);
 			path = CuckooMocks;
 			sourceTree = "<group>";
@@ -388,6 +415,7 @@
 			children = (
 				60D87ED625AF60360033CB7A /* TASK-WeatherApp */,
 				600D41CE25CD9BF400CA2540 /* TASK-WeatherAppTests */,
+				6025741825E833D9005C5D79 /* TASK-WeatherAppUITests */,
 				60D87ED525AF60360033CB7A /* Products */,
 				CB84BF6A4E27F46E822EE478 /* Pods */,
 				D46E968F7BE09A0C1D6A4556 /* Frameworks */,
@@ -399,6 +427,7 @@
 			children = (
 				60D87ED425AF60360033CB7A /* TASK-WeatherApp.app */,
 				600D41CD25CD9BF400CA2540 /* TASK-WeatherAppTests.xctest */,
+				6025741725E833D9005C5D79 /* TASK-WeatherAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -579,6 +608,24 @@
 			productReference = 600D41CD25CD9BF400CA2540 /* TASK-WeatherAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		6025741625E833D9005C5D79 /* TASK-WeatherAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6025742025E833D9005C5D79 /* Build configuration list for PBXNativeTarget "TASK-WeatherAppUITests" */;
+			buildPhases = (
+				6025741325E833D9005C5D79 /* Sources */,
+				6025741425E833D9005C5D79 /* Frameworks */,
+				6025741525E833D9005C5D79 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6025741D25E833D9005C5D79 /* PBXTargetDependency */,
+			);
+			name = "TASK-WeatherAppUITests";
+			productName = "TASK-WeatherAppUITests";
+			productReference = 6025741725E833D9005C5D79 /* TASK-WeatherAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		60D87ED325AF60360033CB7A /* TASK-WeatherApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 60D87EEB25AF60370033CB7A /* Build configuration list for PBXNativeTarget "TASK-WeatherApp" */;
@@ -611,6 +658,10 @@
 						CreatedOnToolsVersion = 12.4;
 						TestTargetID = 60D87ED325AF60360033CB7A;
 					};
+					6025741625E833D9005C5D79 = {
+						CreatedOnToolsVersion = 12.4;
+						TestTargetID = 60D87ED325AF60360033CB7A;
+					};
 					60D87ED325AF60360033CB7A = {
 						CreatedOnToolsVersion = 12.3;
 					};
@@ -631,6 +682,7 @@
 			targets = (
 				60D87ED325AF60360033CB7A /* TASK-WeatherApp */,
 				600D41CC25CD9BF400CA2540 /* TASK-WeatherAppTests */,
+				6025741625E833D9005C5D79 /* TASK-WeatherAppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -641,6 +693,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				6040B55525D1A0A300625587 /* MockWeatherResponseJSON.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6025741525E833D9005C5D79 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -682,15 +741,17 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/TASK-WeatherApp/HomeScene/ModelHomeScene/HomeSceneRepositoryImpl.swift",
+				"$(SRCROOT)/TASK.WeatherApp/HomeScene/Model/HomeSceneRepositoryImpl.swift",
+				"$(SRCROOT)/TASK.WeatherApp/SearchScene/Model/SearchRepositoryImpl.swift",
 			);
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(SRCROOT)/TASK-WeatherAppTests/CuckooMocks/GeneratedMocks.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Define output file. Change \"${PROJECT_DIR}/${PROJECT_NAME}Tests\" to your test's root source folder, if it's not the default name.\nOUTPUT_FILE=\"${PROJECT_DIR}/${PROJECT_NAME}Tests/CuckooMocks\"\necho \"Generated Mocks File = ${OUTPUT_FILE}\"\n\n# Define input directory. Change \"${PROJECT_DIR}/${PROJECT_NAME}\" to your project's root source folder, if it's not the default name.\nINPUT_DIR=\"${PROJECT_DIR}/${PROJECT_NAME}\"\necho \"Mocks Input Directory = ${INPUT_DIR}\"\n\n# Generate mock files, include as many input files as you'd like to create mocks for.\n\"${PODS_ROOT}/Cuckoo/run\" generate --glob --testable \"${PROJECT_NAME}\" \\\n--output \"${OUTPUT_FILE}\" \\\n\"${INPUT_DIR}/HomeScene/ModelHomeScene/HomeSceneRepositoryImpl.swift\"\n# ... and so forth, the last line should never end with a backslash\n\n# After running once, locate `GeneratedMocks.swift` and drag it into your Xcode test target group.\n";
+			shellScript = "# Define output file. Change \"${PROJECT_DIR}/${PROJECT_NAME}Tests\" to your test's root source folder, if it's not the default name.\nOUTPUT_FILE=\"${PROJECT_DIR}/${PROJECT_NAME}Tests/CuckooMocks/GeneratedMocks.swift\"\necho \"Generated Mocks File = ${OUTPUT_FILE}\"\n\n# Define input directory. Change \"${PROJECT_DIR}/${PROJECT_NAME}\" to your project's root source folder, if it's not the default name.\nINPUT_DIR=\"${PROJECT_DIR}/${PROJECT_NAME}\"\necho \"Mocks Input Directory = ${INPUT_DIR}\"\n\n# Generate mock files, include as many input files as you'd like to create mocks for.\n\"${PODS_ROOT}/Cuckoo/run\" generate --testable \"${PROJECT_NAME}\" \\\n--output \"${OUTPUT_FILE}\" \\\n\"${INPUT_DIR}/HomeScene/Model/HomeSceneRepositoryImpl.swift\" \\\n\"${INPUT_DIR}/SearchScene/Model/SearchRepositoryImpl.swift\" \n# ... and so forth, the last line should never end with a backslash\n\n# After running once, locate `GeneratedMocks.swift` and drag it into your Xcode test target group.\n";
 		};
 		704C98E82F14F5E117E0DB77 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -760,8 +821,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				600D41D025CD9BF400CA2540 /* TASK_WeatherAppTests.swift in Sources */,
-				60F5D6C025D55E36008BA163 /* MockHomeSceneRepositoryImpl.swift in Sources */,
+				600D41D025CD9BF400CA2540 /* HomeSceneViewModelTests.swift in Sources */,
+				6089EBCA25E841CB003BD5DE /* GeneratedMocks.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6025741325E833D9005C5D79 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6025741A25E833D9005C5D79 /* TASK_WeatherAppUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -839,6 +908,11 @@
 			target = 60D87ED325AF60360033CB7A /* TASK-WeatherApp */;
 			targetProxy = 600D41D225CD9BF400CA2540 /* PBXContainerItemProxy */;
 		};
+		6025741D25E833D9005C5D79 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 60D87ED325AF60360033CB7A /* TASK-WeatherApp */;
+			targetProxy = 6025741C25E833D9005C5D79 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -881,6 +955,44 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TASK-WeatherApp.app/TASK-WeatherApp";
+			};
+			name = Release;
+		};
+		6025741E25E833D9005C5D79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "TASK-WeatherAppUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.TASK-WeatherAppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "TASK-WeatherApp";
+			};
+			name = Debug;
+		};
+		6025741F25E833D9005C5D79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "TASK-WeatherAppUITests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.example.TASK-WeatherAppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "TASK-WeatherApp";
 			};
 			name = Release;
 		};
@@ -1048,6 +1160,15 @@
 			buildConfigurations = (
 				600D41D425CD9BF400CA2540 /* Debug */,
 				600D41D525CD9BF400CA2540 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6025742025E833D9005C5D79 /* Build configuration list for PBXNativeTarget "TASK-WeatherAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6025741E25E833D9005C5D79 /* Debug */,
+				6025741F25E833D9005C5D79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -13,9 +13,10 @@ end
 
 target 'TASK-WeatherAppTests' do
   
-	use_frameworks!
+  use_frameworks!
 	
-	pod 'Cuckoo'
-	pod 'Quick'
-	pod 'Nimble'
+  pod 'Cuckoo'
+  pod 'Quick'
+  pod 'Nimble'
+  pod 'Alamofire'
 end

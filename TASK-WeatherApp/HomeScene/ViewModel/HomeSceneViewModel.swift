@@ -34,6 +34,9 @@ class HomeSceneViewModel {
         return subject
             .flatMap({ [unowned self] (coordinate) -> AnyPublisher<WeatherInfo, Never> in
                 self.spinnerSubject.send(true)
+                #warning("readme - improve app")
+                // this should be in repository?
+                // mapError so i don't include AFError here?
                 return homeSceneRepositoryImpl.fetchWeatherDataBy(location: coordinate)
                     .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
                         switch result {
@@ -46,8 +49,8 @@ class HomeSceneViewModel {
                         }
                     }.eraseToAnyPublisher()
             })
-            .receive(on: RunLoop.main)
             .subscribe(on: DispatchQueue.global(qos: .background))
+            .receive(on: RunLoop.main)
             .sink { (completion) in
                 switch completion {
                 case .finished: break

@@ -12,12 +12,11 @@ class HomeSceneRepositoryImpl : WeatherRepository {
         path.append(Constants.OpenWeatherMapORG.BASE)
         path.append("lat=\(location.latitude)&lon=\(location.longitude)")
         path.append(Constants.OpenWeatherMapORG.KEY)
+        
         switch UserDefaultsService.fetchUpdated().measurmentUnit {
         case .metric: path.append(Constants.OpenWeatherMapORG.WITH_METRIC_UNITS)
         case .imperial: path.append(Constants.OpenWeatherMapORG.WITH_IMPERIAL_UNITS)
         }
-        #warning("delete print")
-        print(path)
         return RestManager.requestObservable(url: path)
     }
     

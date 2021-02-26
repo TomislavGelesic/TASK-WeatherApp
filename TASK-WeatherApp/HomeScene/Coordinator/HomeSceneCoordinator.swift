@@ -7,20 +7,23 @@
 
 import UIKit
 
-class HomeSceneCoordinator: Coordinator {
+class HomeSceneCoordinator: Coordinator, CoordinatorDelegate {
     
-    weak var parentCoordinator: AppCoordinator?
+    weak var delegate: AppCoordinator?
     var childCoordinators: [Coordinator] = [Coordinator]()
     var navigationController: UINavigationController
     
     func start() {
-        let viewModel = HomeSceneViewModel(coordinator: self, repository: HomeSceneRepositoryImpl())
+        let viewModel = HomeSceneViewModel(repository: HomeSceneRepositoryImpl())
+        viewModel.coordinatorDelegate = self
+        if viewModel.coordinatorDelegate != nil {
+            print("ok")
+        }
         let viewController = HomeSceneViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: false)
     }
     
-    init(parentCoordinator: AppCoordinator, navigationController: UINavigationController) {
-        self.parentCoordinator = parentCoordinator
+    init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
 
@@ -28,8 +31,14 @@ class HomeSceneCoordinator: Coordinator {
         //print("HomeSceneCoordinator deinit")
     }
     
-    func goToSettingsScene(image: UIImage) {
-        navigationController.popViewController(animated: true)
-        parentCoordinator?.childDidFinish(self, goTo: .settingsScene(backgroundImage: image))
+    func viewControllerHasFinished(goTo option: SceneOption) {
+        switch option {
+        case .homeScene:
+            break
+        case .settingsScene(backgroundImage: let image):
+            navigationController.popViewController(animated: true)
+            delegate?.childDidFinish(self, goTo: .settingsScene(backgroundImage: image))
+        }
     }
 }
+

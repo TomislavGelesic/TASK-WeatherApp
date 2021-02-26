@@ -20,7 +20,6 @@ public class RestManager {
     }()
     
     static func requestObservable<T: Codable>(url: String) -> AnyPublisher<Result<T, AFError>, Never> {
-        
         return RestManager.manager
             .request(url, encoding: URLEncoding.default)
             .validate()

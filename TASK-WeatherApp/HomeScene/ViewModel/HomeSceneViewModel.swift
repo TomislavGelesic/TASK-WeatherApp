@@ -8,10 +8,11 @@
 import UIKit
 import Combine
 import MapKit
+import Alamofire
 
 class HomeSceneViewModel {
     
-    var coordinator: HomeSceneCoordinator
+    var coordinatorDelegate: CoordinatorDelegate?
     var homeSceneRepositoryImpl: HomeSceneRepositoryImpl
     var spinnerSubject = PassthroughSubject<Bool, Never>()
     var alertSubject = PassthroughSubject<String, Never>()
@@ -20,8 +21,7 @@ class HomeSceneViewModel {
     var screenData = WeatherInfo()
     var coreDataService = CoreDataService.sharedInstance
     
-    init(coordinator coord: HomeSceneCoordinator, repository: HomeSceneRepositoryImpl) {
-        coordinator = coord
+    init(repository: HomeSceneRepositoryImpl) {
         homeSceneRepositoryImpl = repository
     }
     
@@ -32,37 +32,27 @@ class HomeSceneViewModel {
     func initializeWeatherSubject(subject: AnyPublisher<CLLocationCoordinate2D, Never>) -> AnyCancellable {
         
         return subject
-            .flatMap({ [unowned self] (coordinate) -> AnyPublisher<WeatherInfo, Never> in
+            .flatMap({ [unowned self] (coordinate) -> AnyPublisher<Result<WeatherResponse, AFError>, Never> in
                 self.spinnerSubject.send(true)
-                #warning("readme - improve app")
-                // this should be in repository?
-                // mapError so i don't include AFError here?
                 return homeSceneRepositoryImpl.fetchWeatherDataBy(location: coordinate)
-                    .flatMap { [unowned self] (result) -> AnyPublisher<WeatherInfo, Never> in
-                        switch result {
-                        case .success(let weatherResponse):
-                            return Just(WeatherInfo(weatherResponse)).eraseToAnyPublisher()
-                        case .failure(_):
-                            self.spinnerSubject.send(false)
-                            self.alertSubject.send("Internet connection lost.")
-                            return Just(WeatherInfo()).eraseToAnyPublisher()
-                        }
-                    }.eraseToAnyPublisher()
             })
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink { (completion) in
-                switch completion {
-                case .finished: break
-                case .failure(_): print("THIS ERROR SHOULD NEVER HAPPEN")
+            .sink(receiveValue: { [unowned self] (result) in
+                switch result {
+                case .success(let response):
+                    let data = WeatherInfo(response)
+                    self.screenData = data
+                    UserDefaultsService.update(with: data)
+                    self.coreDataService.save(data)
+                    self.refreshUISubject.send()
+                    self.spinnerSubject.send(false)
+                case .failure(let error):
+                    print(error)
+                    self.spinnerSubject.send(false)
+                    self.alertSubject.send("Internet connection lost.")
                 }
-            } receiveValue: { [unowned self] (data) in
-                self.screenData = data
-                UserDefaultsService.update(with: data)
-                self.coreDataService.save(data)
-                self.refreshUISubject.send()
-                self.spinnerSubject.send(false)
-            }
+            })
     }
     
     func getConditionsToShow() -> [ConditionTypes] {
@@ -76,7 +66,9 @@ class HomeSceneViewModel {
     
     func getMeasurementUnit() -> MeasurementUnits { return UserDefaultsService.fetchUpdated().measurmentUnit }
     
-    func settingsTapped(image: UIImage) { coordinator.goToSettingsScene(image: image) }
+    func settingsTapped(image: UIImage) {
+        coordinatorDelegate?.viewControllerHasFinished(goTo: .settingsScene(backgroundImage: image))
+    }
     
     func updateBackgorundImageInfo(weatherType: String, daytime: Bool) {
         let userDefaults = UserDefaults.standard

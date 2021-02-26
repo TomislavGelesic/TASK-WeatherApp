@@ -11,15 +11,14 @@ import SnapKit
 
 class SettingsSceneViewModel {
     
-    var coordinator: SettingsSceneCoordinator
+    var coordinatorDelegate: CoordinatorDelegate?
     var savedLocations = [WeatherInfo]()
     var coreDataService = CoreDataService.sharedInstance
     var userSettings = UserDefaultsService.fetchUpdated()
     var selectedConditions = [ConditionTypes]()
     var refreshUISubject = CurrentValueSubject<Bool, Never>(true)
     
-    init(coordinator: SettingsSceneCoordinator) {
-        self.coordinator = coordinator
+    init() {
         if let cities = coreDataService.get(.all) {
             savedLocations = cities
         }
@@ -42,16 +41,15 @@ extension SettingsSceneViewModel {
     
     func applyTapped(_ type: MeasurementUnits) {
         saveUserSettings(measurmentUnit: type, wantedCity: nil, conditions: selectedConditions)
-        coordinator.returnToHomeScene()
+        coordinatorDelegate?.viewControllerHasFinished(goTo: .homeScene)
     }
     
-    func backButtonTapped() { coordinator.returnToHomeScene() }
+    func backButtonTapped() { coordinatorDelegate?.viewControllerHasFinished(goTo: .homeScene) }
     
     func didSelectSavedCity(wantedCity position: Int?, _ unit: MeasurementUnits) {
         saveUserSettings(measurmentUnit: unit, wantedCity: position, conditions: selectedConditions)
         UserDefaultsService.setShouldShowUserLocationWeather(false)
-        let settings = UserDefaultsService.fetchUpdated()
-        coordinator.returnToHomeScene()
+        coordinatorDelegate?.viewControllerHasFinished(goTo: .homeScene)
     }
     
     func conditionTapped(_ type: ConditionTypes) {

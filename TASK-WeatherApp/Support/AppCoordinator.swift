@@ -45,12 +45,14 @@ extension AppCoordinator {
     }
     
     func goToHomeScene(){
-        let child = HomeSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
+        let child = HomeSceneCoordinator(navigationController: navigationController)
+        child.delegate = self
         child.start()
     }
     
     func goToSettingsScene(image: UIImage) {
-        let child = SettingsSceneCoordinator(parentCoordinator: self, navigationController: navigationController)
+        let child = SettingsSceneCoordinator(navigationController: navigationController)
+        child.delegate = self
         childCoordinators.append(child)
         child.backgroundImage = image
         child.start()

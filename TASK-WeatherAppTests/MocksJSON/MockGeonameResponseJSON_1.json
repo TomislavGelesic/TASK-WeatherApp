@@ -1,0 +1,190 @@
+
+
+{
+    [
+        {
+            "countryName":"Wallis and Futuna",
+            "fcodeName":"locality",
+            "adminName1":"",
+            "lat":"-13.24972",
+            "fcode":"LCTY"
+        },
+        {
+            "adminCode1":"09",
+            "lng":"16.37208",
+            "geonameId":2761369,
+            "toponymName":"Vienna",
+            "countryId":"2782113",
+            "fcl":"P",
+            "population":1691468,
+            "countryCode":"AT",
+            "name":"Vienna",
+            "fclName":"city, village,...",
+            "adminCodes1":{
+                "ISO3166_2":"9"
+            },
+            "countryName":"Austria",
+            "fcodeName":"capital of a political entity",
+            "adminName1":"Vienna",
+            "lat":"48.20849",
+            "fcode":"PPLC"
+        },
+        {
+            "adminCode1":"61",
+            "lng":"27.91667",
+            "geonameId":726050,
+            "toponymName":"Varna",
+            "countryId":"732800",
+            "fcl":"P",
+            "population":312770,
+            "countryCode":"BG",
+            "name":"Varna",
+            "fclName":"city, village,...",
+            "adminCodes1":{
+                "ISO3166_2":"03"
+            },
+            "countryName":"Bulgaria",
+            "fcodeName":"seat of a first-order administrative division",
+            "adminName1":"Varna",
+            "lat":"43.21667",
+            "fcode":"PPLA"
+        },
+        {
+            "adminCode1":"30",
+            "lng":"-96.66667",
+            "geonameId":3514780,
+            "toponymName":"Estado de Veracruz-Llave",
+            "countryId":"3996063",
+            "fcl":"A",
+            "population":7058898,
+            "countryCode":"MX",
+            "name":"Veracruz",
+            "fclName":"country, state, region,...",
+            "adminCodes1":{
+                "ISO3166_2":"VER"
+            },
+            "countryName":"Mexico",
+            "fcodeName":"first-order administrative division",
+            "adminName1":"Veracruz",
+            "lat":"19.33333",
+            "fcode":"ADM1"
+        },
+        {
+            "adminCode1":"09",
+            "lng":"27.98972",
+            "geonameId":363885,
+            "toponymName":"Wau",
+            "countryId":"7909807",
+            "fcl":"P",
+            "population":127384,
+            "countryCode":"SS",
+            "name":"Vau",
+            "fclName":"city, village,...",
+            "adminCodes1":{
+                "ISO3166_2":"BW"
+            },
+            "countryName":"South Sudan",
+            "fcodeName":"seat of a first-order administrative division",
+            "adminName1":"Western Bahr al Ghazal",
+            "lat":"7.70111",
+            "fcode":"PPLA"
+        },
+        {
+            "adminCode1":"87",
+            "lng":"105.78825",
+            "geonameId":1586203,
+            "toponymName":"Cần Thơ",
+            "countryId":"1562822",
+            "fcl":"P",
+            "population":259598,
+            "countryCode":"VN",
+            "name":"VCA",
+            "fclName":"city, village,...",
+            "adminCodes1":{
+                "ISO3166_2":"CT"
+            },
+            "countryName":"Vietnam",
+            "fcodeName":"seat of a first-order administrative division",
+            "adminName1":"Can Tho",
+            "lat":"10.03711",
+            "fcode":"PPLA"
+        },
+        {
+            "adminCode1":"10",
+            "lng":"33.48333",
+            "geonameId":1049261,
+            "toponymName":"Chimoio",
+            "countryId":"1036973",
+            "fcl":"P",
+            "population":256936,
+            "countryCode":"MZ",
+            "name":"VPY",
+            "fclName":"city, village,...",
+            "adminCodes1":{
+                "ISO3166_2":"B"
+            },
+            "countryName":"Mozambique",
+            "fcodeName":"seat of a first-order administrative division",
+            "adminName1":"Manica",
+            "lat":"-19.11639",
+            "fcode":"PPLA"
+        },
+        {
+            "adminCode1":"18",
+            "lng":"168.31366",
+            "geonameId":2135171,
+            "toponymName":"Port-Vila",
+            "countryId":"2134431",
+            "fcl":"P",
+            "population":35901,
+            "countryCode":"VU",
+            "name":"VLI",
+            "fclName":"city, village,...",
+            "adminCodes1":{
+                "ISO3166_2":"SEE"
+            },
+            "countryName":"Vanuatu",
+            "fcodeName":"capital of a political entity",
+            "adminName1":"Shefa",
+            "lat":"-17.73648",
+            "fcode":"PPLC"
+        },
+        {
+            "adminCode1":"CE",
+            "lng":"-15.95798",
+            "geonameId":2463447,
+            "toponymName":"Dakhla",
+            "countryId":"2461445",
+            "fcl":"P",
+            "population":75000,
+            "countryCode":"EH",
+            "name":"VIL",
+            "fclName":"city, village,...",
+            "countryName":"Western Sahara",
+            "fcodeName":"seat of a first-order administrative division",
+            "adminName1":"Oued Ed-Dahab-Lagouira",
+            "lat":"23.68477",
+            "fcode":"PPLA"
+        },
+        {
+            "adminCode1":"25",
+            "lng":"77.92",
+            "geonameId":7646157,
+            "toponymName":"Virudhunagar",
+            "countryId":"1269750",
+            "fcl":"A",
+            "population":1942288,
+            "countryCode":"IN",
+            "name":"Virudhunagar",
+            "fclName":"country, state, region,...",
+            "adminCodes1":{
+                "ISO3166_2":"TN"
+            },
+            "countryName":"India",
+            "fcodeName":"second-order administrative division",
+            "adminName1":"Tamil Nadu",
+            "lat":"9.45",
+            "fcode":"ADM2"
+        }
+    ]
+}

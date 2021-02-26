@@ -7,12 +7,11 @@ import Nimble
 import Combine
 import UIKit
 import Alamofire
-import CoreLocation
 
-class HomeSceneViewModelTests: QuickSpec {
+class SearchSceneViewModelTests: QuickSpec {
     
     func getResource<T: Codable>(_ fileName: String) -> T? {
-        let bundle = Bundle.init(for: HomeSceneViewModelTests.self)
+        let bundle = Bundle.init(for: SearchSceneViewModelTests.self)
         guard let resourcePath = bundle.url(forResource: fileName, withExtension: "json"),
               let data = try? Data(contentsOf: resourcePath),
               let parsedData: T = SerializationManager.parseData(jsonData: data) else { return nil }
@@ -23,21 +22,19 @@ class HomeSceneViewModelTests: QuickSpec {
         
         var alertCalled = false
         var disposeBag = Set<AnyCancellable>()
-        var mock: MockHomeSceneRepositoryImpl!
-        var sut: HomeSceneViewModel!
+        var mock: MockSearchRepositoryImpl!
+        var sut: SearchSceneViewModel!
         
         func cleanDisposeBag() { for cancellable in disposeBag { cancellable.cancel() } }
         
         func initialize() {
-            mock = MockHomeSceneRepositoryImpl()
-            sut = HomeSceneViewModel(coordinator: HomeSceneCoordinator(parentCoordinator: AppCoordinator(),
-                                                                       navigationController: UINavigationController()),
-                                     repository: mock)
+            mock = MockSearchRepositoryImpl()
+            sut = SearchSceneViewModel(searchRepository: mock)
             alertCalled = false
         }
         
         func subscribe() {
-            sut.initializeWeatherSubject(subject: sut.weatherSubject.eraseToAnyPublisher())
+            sut.initializeSearchSubject(subject: sut.searchSubject.eraseToAnyPublisher())
                 .store(in: &disposeBag)
             sut.alertSubject
                 .subscribe(on: DispatchQueue.global(qos: .background))
@@ -46,22 +43,36 @@ class HomeSceneViewModelTests: QuickSpec {
                 .store(in: &disposeBag)
         }
         
-        describe("UNIT-TEST HomeSceneRepository") {
+        describe("UNIT-TEST SearchRepository") {
             context("Good screen data initialize success screen") {
                 beforeEach {
                     initialize()
-                    stub(mock) { [unowned self] stub in
-                        if let data: WeatherResponse = self.getResource("MockWeatherResponseJSON") {
-                            let publisher = Just(Result<WeatherResponse, AFError>.success(data)).eraseToAnyPublisher()
-                            when(stub).fetchWeatherDataBy(location: any()).thenReturn(publisher)
+                    stub(mock) { [unowned self] stub in // just for desired search
+                        if let data1: GeoNameResponse = self.getResource("MockGeonameResponseJSON_1"), // V
+                           let data2: GeoNameResponse = self.getResource("MockGeonameResponseJSON_2"), // i
+                           let data3: GeoNameResponse = self.getResource("MockGeonameResponseJSON_3"), // e
+                           let data4: GeoNameResponse = self.getResource("MockGeonameResponseJSON_4"), // n
+                           let data5: GeoNameResponse = self.getResource("MockGeonameResponseJSON_5"), // n
+                           let data6: GeoNameResponse = self.getResource("MockGeonameResponseJSON_6")  // a
+                        {
+                            let publisher =
+                            when(stub).fetchSearchResult(for: any())
+                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data1)).eraseToAnyPublisher())
+                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data2)).eraseToAnyPublisher())
+                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data3)).eraseToAnyPublisher())
+                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data4)).eraseToAnyPublisher())
+                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data5)).eraseToAnyPublisher())
+                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data6)).eraseToAnyPublisher())
+                            
                         }
                     }
                     subscribe()
                 }
                 afterEach { cleanDisposeBag() }
                 it("Success screen initialized.") {
-                    let expected: Int64 = 2761369
-                    expect(sut.screenData.id).toEventually(equal(expected))
+                    let expected: Int = 0
+                    
+                    expect(sut.screenData.count).toEventually(equal(expected))
                 }
             }
             

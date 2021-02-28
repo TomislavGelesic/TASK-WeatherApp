@@ -7,6 +7,7 @@ import Nimble
 import Combine
 import UIKit
 import Alamofire
+import CoreLocation
 
 class SearchSceneViewModelTests: QuickSpec {
     
@@ -47,49 +48,50 @@ class SearchSceneViewModelTests: QuickSpec {
             context("Good screen data initialize success screen") {
                 beforeEach {
                     initialize()
-                    stub(mock) { [unowned self] stub in // just for desired search
-                        if let data1: GeoNameResponse = self.getResource("MockGeonameResponseJSON_1"), // V
-                           let data2: GeoNameResponse = self.getResource("MockGeonameResponseJSON_2"), // i
-                           let data3: GeoNameResponse = self.getResource("MockGeonameResponseJSON_3"), // e
-                           let data4: GeoNameResponse = self.getResource("MockGeonameResponseJSON_4"), // n
-                           let data5: GeoNameResponse = self.getResource("MockGeonameResponseJSON_5"), // n
-                           let data6: GeoNameResponse = self.getResource("MockGeonameResponseJSON_6")  // a
+                    stub(mock) { [unowned self] stub in
+                        if let data: GeoNameResponse = self.getResource("MockGeonameResponseJSON")
                         {
-                            let publisher =
+                            #warning("delete print")
+                            print(data)
                             when(stub).fetchSearchResult(for: any())
-                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data1)).eraseToAnyPublisher())
-                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data2)).eraseToAnyPublisher())
-                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data3)).eraseToAnyPublisher())
-                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data4)).eraseToAnyPublisher())
-                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data5)).eraseToAnyPublisher())
-                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data6)).eraseToAnyPublisher())
-                            
+                                .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data)).eraseToAnyPublisher())
+                        }
+                        else {
+                            #warning("delete print")
+                            print("ERRRRROOOOORRRRR")
                         }
                     }
                     subscribe()
                 }
                 afterEach { cleanDisposeBag() }
                 it("Success screen initialized.") {
-                    let expected: Int = 0
+                    let expected: Int = 10
+                    
+                    //it's passthrough subject
+                    sut.searchSubject.send("Vienna")
+                    
+                    #warning("unknown fail")
+                    //why does it fail??
                     
                     expect(sut.screenData.count).toEventually(equal(expected))
                 }
             }
             
-            context("Bad screen data initialize fail screen.") {
+            context("Bad screen data initialize fail screen") {
                 beforeEach {
                     initialize()
-                    subscribe()
                     stub(mock) { stub in
-                        let publisher = Just(Result<WeatherResponse, AFError>.failure(AFError.explicitlyCancelled)).eraseToAnyPublisher()
-                        when(stub).fetchWeatherDataBy(location: any()).thenReturn(publisher)
+                        let data = GeoNameResponse(geonames: [GeoNameItem]())
+                        when(stub).fetchSearchResult(for: any())
+                            .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data)).eraseToAnyPublisher())
                     }
                     subscribe()
                 }
                 afterEach { cleanDisposeBag() }
                 it("Fail screen initialized.") {
-                    sut.alertSubject.send("")
-                    expect(alertCalled).toEventually(equal(true))
+                    let expected: Int = 0
+                    sut.searchSubject.send("Vienna")
+                    expect(sut.screenData.count).toEventually(equal(expected))
                 }
             }
         }

@@ -20,20 +20,21 @@ class HomeSceneViewModelTests: QuickSpec {
     }
     
     override func spec() {
-        
+        var coordinatorCalled: SceneOption? = nil
         var alertCalled = false
         var disposeBag = Set<AnyCancellable>()
         var mock: MockHomeSceneRepositoryImpl!
         var sut: HomeSceneViewModel!
-        
+        var coordinator: MockHomeSceneCoordinator!
         func cleanDisposeBag() { for cancellable in disposeBag { cancellable.cancel() } }
         
         func initialize() {
             mock = MockHomeSceneRepositoryImpl()
-            sut = HomeSceneViewModel(coordinator: HomeSceneCoordinator(parentCoordinator: AppCoordinator(),
-                                                                       navigationController: UINavigationController()),
-                                     repository: mock)
+            coordinator = MockHomeSceneCoordinator(navigationController: UINavigationController())
+            sut = HomeSceneViewModel(repository: mock)
+            sut.coordinatorDelegate = coordinator
             alertCalled = false
+            coordinatorCalled = nil
         }
         
         func subscribe() {
@@ -79,6 +80,41 @@ class HomeSceneViewModelTests: QuickSpec {
                 it("Fail screen initialized.") {
                     sut.alertSubject.send("")
                     expect(alertCalled).toEventually(equal(true))
+                }
+            }
+        }
+        
+        describe("UNIT-TEST HomeSceneCoordinator") {
+            context("Settings button tap call coordinator delegate.") {
+                beforeEach {
+                    initialize()
+                    stub(coordinator) { (stub) in
+                        when(stub).viewControllerHasFinished(goTo: any()).then { (option) in
+                            coordinatorCalled = option
+                        }
+                    }
+                }
+                it("Coordinator delegate called.") {
+                    expect(coordinatorCalled).to(beNil())
+                    sut.settingsTapped(image: UIImage())
+                    expect(coordinatorCalled).toNot(beNil())
+                }
+            }
+            
+            context("Search textField tap call coordinator delegate.") {
+                beforeEach {
+                    initialize()
+                    stub(coordinator) { (stub) in
+                        when(stub).viewControllerHasFinished(goTo: any()).then { (option) in
+                            coordinatorCalled = option
+                        }
+                    }
+                }
+                it("Coordinator delegate called.") {
+                    expect(coordinatorCalled).to(beNil())
+                    sut.presentSearchScene(on: HomeSceneViewController(viewModel: sut), with: UIImage())
+                    sut.settingsTapped(image: UIImage())
+                    expect(coordinatorCalled).toNot(beNil())
                 }
             }
         }

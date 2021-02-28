@@ -86,4 +86,13 @@ class HomeSceneViewModel {
         let settings = UserDefaultsService.fetchUpdated()
         weatherSubject.send(CLLocationCoordinate2D(latitude: settings.lastLatitude, longitude: settings.lastLongitude))
     }
+    
+    func presentSearchScene(on vc: HomeSceneViewController, with image: UIImage?) {
+        let vm = SearchSceneViewModel(searchRepository: SearchRepositoryImpl())
+        vm.delegate = vc
+        let viewController = SearchSceneViewController(viewModel: vm)
+        viewController.backgroundImage.image = image
+        viewController.modalPresentationStyle = .fullScreen
+        vc.present(vc, animated: true)
+    }
 }

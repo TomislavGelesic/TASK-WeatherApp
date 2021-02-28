@@ -13,6 +13,14 @@ class HomeSceneCoordinator: Coordinator, CoordinatorDelegate {
     var childCoordinators: [Coordinator] = [Coordinator]()
     var navigationController: UINavigationController
     
+    init(navigationController: UINavigationController) {
+        self.navigationController = navigationController
+    }
+
+    deinit {
+        print("HomeSceneCoordinator deinit")
+    }
+    
     func start() {
         let viewModel = HomeSceneViewModel(repository: HomeSceneRepositoryImpl())
         viewModel.coordinatorDelegate = self
@@ -21,14 +29,6 @@ class HomeSceneCoordinator: Coordinator, CoordinatorDelegate {
         }
         let viewController = HomeSceneViewController(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: false)
-    }
-    
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
-    }
-
-    deinit {
-        //print("HomeSceneCoordinator deinit")
     }
     
     func viewControllerHasFinished(goTo option: SceneOption) {

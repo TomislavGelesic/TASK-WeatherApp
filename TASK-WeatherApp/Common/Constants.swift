@@ -25,7 +25,7 @@ struct Constants {
     }
     
 //    examples:
-//    https://secure.geonames.org/searchJSON?name_startsWith=Vienna&username=tgelesic
+//    https://secure.geonames.org/searchJSON?name_startsWith=Vienna&maxRows=10&username=tgelesic
     
     
     struct OpenWeatherMapORG {

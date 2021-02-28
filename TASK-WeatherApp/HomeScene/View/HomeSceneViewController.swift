@@ -335,21 +335,12 @@ extension HomeSceneViewController {
         searchTextField.resignFirstResponder()
         if let selectedCity = item { viewModel.update(selectedCity) }
     }
-    
-    func presentSearchScene() {
-        let vm = SearchSceneViewModel(searchRepository: SearchRepositoryImpl())
-        vm.delegate = self
-        let vc = SearchSceneViewController(viewModel: vm)
-        vc.backgroundImage.image = backgroundImage.image
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true)
-    }
 }
 
 extension HomeSceneViewController: UITextFieldDelegate {
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        presentSearchScene()
+        viewModel.presentSearchScene(on: self, with: backgroundImage.image)
         return true
     }
 }

@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 import SnapKit
-
+import Alamofire
 
 class SearchSceneViewModel {
     
@@ -32,30 +32,20 @@ extension SearchSceneViewModel {
         return subject
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.global())
             .removeDuplicates()
-            .flatMap { [unowned self] (searchText) -> AnyPublisher<[Geoname], Never> in
+            .flatMap { [unowned self] (searchText) -> AnyPublisher<Result<GeoNameResponse, AFError>, Never> in
                 return self.searchRepository.fetchSearchResult(for: searchText)
-                    .flatMap { (result) -> AnyPublisher<[Geoname], Never> in
-                        switch result {
-                        case .success(let geonamesResponse):
-                            let data: [Geoname] = geonamesResponse.geonames.map{ Geoname($0) }
-                            return Just(data).eraseToAnyPublisher()
-                        case .failure(let error):
-                            print(error)
-                            return Just([Geoname]()).eraseToAnyPublisher()
-                        }
-                    }.eraseToAnyPublisher()
             }
             .subscribe(on: DispatchQueue.global(qos: .background))
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { (completion) in
-                switch completion {
-                case .finished: break
-                case .failure(_): print("THIS ERROR SHOULD NEVER HAPPEN")
+            .sink { [unowned self] (result) in
+                switch result {
+                case .success(let response):
+                    self.screenData = response.geonames.map{ Geoname($0)}
+                    self.refreshUISubject.send()
+                case .failure(_):
+                    break
                 }
-            }, receiveValue: { [unowned self] (data) in
-                self.screenData = data
-                self.refreshUISubject.send()
-            })
+            }
     }
     
     func search(text: String?) {

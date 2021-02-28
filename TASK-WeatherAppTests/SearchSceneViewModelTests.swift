@@ -23,13 +23,12 @@ class SearchSceneViewModelTests: QuickSpec {
         
         var alertCalled = false
         var disposeBag = Set<AnyCancellable>()
-        var mock: MockSearchRepositoryImpl!
+        var mock = MockSearchRepositoryImpl()
         var sut: SearchSceneViewModel!
         
         func cleanDisposeBag() { for cancellable in disposeBag { cancellable.cancel() } }
         
         func initialize() {
-            mock = MockSearchRepositoryImpl()
             sut = SearchSceneViewModel(searchRepository: mock)
             alertCalled = false
         }
@@ -51,19 +50,12 @@ class SearchSceneViewModelTests: QuickSpec {
                     stub(mock) { [unowned self] stub in
                         if let data: GeoNameResponse = self.getResource("MockGeonameResponseJSON")
                         {
-                            #warning("delete print")
-                            print(data)
                             when(stub).fetchSearchResult(for: any())
                                 .thenReturn(Just(Result<GeoNameResponse, AFError>.success(data)).eraseToAnyPublisher())
-                        }
-                        else {
-                            #warning("delete print")
-                            print("ERRRRROOOOORRRRR")
                         }
                     }
                     subscribe()
                 }
-                afterEach { cleanDisposeBag() }
                 it("Success screen initialized.") {
                     let expected: Int = 10
                     
@@ -87,7 +79,6 @@ class SearchSceneViewModelTests: QuickSpec {
                     }
                     subscribe()
                 }
-                afterEach { cleanDisposeBag() }
                 it("Fail screen initialized.") {
                     let expected: Int = 0
                     sut.searchSubject.send("Vienna")

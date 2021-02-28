@@ -20,21 +20,17 @@ class HomeSceneViewModelTests: QuickSpec {
     }
     
     override func spec() {
-        var coordinatorCalled: SceneOption? = nil
         var alertCalled = false
         var disposeBag = Set<AnyCancellable>()
-        var mock: MockHomeSceneRepositoryImpl!
+        var mock = MockHomeSceneRepositoryImpl()
         var sut: HomeSceneViewModel!
-        var coordinator: MockHomeSceneCoordinator!
+        var coordinator = MockHomeSceneCoordinator(navigationController: UINavigationController())
         func cleanDisposeBag() { for cancellable in disposeBag { cancellable.cancel() } }
         
         func initialize() {
-            mock = MockHomeSceneRepositoryImpl()
-            coordinator = MockHomeSceneCoordinator(navigationController: UINavigationController())
             sut = HomeSceneViewModel(repository: mock)
             sut.coordinatorDelegate = coordinator
             alertCalled = false
-            coordinatorCalled = nil
         }
         
         func subscribe() {
@@ -50,16 +46,15 @@ class HomeSceneViewModelTests: QuickSpec {
         describe("UNIT-TEST HomeSceneRepository") {
             context("Good screen data initialize success screen") {
                 beforeEach {
-                    initialize()
                     stub(mock) { [unowned self] stub in
                         if let data: WeatherResponse = self.getResource("MockWeatherResponseJSON") {
                             let publisher = Just(Result<WeatherResponse, AFError>.success(data)).eraseToAnyPublisher()
                             when(stub).fetchWeatherDataBy(location: any()).thenReturn(publisher)
                         }
                     }
+                    initialize()
                     subscribe()
                 }
-                afterEach { cleanDisposeBag() }
                 it("Success screen initialized.") {
                     let expected: Int64 = 2761369
                     expect(sut.screenData.id).toEventually(equal(expected))
@@ -68,15 +63,13 @@ class HomeSceneViewModelTests: QuickSpec {
             
             context("Bad screen data initialize fail screen.") {
                 beforeEach {
-                    initialize()
-                    subscribe()
                     stub(mock) { stub in
                         let publisher = Just(Result<WeatherResponse, AFError>.failure(AFError.explicitlyCancelled)).eraseToAnyPublisher()
                         when(stub).fetchWeatherDataBy(location: any()).thenReturn(publisher)
                     }
+                    initialize()
                     subscribe()
                 }
-                afterEach { cleanDisposeBag() }
                 it("Fail screen initialized.") {
                     sut.alertSubject.send("")
                     expect(alertCalled).toEventually(equal(true))
@@ -87,34 +80,29 @@ class HomeSceneViewModelTests: QuickSpec {
         describe("UNIT-TEST HomeSceneCoordinator") {
             context("Settings button tap call coordinator delegate.") {
                 beforeEach {
-                    initialize()
                     stub(coordinator) { (stub) in
-                        when(stub).viewControllerHasFinished(goTo: any()).then { (option) in
-                            coordinatorCalled = option
-                        }
+                        when(stub).viewControllerHasFinished(goTo: any()).thenDoNothing()
                     }
+                    initialize()
                 }
                 it("Coordinator delegate called.") {
-                    expect(coordinatorCalled).to(beNil())
+                    sut.coordinatorDelegate = coordinator
                     sut.settingsTapped(image: UIImage())
-                    expect(coordinatorCalled).toNot(beNil())
+                    verify(coordinator).viewControllerHasFinished(goTo: any())
                 }
             }
             
             context("Search textField tap call coordinator delegate.") {
                 beforeEach {
-                    initialize()
                     stub(coordinator) { (stub) in
-                        when(stub).viewControllerHasFinished(goTo: any()).then { (option) in
-                            coordinatorCalled = option
-                        }
+                        when(stub).viewControllerHasFinished(goTo: any()).thenDoNothing()
                     }
+                    initialize()
                 }
                 it("Coordinator delegate called.") {
-                    expect(coordinatorCalled).to(beNil())
-                    sut.presentSearchScene(on: HomeSceneViewController(viewModel: sut), with: UIImage())
-                    sut.settingsTapped(image: UIImage())
-                    expect(coordinatorCalled).toNot(beNil())
+                    sut.coordinatorDelegate = coordinator
+                    sut.presentSearchScene(on: nil, with: nil)
+                    verify(coordinator).viewControllerHasFinished(goTo: any())
                 }
             }
         }

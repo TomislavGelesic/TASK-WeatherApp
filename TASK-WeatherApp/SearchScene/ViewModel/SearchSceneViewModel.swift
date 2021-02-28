@@ -18,7 +18,7 @@ class SearchSceneViewModel {
     var spinnerSubject = PassthroughSubject<Bool, Never>()
     var alertSubject = PassthroughSubject<String, Never>()
     var refreshUISubject = PassthroughSubject<Void, Never>()
-    let searchSubject = PassthroughSubject<String, Never>()
+    let searchSubject = CurrentValueSubject<String, Never>("")
     
     init(searchRepository: GeoNamesRepository) { self.searchRepository = searchRepository }
     

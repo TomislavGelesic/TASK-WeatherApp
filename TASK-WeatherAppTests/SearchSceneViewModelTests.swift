@@ -23,7 +23,7 @@ class SearchSceneViewModelTests: QuickSpec {
         
         var alertCalled = false
         var disposeBag = Set<AnyCancellable>()
-        var mock = MockSearchRepositoryImpl()
+        let mock = MockSearchRepositoryImpl()
         var sut: SearchSceneViewModel!
         
         func cleanDisposeBag() { for cancellable in disposeBag { cancellable.cancel() } }
@@ -58,13 +58,7 @@ class SearchSceneViewModelTests: QuickSpec {
                 }
                 it("Success screen initialized.") {
                     let expected: Int = 10
-                    
-                    //it's passthrough subject
                     sut.searchSubject.send("Vienna")
-                    
-                    #warning("unknown fail")
-                    //why does it fail??
-                    
                     expect(sut.screenData.count).toEventually(equal(expected))
                 }
             }

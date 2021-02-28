@@ -22,9 +22,9 @@ class HomeSceneViewModelTests: QuickSpec {
     override func spec() {
         var alertCalled = false
         var disposeBag = Set<AnyCancellable>()
-        var mock = MockHomeSceneRepositoryImpl()
+        let mock = MockHomeSceneRepositoryImpl()
         var sut: HomeSceneViewModel!
-        var coordinator = MockHomeSceneCoordinator(navigationController: UINavigationController())
+        let coordinator = MockHomeSceneCoordinator(navigationController: UINavigationController())
         func cleanDisposeBag() { for cancellable in disposeBag { cancellable.cancel() } }
         
         func initialize() {
